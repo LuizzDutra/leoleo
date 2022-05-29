@@ -6,24 +6,36 @@ class Player(pg.sprite.Sprite):
 		super().__init__()
 		self.sprites = []
 		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (64,64)))
+		self.sprites.append(pg.transform.rotate(self.sprites[0], 90))
+		self.sprites.append(pg.transform.rotate(self.sprites[0], 180))
+		self.sprites.append(pg.transform.rotate(self.sprites[0], 270))
 		self.image = self.sprites[0]
 		self.rect = self.image.get_rect(center = (screen_width/2, screen_height/2))
 		self.speed = 5
+		self.throw_delay = 1
+		self.last_throw = 0
 
 	def ball_throw(self):
-		return Ball(player.rect.center)
+		if time.time() - self.last_throw > self.throw_delay:
+			self.last_throw = time.time()
+			ball_group.add(Ball(self.rect.center))
 
 	def move(self):
 		if keys_pressed[pg.K_a]:
 			self.rect.x -= self.speed
+			self.image = self.sprites[1]
 		if keys_pressed[pg.K_d]:
 			self.rect.x += self.speed
+			self.image = self.sprites[3]
 		if keys_pressed[pg.K_w]:
 			self.rect.y -= self.speed
+			self.image = self.sprites[0]
 		if keys_pressed[pg.K_s]:
 			self.rect.y += self.speed
+			self.image = self.sprites[2]
 
 	def update(self):
+		self.image = self.sprites[0]
 		self.move()
 	
 class Ball(pg.sprite.Sprite):
@@ -47,12 +59,12 @@ class Ball(pg.sprite.Sprite):
 			self.kill()
 
 
-#Classe de tempo que será usada para calcular o horário e passar os dias
+#Classe de tempo que serï¿½ usada para calcular o horï¿½rio e passar os dias
 class Time():
 	def __init__(self):
-		self.timescale = 10000 #Escala de tempo em relação à vida real/ padrão = 60
+		self.timescale = 10000 #Escala de tempo em relaï¿½ï¿½o ï¿½ vida real/ padrï¿½o = 60
 		self.start_time = time.time()
-		self.cur_time = 0 #Tempo que passou desde a criação do objeto com a classe
+		self.cur_time = 0 #Tempo que passou desde a criaï¿½ï¿½o do objeto com a classe
 		self.day = 1 #Use o operador "%" por 7 (ex:day % 7) no index do "week_day" para pegar o dia da semana/ Ex: dado day = 1 -> weekday[day%7] --> "Segunda"
 		self.week_day = {0:"Domingo", 1:"Segunda", 2:"Terca", 3:"Quarta", 4:"Quinta", 5:"Sexta", 6:"Sabado"}
 		self.day_duration = 34200
@@ -66,13 +78,23 @@ class Time():
 		self.day_pass_check()
 		self.cur_time = (time.time() - self.start_time) * self.timescale
 	
+#Ponteiro personalizado
+class Cursor(pg.sprite.Sprite):
+	def __init__(self):
+		super().__init__()
+		self.sprites = []
+		self.sprites.append(pg.image.load(os.path.join("Assets", "cursor.png")))
+		self.image = self.sprites[0]
+		self.rect = self.image.get_rect(center = pg.mouse.get_pos())
+	def update(self):
+		self.rect.center = pg.mouse.get_pos()
 
 pg.init()
 screen_width, screen_height = 1280, 720
 screen = pg.display.set_mode((screen_width, screen_height))
 pg.display.set_caption("Oho")
 clock = pg.time.Clock()
-#pg.mouse.set_visible(False)
+pg.mouse.set_visible(False)
 
 player = Player()
 player_group = pg.sprite.Group()
@@ -82,11 +104,14 @@ ball_group = pg.sprite.Group()
 
 calendar = Time()
 
+cursor = Cursor()
+
 def draw():
 	screen.fill((100,100,100))
 
 	ball_group.draw(screen)
 	player_group.draw(screen)
+	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 	
 	pg.display.update()
 
@@ -97,13 +122,14 @@ while True:
 			pg.quit()
 			sys.exit()
 		if event.type == pg.MOUSEBUTTONDOWN:
-			ball_group.add(player.ball_throw())
+			player.ball_throw()
 	
 	keys_pressed = pg.key.get_pressed()
 
 	player_group.update()
 	ball_group.update()
 	calendar.update()
+	cursor.update()
 	draw()
 
 	#Print Debug
