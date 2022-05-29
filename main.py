@@ -11,7 +11,6 @@ class Player(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(center = (screen_width/2, screen_height/2))
 		self.speed = 5
 
-
 	def ball_throw(self):
 		return Ball(player.rect.center)
 
@@ -44,11 +43,6 @@ class Ball(pg.sprite.Sprite):
 		self.ydir = math.sin(self.angle) 
 		self.time = time.time()
 		self.life_time = 5
-
-	def md(self, n):
-		if n < 0:
-			n *= -1
-		return n
 
 	def update(self):
 		self.rect.x += self.speed * self.xdir
