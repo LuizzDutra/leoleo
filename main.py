@@ -59,12 +59,12 @@ class Ball(pg.sprite.Sprite):
 			self.kill()
 
 
-#Classe de tempo que ser� usada para calcular o hor�rio e passar os dias
+#Classe de tempo que será usada para calcular o horário e passar os dias
 class Time():
 	def __init__(self):
-		self.timescale = 10000 #Escala de tempo em rela��o � vida real/ padr�o = 60
+		self.timescale = 10000 #Escala de tempo em relação à vida real/ padrão = 60
 		self.start_time = time.time()
-		self.cur_time = 0 #Tempo que passou desde a cria��o do objeto com a classe
+		self.cur_time = 0 #Tempo que passou desde a criaçãoo do objeto com a classe
 		self.day = 1 #Use o operador "%" por 7 (ex:day % 7) no index do "week_day" para pegar o dia da semana/ Ex: dado day = 1 -> weekday[day%7] --> "Segunda"
 		self.week_day = {0:"Domingo", 1:"Segunda", 2:"Terca", 3:"Quarta", 4:"Quinta", 5:"Sexta", 6:"Sabado"}
 		self.day_duration = 34200
