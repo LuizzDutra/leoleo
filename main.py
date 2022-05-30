@@ -6,12 +6,10 @@ class Player(pg.sprite.Sprite):
 		super().__init__()
 		self.sprites = []
 		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (64,64)))
-		self.sprites.append(pg.transform.rotate(self.sprites[0], 90))
-		self.sprites.append(pg.transform.rotate(self.sprites[0], 180))
-		self.sprites.append(pg.transform.rotate(self.sprites[0], 270))
 		self.image = self.sprites[0]
 		self.rect = self.image.get_rect(center = (screen_width/2, screen_height/2))
-		self.speed = 5
+		self.xspeed = 5
+		self.yspeed = 5
 		self.throw_delay = 1
 		self.last_throw = 0
 
@@ -22,23 +20,18 @@ class Player(pg.sprite.Sprite):
 
 	def move(self):
 		if keys_pressed[pg.K_a]:
-			self.rect.x -= self.speed
-			self.image = self.sprites[1]
+			self.rect.x -= self.xspeed
 		if keys_pressed[pg.K_d]:
-			self.rect.x += self.speed
-			self.image = self.sprites[3]
+			self.rect.x += self.xspeed
 		if keys_pressed[pg.K_w]:
-			self.rect.y -= self.speed
-			self.image = self.sprites[0]
+			self.rect.y -= self.yspeed
 		if keys_pressed[pg.K_s]:
-			self.rect.y += self.speed
-			self.image = self.sprites[2]
+			self.rect.y += self.yspeed
 
 	def update(self):
-		self.image = self.sprites[0]
 		self.move()
 	
-class Ball(pg.sprite.Sprite):
+class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 	def __init__(self, player_pos):
 		super().__init__()
 		self.sprites = []
@@ -58,6 +51,12 @@ class Ball(pg.sprite.Sprite):
 		if time.time() - self.time > self.life_time:
 			self.kill()
 
+class Wall(pg.sprite.Sprite):
+	def __init__(self, width, height, x, y):
+		super().__init__()
+		self.image = pg.Surface((width, height))
+		self.image.fill((30,30,30))
+		self.rect = self.image.get_rect(center = (x, y))
 
 #Classe de tempo que será usada para calcular o horário e passar os dias
 class Time():
@@ -102,15 +101,38 @@ player_group.add(player)
 
 ball_group = pg.sprite.Group()
 
+wall_group = pg.sprite.Group()
+wall_group.add(Wall(60, 60, 200, 200))
+
+
 calendar = Time()
 
 cursor = Cursor()
+
+def collision_check():
+	#colisão jogador/parede
+	for obj in wall_group:
+		if player.rect.colliderect(obj):
+			if abs(player.rect.bottom - obj.rect.top) < 5:
+				player.rect.y -= player.yspeed
+			if abs(player.rect.right - obj.rect.left) < 5:
+				player.rect.x -= player.xspeed
+			if abs(player.rect.left - obj.rect.right) < 5:
+				player.rect.x += player.xspeed
+			if abs(player.rect.top - obj.rect.bottom) < 5:
+				player.rect.y += player.yspeed
+	#colisão bola/parede -> https://www.youtube.com/watch?v=1_H7InPMjaY
+	for obj in ball_group:
+		for obj2 in wall_group:
+			if obj.rect.colliderect(obj2):
+				obj.kill()
 
 def draw():
 	screen.fill((100,100,100))
 
 	ball_group.draw(screen)
 	player_group.draw(screen)
+	wall_group.draw(screen)
 	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 	
 	pg.display.update()
@@ -131,9 +153,10 @@ while True:
 	calendar.update()
 	cursor.update()
 	draw()
+	collision_check()
 
 	#Print Debug
-	print("{:.0f}".format(calendar.cur_time//60))
-	print(calendar.week_day[calendar.day%7])
+	#print("{:.0f}".format(calendar.cur_time//60))
+	#print(calendar.week_day[calendar.day%7])
 
 	clock.tick(60)
