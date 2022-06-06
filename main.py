@@ -1,5 +1,5 @@
 import pygame as pg
-import os, sys, math, time
+import os, sys, time
 import lc
 
 class Player(pg.sprite.Sprite):
@@ -11,6 +11,8 @@ class Player(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(center = (screen_width/2, screen_height/2))
 		self.xspeed = 5
 		self.yspeed = 5
+		self.xvel = 0
+		self.yvel = 0
 		self.throw_delay = 1
 		self.last_throw = 0
 
@@ -20,14 +22,21 @@ class Player(pg.sprite.Sprite):
 			ball_group.add(Ball(self.rect.center))
 
 	def move(self):
+		self.xvel = 0
+		self.yvel = 0
 		if keys_pressed[pg.K_a]:
-			self.rect.x -= self.xspeed
+			self.xvel = -self.xspeed
 		if keys_pressed[pg.K_d]:
-			self.rect.x += self.xspeed
+			self.xvel = +self.xspeed
 		if keys_pressed[pg.K_w]:
-			self.rect.y -= self.yspeed
+			self.yvel = -self.yspeed
 		if keys_pressed[pg.K_s]:
-			self.rect.y += self.yspeed
+			self.yvel = +self.yspeed
+		if keys_pressed[pg.K_LSHIFT]:
+			self.xvel *= 0.5
+			self.yvel *= 0.5
+		self.rect.x += self.xvel
+		self.rect.y += self.yvel
 
 	def update(self):
 		self.move()
@@ -40,9 +49,17 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.image = self.sprites[0]
 		self.rect = self.image.get_rect(center = player_pos)
 		self.speed = 10
-		self.angle = math.atan2(pg.mouse.get_pos()[1] - self.rect.y, pg.mouse.get_pos()[0] - self.rect.x)
-		self.xdir = math.cos(self.angle) 
-		self.ydir = math.sin(self.angle) 
+		self.xdir = 0
+		self.ydir = 0
+		if keys_pressed[pg.K_d]:
+			self.xdir = 1 
+		if keys_pressed[pg.K_s]: 
+			self.ydir = 1 
+		if keys_pressed[pg.K_a]:
+			self.xdir = -1 
+		if keys_pressed[pg.K_w]: 
+			self.ydir = -1 
+
 		self.time = time.time()
 		self.life_time = 5
 
@@ -82,6 +99,14 @@ class Cursor(pg.sprite.Sprite):
 	def update(self):
 		self.rect.center = pg.mouse.get_pos()
 
+class Camera():
+	def __init__(self):
+		self.xoffset = screen_width/2 - player.rect.x;
+		self.yoffset = screen_height/2 - player.rect.y;
+	def update(self):
+		self.xoffset = screen_width/2 - player.rect.x;
+		self.yoffset = screen_height/2 - player.rect.y;
+
 pg.init()
 screen_width, screen_height = 1280, 720
 screen = pg.display.set_mode((screen_width, screen_height))
@@ -102,18 +127,20 @@ calendar = Time()
 
 cursor = Cursor()
 
+camera = Camera()
+
 def collision_check():
 	#colisão jogador/parede
 	for obj in wall_group:
 		if player.rect.colliderect(obj):
 			if abs(player.rect.bottom - obj.rect.top) < player.yspeed*2:
-				player.rect.y -= player.yspeed
+				player.rect.bottom = obj.rect.top
 			if abs(player.rect.right - obj.rect.left) < player.xspeed*2:
-				player.rect.x -= player.xspeed
+				player.rect.right = obj.rect.left
 			if abs(player.rect.left - obj.rect.right) < player.xspeed*2:
-				player.rect.x += player.xspeed
+				player.rect.left = obj.rect.right
 			if abs(player.rect.top - obj.rect.bottom) < player.yspeed*2:
-				player.rect.y += player.yspeed
+				player.rect.top = obj.rect.bottom
 	#colisão bola/parede -> https://www.youtube.com/watch?v=1_H7InPMjaY
 	for obj in ball_group:
 		for obj2 in wall_group:
@@ -123,9 +150,11 @@ def collision_check():
 def draw():
 	screen.fill((100,100,100))
 
-	ball_group.draw(screen)
-	player_group.draw(screen)
-	wall_group.draw(screen)
+	for ball in ball_group:
+		screen.blit(ball.image, (ball.rect.x + camera.xoffset, ball.rect.y + camera.yoffset))
+	screen.blit(player.image, (screen_width/2, screen_height/2))
+	for wall in wall_group:
+		screen.blit(wall.image, (wall.rect.x + camera.xoffset, wall.rect.y + camera.yoffset))
 	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 	
 	pg.display.update()
@@ -145,6 +174,7 @@ while True:
 	ball_group.update()
 	calendar.update()
 	cursor.update()
+	camera.update()
 	draw()
 	collision_check()
 

@@ -7,7 +7,7 @@ class Wall(pg.sprite.Sprite):
 		self.image.fill((30,30,30))
 		self.rect = self.image.get_rect(x = x , y = y)
 
-wall0 = Wall(128, 128, 200, 200)
+wall0 = Wall(32, 128, 200, 200)
 
 level0 = [wall0]
 
