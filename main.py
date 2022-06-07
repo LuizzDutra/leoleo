@@ -6,9 +6,9 @@ class Player(pg.sprite.Sprite):
 	def __init__(self):
 		super().__init__()
 		self.sprites = []
-		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (64, 64)))
+		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)))
 		self.image = self.sprites[0]
-		self.rect = self.image.get_rect(center = (screen_width/2, screen_height/2))
+		self.rect = self.image.get_rect(center = (0, 0))
 		self.xspeed = 5
 		self.yspeed = 5
 		self.xvel = 0
