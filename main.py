@@ -38,6 +38,11 @@ class Player(pg.sprite.Sprite):
 		self.rect.x += self.xvel
 		self.rect.y += self.yvel
 
+		if keys_pressed[pg.K_e]:
+			for door in door_group:
+				if abs(player.rect.x - door.rect.center[0]) < 100 and abs(player.rect.y - door.rect.center[1]) < 100:
+					door.open()
+
 	def update(self):
 		self.move()
 	
@@ -68,6 +73,19 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.rect.y += self.speed * self.ydir
 		if time.time() - self.time > self.life_time:
 			self.kill()
+
+class Door(pg.sprite.Sprite):
+	def __init__(self, x, y, width, height):
+		super().__init__()
+		self.image = pg.Surface((width, height))
+		self.rect = self.image.get_rect(x = x, y = y)
+		self.open_time = 0.5
+		self.open_delta = 0
+	def open(self):
+		if time.time() - self.open_delta > self.open_time:
+			self.open_delta = time.time()
+			self.image = pg.transform.rotate(self.image, 90)
+			self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 
 #Classe de tempo que será usada para calcular o horário e passar os dias
 class Time():
@@ -123,6 +141,9 @@ ball_group = pg.sprite.Group()
 wall_group = pg.sprite.Group()
 lc.level_construct(wall_group, lc.level0)
 
+door_group = pg.sprite.Group()
+door_group.add(Door(288, -255, 64, 10))
+
 calendar = Time()
 
 cursor = Cursor()
@@ -141,11 +162,23 @@ def collision_check():
 				player.rect.left = obj.rect.right
 			if abs(player.rect.top - obj.rect.bottom) < player.yspeed*2:
 				player.rect.top = obj.rect.bottom
+			
 	#colisão bola/parede -> https://www.youtube.com/watch?v=1_H7InPMjaY
 	for obj in ball_group:
 		for obj2 in wall_group:
 			if obj.rect.colliderect(obj2):
 				obj.kill()
+	#colisão porta
+	for obj in door_group:
+		if player.rect.colliderect(obj):
+			if abs(player.rect.bottom - obj.rect.top) < player.yspeed*2:
+				player.rect.bottom = obj.rect.top
+			if abs(player.rect.right - obj.rect.left) < player.xspeed*2:
+				player.rect.right = obj.rect.left
+			if abs(player.rect.left - obj.rect.right) < player.xspeed*2:
+				player.rect.left = obj.rect.right
+			if abs(player.rect.top - obj.rect.bottom) < player.yspeed*2:
+				player.rect.top = obj.rect.bottom
 
 def draw():
 	screen.fill((100,100,100))
@@ -156,6 +189,8 @@ def draw():
 	for wall in wall_group:
 		screen.blit(wall.image, (wall.rect.x + camera.xoffset, wall.rect.y + camera.yoffset))
 	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
+	for door in door_group:
+		screen.blit(door.image, (door.rect.x + camera.xoffset, door.rect.y + camera.yoffset))
 	
 	pg.display.update()
 
@@ -172,6 +207,7 @@ while True:
 
 	player_group.update()
 	ball_group.update()
+	door_group.update()
 	calendar.update()
 	cursor.update()
 	camera.update()
@@ -181,5 +217,6 @@ while True:
 	#Print Debug
 	#print("{:.0f}".format(calendar.cur_time//60))
 	#print(calendar.week_day[calendar.day%7])
+	print(player.rect.x, player.rect.y)
 
 	clock.tick(60)

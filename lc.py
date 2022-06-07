@@ -4,10 +4,11 @@ import pygame as pg
 class Wall(pg.sprite.Sprite):
 	def __init__(self, pos, pos2): #recebe o ponto superior esquerdo e inferior direito de um retângulo
 		super().__init__()
-		self.image = pg.Surface((abs(64*(pos[0] - pos2[0])), abs(64*(pos[1] - pos2[1]))))
+		self.gs = 64
+		self.image = pg.Surface((abs(self.gs*(pos[0] - pos2[0])), abs(self.gs*(pos[1] - pos2[1]))))
 		self.image.fill((30,30,30))
-		self.rect = self.image.get_rect(x = 64*pos[0] , y = -64*pos[1]) #na construção o y tem que ser negativo para facilitar na planta
-
+		self.rect = self.image.get_rect(x = self.gs*pos[0] , y = -self.gs*pos[1]) #na construção o y tem que ser negativo para facilitar na planta
+	
 
 
 wall0 = Wall((0, 2), (-1, 1))
