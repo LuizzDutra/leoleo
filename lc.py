@@ -17,7 +17,7 @@ class Door(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(x = x, y = y)
 		self.open_time = 0.5
 		self.open_delta = 0
-	def open(self):
+	def interact(self):
 		if time() - self.open_delta > self.open_time:
 			self.open_delta = time()
 			self.image = pg.transform.rotate(self.image, 90)
