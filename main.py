@@ -16,11 +16,14 @@ class Player(pg.sprite.Sprite):
 		self.use_delay = 0.2
 		self.last_use = 0
 		self.inv_select = 0
-		self.item_list = [Item(), Item(), Item(), Item()]
+		self.item_list = [Item(), Item(), Item(), Item(), Item(2)]
+		self.energy_max = 100
 		self.energy = 100
+		self.hp_max = 100
 		self.hp = 100
 
 	def ball_throw(self):
+		self.energy -= 5
 		ball_group.add(Ball(self.rect.center))
 
 	def interact(self):
@@ -67,6 +70,8 @@ class Player(pg.sprite.Sprite):
 			self.inv_select = 2
 		if keys_pressed[pg.K_4]:
 			self.inv_select = 3
+		if keys_pressed[pg.K_5]:
+			self.inv_select = 4
 		if keys_pressed[pg.K_t]:
 			for item in self.item_list:
 				if item.id  == 0:
@@ -74,7 +79,11 @@ class Player(pg.sprite.Sprite):
 
 	def update(self):
 		self.control()
-	
+		if self.energy > self.energy_max:
+			self.energy = self.energy_max
+		if self.hp > self.hp_max:
+			self.hp = self.hp_max
+
 class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 	def __init__(self, player_pos):
 		super().__init__()
@@ -167,11 +176,17 @@ class Item():
 	def __init__(self, id=0):
 		self.sprites = []
 		self.sprites.append(pg.Surface((0, 0)))
-		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "ball.png")), (16,16)))
+		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "ball.png")), (32,32)))
+		self.sprites.append(pg.Surface((32,32)))
+		self.sprites[2].fill((0,150,0))
+		self.name_dict = {0:"none", 1:"ball", 2:"Car"}
 		self.id = id
-		self.name_dict = {0:"none", 1:"ball"}
-		self.name = self.name_dict[id]
-		self.image = self.sprites[self.id]
+		try:
+			self.image = self.sprites[self.id]
+		except:
+			self.id = 0
+			self.image = self.sprites[self.id]
+
 		self.rect = self.image.get_rect()
 
 	def drop(self):
@@ -181,7 +196,11 @@ class Item():
 
 	def use(self):
 		if self.id == 1:
-			player.ball_throw()
+			if player.xvel or player.yvel != 0:
+				player.ball_throw()
+				self.id = 0
+		if self.id == 2:
+			player.energy += 10
 			self.id = 0
 	def update(self):
 		self.image = self.sprites[self.id]
@@ -192,12 +211,12 @@ class Item():
 		def __init__(self, id=0):
 			super().__init__()
 			self.id = id
-			self.image = item.sprites[id]
+			self.image = pg.transform.scale(item.sprites[id], (16,16))
 			self.rect = self.image.get_rect(center = player.rect.center)
 		def interact(self):
-			for item in player.item_list:
-				if item.id == 0:
-					item.id = self.id
+			for slot in player.item_list:
+				if slot.id == 0:
+					slot.id = self.id
 					self.kill()
 					break
 
@@ -207,22 +226,13 @@ class Hud():
 		self.sprites = []
 		self.sprites.append(pg.image.load(os.path.join("Assets", "inv_slots.png")))
 		self.sprites.append(pg.image.load(os.path.join("Assets", "inv_slots_selected.png")))
-		self.pos = [self.sprites[0].get_rect(x = 100, y = 650), self.sprites[0].get_rect(x = 174, y = 650), self.sprites[0].get_rect(x =248, y = 650), self.sprites[0].get_rect(x =322, y = 650)]
+		self.pos = [self.sprites[0].get_rect(x = 100, y = 650), self.sprites[0].get_rect(x = 174, y = 650), self.sprites[0].get_rect(x =248, y = 650), self.sprites[0].get_rect(x =322, y = 650), self.sprites[0].get_rect(x =322+74, y = 650)]
 	def draw_inv(self):
-		screen.blit(self.sprites[0], self.pos[0].topleft)
-		screen.blit(self.sprites[0], self.pos[1].topleft)
-		screen.blit(self.sprites[0], self.pos[2].topleft)
-		screen.blit(self.sprites[0], self.pos[3].topleft)
+		for pos in self.pos:
+			screen.blit(self.sprites[0], pos.topleft)
 
-		if player.inv_select == 0:
-			screen.blit(self.sprites[1], self.pos[0].topleft)
-		if player.inv_select == 1:
-			screen.blit(self.sprites[1], self.pos[1].topleft)
-		if player.inv_select == 2:
-			screen.blit(self.sprites[1], self.pos[2].topleft)
-		if player.inv_select == 3:
-			screen.blit(self.sprites[1], self.pos[3].topleft)
-
+		screen.blit(self.sprites[1], self.pos[player.inv_select].topleft)
+		
 		i = 0
 		for item in player.item_list:
 			screen.blit(item.image, (self.pos[i].centerx - item.rect.width/2, self.pos[i].centery - item.rect.height/2))
@@ -279,7 +289,6 @@ def collision_check():
 	for obj in ball_group:
 		for obj2 in wall_group:
 			if obj.rect.colliderect(obj2):
-				print(obj)
 				obj.kill()
 		for obj3 in door_group:
 			if obj.rect.colliderect(obj3):
@@ -306,26 +315,28 @@ def draw():
 		screen.blit(player.image, (screen_width/2, screen_height/2))
 	for wall in wall_group:
 		screen.blit(wall.image, (wall.rect.x + camera.xoffset, wall.rect.y + camera.yoffset))
-	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
+	
 	for door in door_group:
 		screen.blit(door.image, (door.rect.x + camera.xoffset, door.rect.y + camera.yoffset))
 	for item in drop_item_group:
 		screen.blit(item.image, (item.rect.x + camera.xoffset, item.rect.y + camera.yoffset))
 
-	a = ""
-
-	for item in player.item_list:
-		a += str(item.name+",")
+	#a = ""
+	#for item in player.item_list:
+		#a += str(item.name+",")
+	#screen.blit(arial.render(a, True, (0,0,0)), (0,100))
+	#screen.blit(arial.render(str(player.inv_select+1), True, (0,0,0)), (0,80))
 
 	screen.blit(calendar.image, (10, 10))
 	screen.blit(arial.render(str(player.hp), True, (255,0,0)), (1200,25))
 	screen.blit(arial.render(str(player.energy), True, (255,0,255)), (1200,55))
 	screen.blit(arial.render(("({},{})".format(pg.mouse.get_pos()[0], pg.mouse.get_pos()[1])), True, (0,255,255)), (screen_width/2, 0))
 
-	screen.blit(arial.render(a, True, (0,0,0)), (0,100))
-	screen.blit(arial.render(str(player.inv_select+1), True, (0,0,0)), (0,80))
+
+
 	
 	hud.draw_inv()
+	screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 
 
 
