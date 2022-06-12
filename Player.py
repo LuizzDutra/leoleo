@@ -21,7 +21,8 @@ class Player(pg.sprite.Sprite):
 		self.energy = 100
 		self.hp_max = 100
 		self.hp = 100
-		self.interactable_group_list = []
+		self.pickup_range = 100
+		self.interactable_list = []
 	def control(self, keys_pressed):
 		self.xvel = 0
 		self.yvel = 0
@@ -45,7 +46,9 @@ class Player(pg.sprite.Sprite):
 		if keys_pressed[pg.K_g]:
 			self.item_list[self.inv_select].drop(self.rect.center)
 		if keys_pressed[pg.K_e]:
-			self.interact()
+			if (time() - self.last_use) > self.use_delay:
+				self.interact()
+				self.last_use = time()
 		if keys_pressed[pg.K_1]:
 			self.inv_select = 0
 		if keys_pressed[pg.K_2]:
@@ -60,17 +63,32 @@ class Player(pg.sprite.Sprite):
 			for item in self.item_list:
 				if item.id  == 0:
 					item.id = 1
+	def get_interactable_list(self, item_group = pg.sprite.Group, interactable_group_list = []):
+		self.interactable_list = [] #reset da lista
+		#interação do personagem/ for loop usado para filtrar os interagiveis por distância.
+		#Objetos no alcançe são colocados em uma lista de interação
+		for i in range(10, 0, -1):
+			for item in item_group:
+				if abs(self.rect.x - item.rect.center[0]) < self.pickup_range/i and abs(self.rect.y - item.rect.center[1]) < self.pickup_range/i:
+					if len(self.interactable_list) == 0:
+						self.interactable_list.append(item)
+			for group in interactable_group_list:
+					for obj in group:
+						if abs(self.rect.x - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.y - obj.rect.center[1]) < self.pickup_range/i:
+							if len(self.interactable_list) == 0:
+								self.interactable_list.append(obj)
+
 	def interact(self):
-		for group in self.interactable_group_list:
-			for obj in group:
-				if abs(self.rect.x - obj.rect.center[0]) < 100 and abs(self.rect.y - obj.rect.center[1]) < 100:
-					try:
-						obj.interact(self.item_list)
-					except:
-						obj.interact()
-	def update(self, interactable_group_list):
+		for obj in self.interactable_list:
+			try:
+				obj.interact(self.item_list)
+			except:
+				obj.interact()
+	def update(self):
+
 		if self.energy > self.energy_max:
 			self.energy = self.energy_max
 		if self.hp > self.hp_max:
 			self.hp = self.hp_max
-		self.interactable_group_list = interactable_group_list
+		for item in self.item_list:
+			item.update()
