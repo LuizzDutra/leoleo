@@ -23,12 +23,14 @@ class Key(Item):
 	def __init__(self, id:int):
 		super().__init__()
 		self.name = "Chave"
+		self.image = images.chave
+		self.rect = self.image.get_rect()
 		self.id = id
 	def use(self, player):
 		for obj in player.interactable_list:
 			if isinstance(obj, Door):
 				if self.id == obj.id:
-					obj.locked = False
+					obj.lock_unlock()
 
 
 

@@ -23,13 +23,13 @@ pg.mouse.set_visible(False)
 player = Player()
 player_group = pg.sprite.Group()
 player_group.add(player)
-player.inv_list = [Manguza(), Pacoca(), Key(5)]
+player.inv_list = [Manguza(), Pacoca(), Key(4)]
 
 wall_group = pg.sprite.Group()
 lc.level_construct(wall_group, lc.level0)
 
 door_group = pg.sprite.Group()
-door_group.add(lc.Door(288, -255, 64, 10, True))
+door_group.add(lc.Door(288, -255, 10, 64, True, 4))
 
 day_time = calendario.Calendario()
 

@@ -24,7 +24,7 @@ class Player(pg.sprite.Sprite):
 		self.inv_limit = 5
 		self.inv_list = []
 		self.energy_max = 100
-		self.energy = 10
+		self.energy = 100
 		self.hp_max = 100
 		self.hp = 100
 		self.pickup_range = 100
@@ -33,16 +33,16 @@ class Player(pg.sprite.Sprite):
 		self.xvel = 0
 		self.yvel = 0
 		if keys_pressed[pg.K_a]:
-			self.xvel = -self.xspeed
+			self.xvel -= self.xspeed
 		if keys_pressed[pg.K_d]:
-			self.xvel = +self.xspeed
+			self.xvel += self.xspeed
 		if keys_pressed[pg.K_w]:
-			self.yvel = -self.yspeed
+			self.yvel -= self.yspeed
 		if keys_pressed[pg.K_s]:
-			self.yvel = +self.yspeed
+			self.yvel += self.yspeed
 		if keys_pressed[pg.K_LSHIFT]:
-			self.xvel *= 0.5
-			self.yvel *= 0.5
+			self.xvel /= 2
+			self.yvel /= 2
 		self.rect.x += self.xvel
 		self.rect.y += self.yvel
 		if keys_pressed[pg.K_f]:
