@@ -1,11 +1,11 @@
 import pygame as pg
 import os
-
+pg.font.init()
 
 class Hud():
 	def __init__(self):
-		pg.font.init()
 		self.arial = pg.font.SysFont("Arial", 25)
+		self.smallarial = pg.font.SysFont("Arial", 15)
 		self.inv_sprites = []
 		self.inv_sprites.append(pg.image.load(os.path.join("Assets", "inv_slots.png")))
 		self.inv_sprites.append(pg.image.load(os.path.join("Assets", "inv_slots_selected.png")))
@@ -16,10 +16,11 @@ class Hud():
 
 		screen.blit(self.inv_sprites[1], self.inv_rect[inv_select].topleft)
 		
-		i = 0
-		for item in item_list:
-			screen.blit(item.image, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
-			i+=1
+		for i, item in enumerate(item_list):
+			if item != None:
+				screen.blit(item.image, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
+				screen.blit(self.smallarial.render(str(item.name), True, (255,255,255), (127,127,127)), (self.inv_rect[i].x, self.inv_rect[i].y))
+
 	def draw_ui(self, screen, player, calendar, cursor):
 		screen.blit(calendar.image, (10, 10))
 		screen.blit(self.arial.render(str(player.hp), True, (255,0,0)), (1200,25))

@@ -2,8 +2,9 @@ from numpy import full
 import pygame as pg
 import sys
 import lc
-from Player import Player
-from Item import Item, drop_item_group, ball_group
+import sons
+from Player import Player, drop_item_group
+from Item import Item, Pacoca, Paper_Ball, Manguza, ball_group
 from Time import Time
 from Camera import Camera
 from Cursor import Cursor
@@ -23,7 +24,7 @@ pg.mouse.set_visible(False)
 player = Player()
 player_group = pg.sprite.Group()
 player_group.add(player)
-player.item_list = [Item(2), Item(), Item(), Item(), Item()]
+player.inv_list = [Manguza(), Pacoca(), None, None, None]
 
 wall_group = pg.sprite.Group()
 lc.level_construct(wall_group, lc.level0)
@@ -43,6 +44,9 @@ group_draw_list = [player_group, wall_group, door_group, ball_group, drop_item_g
 collision_group_list = [wall_group, door_group]
 interactable_group_list = [door_group]
 
+#sons.musica.play(sons.radio_video, 0, 5000)
+#sons.musica_fila(sons.musica, sons.atwa)
+
 while True:
 	keys_pressed = pg.key.get_pressed()
 	
@@ -51,7 +55,7 @@ while True:
 			pg.quit()
 			sys.exit()
 		if keys_pressed[pg.K_ESCAPE]:
-			print("hello")
+			print("bye")
 			pg.quit()
 			sys.exit()
 		if keys_pressed[pg.K_F11]:
@@ -74,8 +78,10 @@ while True:
 	collision_check(player, collision_group_list, ball_group)
 
 	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
-	hud.draw_inv(screen, player.item_list, player.inv_select)
+	hud.draw_inv(screen, player.inv_list, player.inv_select)
 	hud.draw_ui(screen, player, calendar, cursor)
 	pg.display.update()
+
+	#print(player.inv_list)
 
 	clock.tick(60)
