@@ -1,35 +1,34 @@
 import pygame as pg
 import os
+import images
 from time import time
+from utils import rfl
+from lc import Door
 
 ball_group = pg.sprite.Group()
 
-sprites = []
-sprites.append(pg.Surface((0, 0)))
-sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "ball.png")), (32,32)))
-sprites.append(pg.Surface((32,32)))
-sprites.append(pg.Surface((32,32)))
-sprites.append(pg.Surface((32,32)))
-sprites.append(pg.Surface((32,32)))
-sprites.append(pg.Surface((32,32)))
-errorimage = pg.Surface((32,32))
-errorimage.fill((255,0,150))
 
 class Item(pg.sprite.Sprite):
 	def __init__(self):
 		super().__init__()
 		self.name = "Unasigned"
-		self.image = errorimage
+		self.image = images.errorimage
 		self.rect = self.image.get_rect()
 	def use(self, player:pg.sprite.Sprite):
 		print("Define the use function idiot")
 		print(type(self))
-		self.remove_from_list(player.inv_list)
-		
-	def remove_from_list(self, list=[]):
-		for i, item in enumerate(list):
-			if item == self:
-				list[i] = None
+		rfl(self, player.inv_list)
+
+class Key(Item):
+	def __init__(self, id:int):
+		super().__init__()
+		self.name = "Chave"
+		self.id = id
+	def use(self, player):
+		for obj in player.interactable_list:
+			if isinstance(obj, Door):
+				if self.id == obj.id:
+					obj.locked = False
 
 
 
@@ -37,41 +36,39 @@ class Paper_Ball(Item):
 	def __init__(self):
 		super().__init__()
 		self.name = "Ball"
-		self.image = sprites[1]
+		self.image = images.bola_papel
 		self.rect = self.image.get_rect()
 	def use(self, player):
 		if player.energy >= 5:
 			ball_group.add(Ball(player))
 			player.energy -= 5
-			self.remove_from_list(player.inv_list)
+			rfl(self, player.inv_list)
 
 
 class Manguza(Item):
 	def __init__(self):
 		super().__init__()
 		self.name = "Manguzá"
-		self.image = sprites[2]
+		self.image = images.manguza
 		self.rect = self.image.get_rect()
 	def use(self, player):
 		player.energy += 15
-		self.remove_from_list(player.inv_list)
+		rfl(self, player.inv_list)
 
 class Pacoca(Item):
 	def __init__(self):
 		super().__init__()
 		self.name = "Paçoca"
-		self.image = sprites[3]
+		#self.image = sprites[3]
 	def use(self, player):
-		player.energy += 10
-		self.remove_from_list(player.inv_list)
+		player.energy += 50
+		rfl(self, player.inv_list)
 
 #Essa classe é um projétil e não item
 class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 	def __init__(self, player):
 		super().__init__()
-		self.sprites = []
-		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "ball.png")), (16,16)))
-		self.image = self.sprites[0]
+		self.image = images.bola_papel_projetil
 		self.rect = self.image.get_rect(center = player.rect.center)
 		self.speed = 10
 		self.xdir = 0

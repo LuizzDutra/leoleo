@@ -11,17 +11,20 @@ class Wall(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(x = self.gs*pos[0] , y = -self.gs*pos[1]) #na construção o y tem que ser negativo para facilitar na planta
 
 class Door(pg.sprite.Sprite):
-	def __init__(self, x, y, width, height):
+	def __init__(self, x, y, width, height, locked=False):
 		super().__init__()
 		self.image = pg.Surface((width, height))
 		self.rect = self.image.get_rect(x = x, y = y)
 		self.open_time = 0.5
 		self.open_delta = 0
+		self.locked = locked
+		self.id = 5
 	def interact(self):
 		if time() - self.open_delta > self.open_time:
-			self.open_delta = time()
-			self.image = pg.transform.rotate(self.image, 90)
-			self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
+			if not self.locked:
+				self.open_delta = time()
+				self.image = pg.transform.rotate(self.image, 90)
+				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 
 
 wall0 = Wall((0, 2), (-1, 1))

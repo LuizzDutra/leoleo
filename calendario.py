@@ -1,7 +1,7 @@
 import pygame as pg
 from time import time
 
-class Time():
+class Calendario():
 	def __init__(self):
 		self.timescale = 60 #Escala de tempo em relação à vida real/ padrão = 60
 		self.start_time = time()

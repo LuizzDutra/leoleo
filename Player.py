@@ -1,7 +1,9 @@
 import pygame as pg
 import os
+import images
 from time import time
-from Item import Item, Paper_Ball
+from item import Item, Paper_Ball
+
 
 drop_item_group = pg.sprite.Group()
 
@@ -9,7 +11,7 @@ class Player(pg.sprite.Sprite):
 	def __init__(self):
 		super().__init__()
 		self.sprites = []
-		self.sprites.append(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)))
+		self.sprites.append(images.player_image)
 		self.image = self.sprites[0]
 		self.rect = self.image.get_rect(center = (0, 0))
 		self.xspeed = 5
@@ -106,7 +108,7 @@ class Player(pg.sprite.Sprite):
 			if isinstance(obj, Item):
 				self.add_item(obj)
 			else:
-				print(type)
+				#print(type)
 				obj.interact()
 
 	def update(self):
@@ -114,3 +116,5 @@ class Player(pg.sprite.Sprite):
 			self.energy = self.energy_max
 		if self.hp > self.hp_max:
 			self.hp = self.hp_max
+		while len(self.inv_list) < self.inv_limit:
+			self.inv_list.append(None)
