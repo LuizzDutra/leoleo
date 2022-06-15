@@ -1,11 +1,16 @@
 import pygame as pg
 from utils import outline_image
 
-def sprite_draw(screen, camera, group_draw_list = [], interactable_list = []):
+def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], interactable_list = []):
 	screen.fill((50,50,50))
+	i = 0
 	for group in group_draw_list:
 		for sprite in group:
-			screen.blit(sprite.image, (sprite.rect.x + camera.xoffset, sprite.rect.y + camera.yoffset))
+			offpos = (sprite.rect.x + camera.xoffset, sprite.rect.y + camera.yoffset)
+			if offpos[0]+sprite.rect.width > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.rect.height > 0 and offpos[1] < screen.get_height():
+				i+=1
+				screen.blit(sprite.image, offpos)
+	print("Drawing:",i)
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))

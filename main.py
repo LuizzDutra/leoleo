@@ -47,6 +47,7 @@ interactable_group_list = [door_group]
 #sons.musica_fila(sons.musica, sons.atwa)
 
 while True:
+
 	keys_pressed = pg.key.get_pressed()
 	
 	for event in pg.event.get():
@@ -64,6 +65,11 @@ while True:
 			elif fullscreen == False :
 				pg.display.set_mode(screen.get_size(), pg.FULLSCREEN)
 				fullscreen = True
+		if keys_pressed[pg.K_h]:
+			obj = Item()
+			obj.rect.center = player.rect.center
+			drop_item_group.add(obj)
+
 		
 	player.control(keys_pressed)
 	player_group.update()
@@ -82,5 +88,6 @@ while True:
 	pg.display.update()
 
 	#print(player.inv_list)
-
+	print("Interactables:",len(drop_item_group)+len(door_group))
+	print(clock.get_rawtime())
 	clock.tick(60)
