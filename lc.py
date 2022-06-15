@@ -1,3 +1,4 @@
+from email.mime import image
 import pygame as pg
 from time import time
 import images
@@ -13,7 +14,15 @@ class Wall(pg.sprite.Sprite):
 class Door(pg.sprite.Sprite):
 	def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
 		super().__init__()
-		self.image = pg.Surface((width, height))
+		if width > height:
+			self.image = pg.transform.scale(images.door, (width, height))
+			self.vertical = False
+		if width < height:
+			self.image = pg.transform.scale(pg.transform.rotate(images.door, (-90)), (width, height))
+			self.vertical = True
+		if width == height:
+			self.image = pg.transform.scale(images.door, (width, height))
+			self.vertical = True
 		self.rect = self.image.get_rect(x = x, y = y)
 		self.open_time = 0.5
 		self.open_delta = 0
@@ -38,7 +47,16 @@ class Door(pg.sprite.Sprite):
 		if time() - self.open_delta > self.open_time:
 			if not self.locked:
 				self.open_delta = time()
-				self.image = pg.transform.rotate(self.image, 90)
+				if self.closed:
+					if self.vertical:
+						self.image = pg.transform.rotate(self.image, 90)
+					if not self.vertical:
+						self.image = pg.transform.rotate(self.image, -90)
+				if not self.closed:
+					if self.vertical:
+						self.image = pg.transform.rotate(self.image, -90)
+					if not self.vertical:
+						self.image = pg.transform.rotate(self.image, 90)
 				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 				self.closed = not self.closed
 
