@@ -7,6 +7,6 @@ class Cursor(pg.sprite.Sprite):
 		self.sprites = []
 		self.sprites.append(images.cursor)
 		self.image = self.sprites[0]
-		self.rect = self.image.get_rect(center = pg.mouse.get_pos())
+		self.rect = self.image.get_rect(topleft = pg.mouse.get_pos())
 	def update(self):
-		self.rect.center = pg.mouse.get_pos()
+		self.rect.topleft = pg.mouse.get_pos()
