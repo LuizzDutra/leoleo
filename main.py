@@ -1,3 +1,4 @@
+print("Importando módulos")
 import pygame as pg
 import sys
 import lc
@@ -11,6 +12,8 @@ from cursor import Cursor
 from hud import Hud
 from sprite_draw import sprite_draw
 from collision import collision_check
+from time import time
+print("Módulos importados")
 
 pg.init()
 
@@ -45,6 +48,8 @@ interactable_group_list = [door_group]
 
 #sons.musica.play(sons.radio_video, 0, 5000)
 #sons.musica_fila(sons.musica, sons.atwa)
+debug_delay = 1
+debug_last = 0
 
 while True:
 
@@ -87,7 +92,10 @@ while True:
 	hud.draw_ui(screen, player, day_time, cursor)
 	pg.display.update()
 
-	#print(player.inv_list)
-	print("Interactables:",len(drop_item_group)+len(door_group))
-	print(clock.get_rawtime())
+	
+	if time() - debug_last > debug_delay:
+		print("Interactables:",len(drop_item_group)+len(door_group))
+		print("frametime:", clock.get_rawtime())
+		print("_"*20)
+		debug_last = time()
 	clock.tick(60)

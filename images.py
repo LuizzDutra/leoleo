@@ -1,8 +1,9 @@
 import pygame as pg
 import os
 
-screen_width, screen_height = 1280, 720
-screen = pg.display.set_mode((screen_width, screen_height))
+res = [(1280, 720), (1600, 900), (1920, 1080)]
+screen_res = res[0]
+screen = pg.display.set_mode(screen_res)
 
 player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)).convert()
 inv_select = pg.image.load(os.path.join("Assets", "inv_slots.png")).convert()
