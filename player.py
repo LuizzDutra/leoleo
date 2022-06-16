@@ -2,9 +2,9 @@ import pygame as pg
 import images
 from time import time
 from item import Item, Paper_Ball
+from groups import drop_item_group
 
 
-drop_item_group = pg.sprite.Group()
 
 class Player(pg.sprite.Sprite):
 	def __init__(self):

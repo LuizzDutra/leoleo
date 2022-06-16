@@ -1,11 +1,10 @@
 import pygame as pg
-import os
 import images
 from time import time
 from utils import rfl
 from lc import Door
+from groups import ball_group
 
-ball_group = pg.sprite.Group()
 
 
 class Item(pg.sprite.Sprite):
