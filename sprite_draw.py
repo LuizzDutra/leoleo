@@ -1,6 +1,7 @@
 import pygame as pg
 from utils import outline_image
-
+from item import Item
+smallarial = pg.font.SysFont("Arial", 15)
 def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], interactable_list = []):
 	screen.fill((50,50,50))
 	i = 0
@@ -14,3 +15,5 @@ def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], intera
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))
+		if isinstance(obj, Item):
+					screen.blit(smallarial.render(str(obj.name), True, (255,255,255)), (obj.rect.x + camera.xoffset, obj.rect.top-18+camera.yoffset))
