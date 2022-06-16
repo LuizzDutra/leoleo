@@ -1,12 +1,11 @@
 import pygame as pg
 import os
 import images
-pg.font.init()
+import fontes
+
 
 class Hud():
 	def __init__(self, screen:pg.display.set_mode):
-		self.arial = pg.font.SysFont("Arial", 25)
-		self.smallarial = pg.font.SysFont("Arial", 15)
 		self.inv_sprites = []
 		self.inv_sprites.append(images.inv_select)
 		self.inv_sprites.append(images.inv_slot_selected)
@@ -20,12 +19,12 @@ class Hud():
 		for i, item in enumerate(item_list):
 			if item != None:
 				screen.blit(item.image, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
-				screen.blit(self.smallarial.render(str(item.name), True, (255,255,255), (127,127,127)), (self.inv_rect[i].x, self.inv_rect[i].y))
+				screen.blit(fontes.smallarial.render(str(item.name), True, (255,255,255), (127,127,127)), (self.inv_rect[i].x, self.inv_rect[i].y))
 
 	def draw_ui(self, screen:pg.display.set_mode, player, calendar, cursor):
 		screen.blit(calendar.image, (10, 10))
-		screen.blit(self.arial.render(str(player.hp), True, (255,0,0)), (1200,25))
-		screen.blit(self.arial.render(str(player.energy), True, (255,0,255)), (1200,55))
-		screen.blit(self.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
-		screen.blit(self.arial.render(("({},{})".format(pg.mouse.get_pos()[0], pg.mouse.get_pos()[1])), True, (0,255,255)), (2560/2, 0))
+		screen.blit(fontes.arial.render(str(player.hp), True, (255,0,0)), (1200,25))
+		screen.blit(fontes.arial.render(str(player.energy), True, (255,0,255)), (1200,55))
+		screen.blit(fontes.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
+		screen.blit(fontes.arial.render(("({},{})".format(pg.mouse.get_pos()[0], pg.mouse.get_pos()[1])), True, (0,255,255)), (screen.get_width()/2, 0))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
