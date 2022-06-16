@@ -1,5 +1,4 @@
 import pygame as pg
-import os
 import images
 from time import time
 from item import Item, Paper_Ball
@@ -28,7 +27,7 @@ class Player(pg.sprite.Sprite):
 		self.hp_max = 100
 		self.hp = 100
 		self.money = 0
-		self.pickup_range = 100
+		self.pickup_range = 48
 		self.interactable_list = []
 	def control(self, keys_pressed):
 		self.xvel = 0
@@ -77,11 +76,11 @@ class Player(pg.sprite.Sprite):
 		for i in range(10, 0, -1):
 			for group in interactable_group_list:
 					for obj in group:
-						if abs(self.rect.x - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.y - obj.rect.center[1]) < self.pickup_range/i:
+						if abs(self.rect.centerx - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - obj.rect.center[1]) < self.pickup_range/i:
 							if len(self.interactable_list) == 0:
 								self.interactable_list.append(obj)
 			for item in item_group:
-				if abs(self.rect.x - item.rect.center[0]) < self.pickup_range/i and abs(self.rect.y - item.rect.center[1]) < self.pickup_range/i:
+				if abs(self.rect.centerx - item.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - item.rect.center[1]) < self.pickup_range/i:
 					if len(self.interactable_list) == 0:
 						self.interactable_list.append(item)
 
