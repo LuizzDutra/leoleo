@@ -2,4 +2,4 @@
 projetinho pai
 Joguinho epitaciano no Pygame
 
-[[https://github.com/LuizzDutra/leoleo/tree/master/Assets/bob.png|alt=bob]]
+![alt text](http://url/to/img.png](https://github.com/LuizzDutra/leoleo/tree/master/Assets/bob.png?raw=true))
