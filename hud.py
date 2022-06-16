@@ -26,5 +26,6 @@ class Hud():
 		screen.blit(calendar.image, (10, 10))
 		screen.blit(self.arial.render(str(player.hp), True, (255,0,0)), (1200,25))
 		screen.blit(self.arial.render(str(player.energy), True, (255,0,255)), (1200,55))
+		screen.blit(self.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
 		screen.blit(self.arial.render(("({},{})".format(pg.mouse.get_pos()[0], pg.mouse.get_pos()[1])), True, (0,255,255)), (2560/2, 0))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))

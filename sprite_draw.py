@@ -10,7 +10,7 @@ def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], intera
 			if offpos[0]+sprite.rect.width > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.rect.height > 0 and offpos[1] < screen.get_height():
 				i+=1
 				screen.blit(sprite.image, offpos)
-	print("Drawing:",i)
+	#print("Drawing:",i)
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))
