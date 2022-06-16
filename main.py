@@ -5,7 +5,7 @@ import lc
 import sons
 import images
 from player import Player, drop_item_group
-from item import Item, Pacoca, Paper_Ball, Manguza, Key, ball_group
+import item
 import calendario
 from camera import Camera
 from cursor import Cursor
@@ -26,7 +26,7 @@ pg.mouse.set_visible(False)
 player = Player()
 player_group = pg.sprite.Group()
 player_group.add(player)
-player.inv_list = [Manguza(), Pacoca(), Key(4)]
+player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
 
 wall_group = pg.sprite.Group()
 lc.level_construct(wall_group, lc.level0)
@@ -42,7 +42,7 @@ hud = Hud(screen)
 
 outline_draw = []
 
-group_draw_list = [wall_group, door_group, ball_group, drop_item_group, player_group]
+group_draw_list = [wall_group, door_group, item.ball_group, drop_item_group, player_group]
 collision_group_list = [wall_group, door_group]
 interactable_group_list = [door_group]
 
@@ -71,7 +71,7 @@ while True:
 				pg.display.set_mode(screen.get_size(), pg.FULLSCREEN)
 				fullscreen = True
 		if keys_pressed[pg.K_h]:
-			obj = Item()
+			obj = item.Item()
 			obj.rect.center = player.rect.center
 			drop_item_group.add(obj)
 
@@ -79,13 +79,13 @@ while True:
 	player.control(keys_pressed)
 	player_group.update()
 	player.get_interactable_list(drop_item_group, interactable_group_list)
-	ball_group.update()
+	item.ball_group.update()
 
 	day_time.update()
 	cursor.update()
 	camera.update(player.rect, screen)
 
-	collision_check(player, collision_group_list, ball_group)
+	collision_check(player, collision_group_list, item.ball_group)
 
 	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)

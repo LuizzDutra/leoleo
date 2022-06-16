@@ -27,6 +27,7 @@ class Player(pg.sprite.Sprite):
 		self.energy = 100
 		self.hp_max = 100
 		self.hp = 100
+		self.money = 0
 		self.pickup_range = 100
 		self.interactable_list = []
 	def control(self, keys_pressed):

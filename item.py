@@ -32,7 +32,16 @@ class Key(Item):
 				if self.id == obj.id:
 					obj.lock_unlock()
 
-
+class Money(Item):
+	def __init__(self, quantity:int):
+		super().__init__()
+		self.name = "Dinheiro"
+		self.image = images.money
+		self.rect = self.image.get_rect()
+		self.quantity = quantity
+	def use(self, player):
+		player.money += self.quantity
+		rfl(self, player.inv_list)
 
 class Paper_Ball(Item):
 	def __init__(self):
