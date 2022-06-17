@@ -109,7 +109,7 @@ class Player(pg.sprite.Sprite):
 				self.add_item(obj)
 			else:
 				#print(type)
-				obj.interact()
+				obj.interact(self.rect)
 
 	def update(self):
 		if self.energy > self.energy_max:
