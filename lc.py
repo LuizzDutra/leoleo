@@ -1,6 +1,7 @@
 import pygame as pg
 from time import time
 import images
+import sons
 #Decidi que a escala vai ser 64p:1m
 gs = 64
 
@@ -32,9 +33,11 @@ class Door(pg.sprite.Sprite):
 	def lock(self):
 		if self.closed:
 			self.locked = True
+			sons.effect_play(sons.key)
 	
 	def unlock(self):
 		self.locked = False
+		sons.effect_play(sons.key)
 
 	def lock_unlock(self):
 		if self.locked:
@@ -42,8 +45,10 @@ class Door(pg.sprite.Sprite):
 		elif not self.locked:
 			self.lock()
 
-	def interact(self):
+	def interact(self, rect):
 		if time() - self.open_delta > self.open_time:
+			if self.locked:
+				sons.play_far_effect(rect, self.rect, sons.locked)
 			if not self.locked:
 				self.open_delta = time()
 				if self.closed:
@@ -51,11 +56,13 @@ class Door(pg.sprite.Sprite):
 						self.image = pg.transform.rotate(self.image, 90)
 					if not self.vertical:
 						self.image = pg.transform.rotate(self.image, -90)
+					sons.play_far_effect(rect, self.rect, sons.open_dr)
 				if not self.closed:
 					if self.vertical:
 						self.image = pg.transform.rotate(self.image, -90)
 					if not self.vertical:
 						self.image = pg.transform.rotate(self.image, 90)
+					sons.play_far_effect(rect, self.rect, sons.cls_dr)
 				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 				self.closed = not self.closed
 

@@ -15,6 +15,7 @@ from sprite_draw import sprite_draw
 from collision import collision_check
 import debug
 from time import time
+import sons
 print("Módulos importados")
 
 pg.init()
