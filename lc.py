@@ -3,27 +3,27 @@ from time import time
 import images
 import sons
 #Decidi que a escala vai ser 64p:1m
-gs = 64
+gs = 32 #cada grid tem meio metro
 
 class Wall(pg.sprite.Sprite):
-	def __init__(self, pos:tuple, image):
+	def __init__(self, pos:tuple, id):
 		super().__init__()
-		self.image = image
-		self.rect = self.image.get_rect(x = pos[0]*gs , y = pos[1]*gs)
+		self.image = images.wall_list[id]
+		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
 	def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
 		super().__init__()
 		if width > height:
-			self.image = pg.transform.scale(images.door, (width, height))
+			self.image = pg.transform.scale(images.door, (width*gs, height*gs))
 			self.vertical = False
 		if width < height:
-			self.image = pg.transform.scale(pg.transform.rotate(images.door, (-90)), (width, height))
+			self.image = pg.transform.scale(pg.transform.rotate(images.door, (-90)), (width*gs, height*gs))
 			self.vertical = True
 		if width == height:
-			self.image = pg.transform.scale(images.door, (width, height))
+			self.image = pg.transform.scale(images.door, (width*gs, height*gs))
 			self.vertical = True
-		self.rect = self.image.get_rect(x = x, y = y)
+		self.rect = self.image.get_rect(x = x*gs, y = y*gs)
 		self.open_time = 0.5
 		self.open_delta = 0
 		self.locked = locked
@@ -67,12 +67,18 @@ class Door(pg.sprite.Sprite):
 				self.closed = not self.closed
 
 
-wall0 = Wall((1,1), images.twall_v)
-wall1 = Wall((1,2), images.twall_h)
+level0 = []
+#11-21x 6y
+#teste de criação de mapa
+for i in range(11, 22):
+	level0.append(Wall((i, 6), 0))
+for i in range(11, 22):
+	if i != 15 and i !=16 and i != 17:
+	 level0.append(Wall((i, 16), 0))
 
 
 
-level0 = [wall0, wall1]
+
 
 def level_construct(wall_group, level):
     for wall in wall_group:
