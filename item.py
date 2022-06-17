@@ -4,6 +4,7 @@ from time import time
 from utils import rfl
 from lc import Door
 from groups import ball_group
+import sons
 
 
 
@@ -40,6 +41,7 @@ class Money(Item):
 		self.quantity = quantity
 	def use(self, player):
 		player.money += self.quantity
+		sons.effect_play(sons.cashing)
 		rfl(self, player.inv_list)
 
 class Paper_Ball(Item):
@@ -53,6 +55,7 @@ class Paper_Ball(Item):
 			ball_group.add(Ball(player))
 			player.energy -= 5
 			rfl(self, player.inv_list)
+			sons.effect_play(sons.throw)
 
 
 class Manguza(Item):

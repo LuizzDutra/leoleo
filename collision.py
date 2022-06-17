@@ -1,3 +1,5 @@
+import sons
+
 def collision_check(player, collision_group_list, ball_group):
 	#colisão jogador/parede
 	for group in collision_group_list:
@@ -17,4 +19,5 @@ def collision_check(player, collision_group_list, ball_group):
 		for group in collision_group_list:
 			for obj in group:
 				if ball.rect.colliderect(obj):
+					sons.play_far_effect(player.rect, ball.rect, sons.ball_hit)
 					ball.kill()
