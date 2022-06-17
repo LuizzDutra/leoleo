@@ -2,6 +2,9 @@ import pygame as pg
 from time import time
 import images
 import sons
+import groups
+from PIL import Image
+import os
 #Decidi que a escala vai ser 64p:1m
 gs = 32 #cada grid tem meio metro
 
@@ -9,6 +12,12 @@ class Wall(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id):
 		super().__init__()
 		self.image = images.wall_list[id]
+		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
+
+class Ground(pg.sprite.Sprite):
+	def __init__(self, pos:tuple, id):
+		super().__init__()
+		self.image = images.ground_list[id]
 		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
@@ -67,22 +76,19 @@ class Door(pg.sprite.Sprite):
 				self.closed = not self.closed
 
 
-level0 = []
-#11-21x 6y
 #teste de criação de mapa
-for i in range(11, 22):
-	level0.append(Wall((i, 6), 0))
-for i in range(11, 22):
-	if i != 15 and i !=16 and i != 17:
-	 level0.append(Wall((i, 16), 0))
+level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
 
 
-
-
-
-def level_construct(wall_group, level):
-    for wall in wall_group:
-        wall.kill()
-    for wall in level:
-        wall_group.add(wall)
-    return wall_group
+def level_construct(level_image):
+	level_size = level_image.size
+	for wall in groups.wall_group:
+		wall.kill()
+	for y in range(2, level_size[1]):
+		for x in range(0, level_size[0]):
+			if level_image.getpixel((x, y)) == 0:
+				groups.wall_group.add(Wall((x, y), 0))
+			if level_image.getpixel((x, y)) == 1:
+				groups.wall_group.add(Wall((x, y), 1))
+			if level_image.getpixel((x, y)) == 3:
+				groups.ground_group.add(Ground((x, y), 0))
