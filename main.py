@@ -32,7 +32,7 @@ player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
 
 
 lc.level_construct(lc.level0)
-groups.door_group.add(lc.Door(3.5, -4.5, 0.3, 2, True, 4))
+groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
 
 day_time = calendario.Calendario()
 
@@ -74,6 +74,9 @@ while True:
 			groups.drop_item_group.add(obj)
 		if keys_pressed[pg.K_F1]:
 			player.rect.center = (0,0)
+		if keys_pressed[pg.K_F2]:
+			lc.reload_level()
+			lc.level_construct(lc.level0)
 
 		
 	player.control(keys_pressed)
