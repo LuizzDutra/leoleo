@@ -2,28 +2,37 @@ import pygame as pg
 from time import time
 import images
 import sons
+import groups
+from PIL import Image
+import os
 #Decidi que a escala vai ser 64p:1m
-gs = 64
+gs = 32 #cada grid tem meio metro
 
 class Wall(pg.sprite.Sprite):
-	def __init__(self, pos:tuple, image):
+	def __init__(self, pos:tuple, id):
 		super().__init__()
-		self.image = image
-		self.rect = self.image.get_rect(x = pos[0]*gs , y = pos[1]*gs)
+		self.image = images.wall_list[id]
+		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
+
+class Ground(pg.sprite.Sprite):
+	def __init__(self, pos:tuple, id):
+		super().__init__()
+		self.image = images.ground_list[id]
+		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
 	def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
 		super().__init__()
 		if width > height:
-			self.image = pg.transform.scale(images.door, (width, height))
+			self.image = pg.transform.scale(images.door, (width*gs, height*gs))
 			self.vertical = False
 		if width < height:
-			self.image = pg.transform.scale(pg.transform.rotate(images.door, (-90)), (width, height))
+			self.image = pg.transform.scale(pg.transform.rotate(images.door, (-90)), (width*gs, height*gs))
 			self.vertical = True
 		if width == height:
-			self.image = pg.transform.scale(images.door, (width, height))
+			self.image = pg.transform.scale(images.door, (width*gs, height*gs))
 			self.vertical = True
-		self.rect = self.image.get_rect(x = x, y = y)
+		self.rect = self.image.get_rect(x = x*gs, y = y*gs)
 		self.open_time = 0.5
 		self.open_delta = 0
 		self.locked = locked
@@ -67,16 +76,20 @@ class Door(pg.sprite.Sprite):
 				self.closed = not self.closed
 
 
-wall0 = Wall((1,1), images.twall_v)
-wall1 = Wall((1,2), images.twall_h)
+#teste de criação de mapa
+level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
+print(level0.getpalette())
 
 
-
-level0 = [wall0, wall1]
-
-def level_construct(wall_group, level):
-    for wall in wall_group:
-        wall.kill()
-    for wall in level:
-        wall_group.add(wall)
-    return wall_group
+def level_construct(level_image:Image.Image):
+	level_size = level_image.size
+	for wall in groups.wall_group:
+		wall.kill()
+	for y in range(2, level_size[1]):
+		for x in range(0, level_size[0]):
+			for i in range(len(images.wall_list)):
+				if level_image.getpixel((x, y)) == i:
+					groups.wall_group.add(Wall((x, y), i))
+			for i in range(len(images.wall_list), len(images.ground_list)+len(images.wall_list)):
+				if level_image.getpixel((x, y)) == i:
+					groups.ground_group.add(Ground((x, y), i - len(images.wall_list)))

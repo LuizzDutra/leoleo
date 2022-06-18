@@ -31,8 +31,8 @@ groups.player_group.add(player)
 player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
 
 
-lc.level_construct(groups.wall_group, lc.level0)
-groups.door_group.add(lc.Door(288, -255, 10, 64, True, 4))
+lc.level_construct(lc.level0)
+groups.door_group.add(lc.Door(3.5, -4.5, 0.3, 2, True, 4))
 
 day_time = calendario.Calendario()
 
@@ -41,7 +41,7 @@ camera = Camera(player.rect, screen)
 hud = Hud(screen)
 
 
-group_draw_list = [groups.wall_group, groups.door_group, item.ball_group, groups.drop_item_group, groups.player_group]
+group_draw_list = [groups.wall_group, groups.ground_group, groups.door_group, item.ball_group, groups.drop_item_group, groups.player_group]
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.door_group]
 
