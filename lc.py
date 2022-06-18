@@ -8,6 +8,15 @@ import os
 #Decidi que a escala vai ser 64p:1m
 gs = 32 #cada grid tem meio metro
 
+#paleta vai estar aqui e não no mapa
+BLACK = (0,0,0) #parede0
+RED = (255,0,0) #parede1
+GREEN = (0,255,0) #grama
+BLUE = (0,0,255) #piso
+YELLOW = (255,255,0)
+PINK = (255,0,255)
+CYAN = (0,255,255)
+
 class Wall(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id):
 		super().__init__()
@@ -85,8 +94,13 @@ class Level_surface(pg.sprite.Sprite):
 
 #teste de criação de mapa
 level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
-print(level0.getpalette())
 
+def get_pallete(image:Image.Image) -> list:
+	temp_pallete_list = image.getpalette()
+	pallete_list = []
+	for i in range(0, len(temp_pallete_list), 3):
+		pallete_list.append((temp_pallete_list[i], temp_pallete_list[i+1],temp_pallete_list[i+2]))
+	return pallete_list
 
 
 def level_construct(level_image:Image.Image):
@@ -95,16 +109,20 @@ def level_construct(level_image:Image.Image):
 	level_surface = Level_surface(level_image)
 	level_surface.image.fill((50,50,50))
 	groups.level_surface_group.add(level_surface)
+	pallete = get_pallete(level_image)
 	for wall in groups.wall_group:
 		wall.kill()
-	for y in range(2, level_size[1]):
+	for y in range(0, level_size[1]):
 		for x in range(0, level_size[0]):
-			for i in range(len(images.wall_list)):
-				if level_image.getpixel((x, y)) == i:
-					groups.wall_group.add(Wall((x, y), i))
-			for i in range(len(images.wall_list), len(images.ground_list)+len(images.wall_list)):
-				if level_image.getpixel((x, y)) == i:
-					groups.ground_group.add(Ground((x, y), i - len(images.wall_list)))
+			if pallete[level_image.getpixel((x,y))] == BLACK:
+					groups.wall_group.add(Wall((x, y), 0))
+			if pallete[level_image.getpixel((x,y))] == RED:
+				groups.wall_group.add(Wall((x,y), 1))
+			if pallete[level_image.getpixel((x,y))] == GREEN:
+					groups.ground_group.add(Ground((x, y), 0))
+			if pallete[level_image.getpixel((x,y))] == BLUE:
+				groups.ground_group.add(Ground((x,y), 1))
+			
 	for ground in groups.ground_group:
 		level_surface.image.blit(ground.image, ground.rect.topleft)
 	for wall in groups.wall_group:
