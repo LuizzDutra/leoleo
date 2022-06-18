@@ -75,14 +75,25 @@ class Door(pg.sprite.Sprite):
 				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 				self.closed = not self.closed
 
+class Level_surface(pg.sprite.Sprite):
+	def __init__(self, image):
+		super().__init__()
+		self.image = pg.Surface((image.size[0]*gs, image.size[1]*gs))
+		self.rect = self.image.get_rect(x = 0, y = 0)
+
+
 
 #teste de criação de mapa
 level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
 print(level0.getpalette())
 
 
+
 def level_construct(level_image:Image.Image):
 	level_size = level_image.size
+	level_surface = Level_surface(level_image)
+	level_surface.image.fill((50,50,50))
+	groups.level_surface_group.add(level_surface)
 	for wall in groups.wall_group:
 		wall.kill()
 	for y in range(2, level_size[1]):
@@ -93,3 +104,7 @@ def level_construct(level_image:Image.Image):
 			for i in range(len(images.wall_list), len(images.ground_list)+len(images.wall_list)):
 				if level_image.getpixel((x, y)) == i:
 					groups.ground_group.add(Ground((x, y), i - len(images.wall_list)))
+	for ground in groups.ground_group:
+		level_surface.image.blit(ground.image, ground.rect.topleft)
+	for wall in groups.wall_group:
+		level_surface.image.blit(wall.image, wall.rect.topleft)

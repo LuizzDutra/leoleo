@@ -41,7 +41,7 @@ camera = Camera(player.rect, screen)
 hud = Hud(screen)
 
 
-group_draw_list = [groups.wall_group, groups.ground_group, groups.door_group, item.ball_group, groups.drop_item_group, groups.player_group]
+group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group, groups.player_group]
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.door_group]
 
