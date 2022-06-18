@@ -95,6 +95,11 @@ class Level_surface(pg.sprite.Sprite):
 #teste de criação de mapa
 level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
 
+#usado para debug, bem bugado
+def reload_level():
+	global level0
+	level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
+
 def get_pallete(image:Image.Image) -> list:
 	temp_pallete_list = image.getpalette()
 	pallete_list = []
@@ -105,13 +110,18 @@ def get_pallete(image:Image.Image) -> list:
 
 def level_construct(level_image:Image.Image):
 	print("Carrengando mapa")
+	for surface in groups.level_surface_group:
+		surface.kill()
+	for wall in groups.wall_group:
+		wall.kill()
+	for ground in groups.ground_group:
+		ground.kill()
 	level_size = level_image.size
 	level_surface = Level_surface(level_image)
 	level_surface.image.fill((50,50,50))
 	groups.level_surface_group.add(level_surface)
 	pallete = get_pallete(level_image)
-	for wall in groups.wall_group:
-		wall.kill()
+
 	for y in range(0, level_size[1]):
 		for x in range(0, level_size[0]):
 			if pallete[level_image.getpixel((x,y))] == BLACK:

@@ -74,6 +74,9 @@ while True:
 			groups.drop_item_group.add(obj)
 		if keys_pressed[pg.K_F1]:
 			player.rect.center = (0,0)
+		if keys_pressed[pg.K_F2]:
+			lc.reload_level()
+			lc.level_construct(lc.level0)
 
 		
 	player.control(keys_pressed)
