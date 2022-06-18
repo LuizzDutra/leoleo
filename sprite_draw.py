@@ -16,7 +16,6 @@ def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], intera
 				i+=1
 				screen.blit(sprite.image, offpos)
 	last_draw_quantity = i
-	#print("Drawing:",i)
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))

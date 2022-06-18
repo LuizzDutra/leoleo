@@ -28,7 +28,7 @@ pg.mouse.set_visible(False)
 
 player = Player()
 groups.player_group.add(player)
-player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
+player.inv_list = [item.Key(4), item.Money(50)]
 
 
 lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
@@ -87,8 +87,7 @@ while True:
 	day_time.update()
 	cursor.update()
 	camera.update(player.rect, screen)
-
-	collision_check(player, collision_group_list, groups.ball_group)
+	collision_check(player, collision_group_list)
 
 	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
