@@ -9,7 +9,7 @@ from player import Player
 import item
 import calendario
 from camera import Camera
-from cursor import Cursor
+import cursor
 from hud import Hud
 from sprite_draw import sprite_draw
 from collision import collision_check
@@ -36,7 +36,7 @@ groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
 
 day_time = calendario.Calendario()
 
-cursor = Cursor()
+
 camera = Camera(player.rect, screen)
 hud = Hud(screen)
 
@@ -85,13 +85,13 @@ while True:
 	item.ball_group.update()
 
 	day_time.update()
-	cursor.update()
+	cursor.cursor.update()
 	camera.update(player.rect, screen)
 	collision_check(player, collision_group_list)
 
 	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
-	hud.draw_ui(screen, player, day_time, cursor)
+	hud.draw_ui(screen, player, day_time, cursor.cursor)
 
 	if debug_state:
 		debug.activate_debug(screen, clock, player)

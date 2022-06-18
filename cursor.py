@@ -10,3 +10,4 @@ class Cursor(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(topleft = pg.mouse.get_pos())
 	def update(self):
 		self.rect.topleft = pg.mouse.get_pos()
+cursor = Cursor()
