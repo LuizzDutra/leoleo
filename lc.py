@@ -78,17 +78,18 @@ class Door(pg.sprite.Sprite):
 
 #teste de criação de mapa
 level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
+print(level0.getpalette())
 
 
-def level_construct(level_image):
+def level_construct(level_image:Image.Image):
 	level_size = level_image.size
 	for wall in groups.wall_group:
 		wall.kill()
 	for y in range(2, level_size[1]):
 		for x in range(0, level_size[0]):
-			if level_image.getpixel((x, y)) == 0:
-				groups.wall_group.add(Wall((x, y), 0))
-			if level_image.getpixel((x, y)) == 1:
-				groups.wall_group.add(Wall((x, y), 1))
-			if level_image.getpixel((x, y)) == 3:
-				groups.ground_group.add(Ground((x, y), 0))
+			for i in range(len(images.wall_list)):
+				if level_image.getpixel((x, y)) == i:
+					groups.wall_group.add(Wall((x, y), i))
+			for i in range(len(images.wall_list), len(images.ground_list)+len(images.wall_list)):
+				if level_image.getpixel((x, y)) == i:
+					groups.ground_group.add(Ground((x, y), i - len(images.wall_list)))
