@@ -31,7 +31,7 @@ groups.player_group.add(player)
 player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
 
 
-lc.level_construct(lc.level0)
+lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
 groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
 
 day_time = calendario.Calendario()

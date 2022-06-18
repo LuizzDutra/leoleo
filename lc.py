@@ -5,6 +5,7 @@ import sons
 import groups
 from PIL import Image
 import os
+from random import randint
 #Decidi que a escala vai ser 64p:1m
 gs = 32 #cada grid tem meio metro
 
@@ -24,9 +25,13 @@ class Wall(pg.sprite.Sprite):
 		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Ground(pg.sprite.Sprite):
-	def __init__(self, pos:tuple, id):
+	def __init__(self, pos:tuple, id, rot=False):
 		super().__init__()
-		self.image = images.ground_list[id]
+		rot_dict = {0:90, 1:180, 2:270, 3:0}
+		if rot:
+			self.image = pg.transform.rotate(images.ground_list[id], rot_dict[randint(0, 3)])
+		else:
+			images.ground_list[id]
 		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
@@ -84,11 +89,17 @@ class Door(pg.sprite.Sprite):
 				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 				self.closed = not self.closed
 
-class Level_surface(pg.sprite.Sprite):
-	def __init__(self, image):
+class Level_sprite(pg.sprite.Sprite):
+	def __init__(self, image, x=0, y=0):
 		super().__init__()
 		self.image = pg.Surface((image.size[0]*gs, image.size[1]*gs))
-		self.rect = self.image.get_rect(x = 0, y = 0)
+		self.rect = self.image.get_rect(x = x, y = y)
+class Level_partition_sprite(pg.sprite.Sprite):
+	def __init__(self, image, x=0, y=0):
+		super().__init__()
+		self.image = image
+		self.image.convert()
+		self.rect = self.image.get_rect(x = x, y = y)
 
 
 
@@ -108,7 +119,7 @@ def get_pallete(image:Image.Image) -> list:
 	return pallete_list
 
 
-def level_construct(level_image:Image.Image):
+def level_construct(level_image:Image.Image, part_quantity=36):
 	print("Carrengando mapa")
 	for surface in groups.level_surface_group:
 		surface.kill()
@@ -117,9 +128,8 @@ def level_construct(level_image:Image.Image):
 	for ground in groups.ground_group:
 		ground.kill()
 	level_size = level_image.size
-	level_surface = Level_surface(level_image)
+	level_surface = Level_sprite(level_image)
 	level_surface.image.fill((50,50,50))
-	groups.level_surface_group.add(level_surface)
 	pallete = get_pallete(level_image)
 
 	for y in range(0, level_size[1]):
@@ -137,4 +147,17 @@ def level_construct(level_image:Image.Image):
 		level_surface.image.blit(ground.image, ground.rect.topleft)
 	for wall in groups.wall_group:
 		level_surface.image.blit(wall.image, wall.rect.topleft)
+
+	level_width = level_surface.image.get_width()
+	level_height = level_surface.image.get_height()
+	rcq = int(part_quantity**(1/2)) #quantidades de colunas/linhas no quadrado
+	i = 0
+	for y in range(0,rcq):
+		for x in range(0,rcq):
+			temp_surface = pg.Surface((level_width/rcq, level_height/rcq))
+			temp_surface.blit(level_surface.image, (-x*(level_width/rcq), -y*(level_height/rcq)))
+			groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
+			i += 1
+	print("O mapa particionado em {} partes".format(i))
+
 	print("Mapa Carregado")
