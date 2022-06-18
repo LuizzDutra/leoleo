@@ -32,7 +32,7 @@ player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
 
 
 lc.level_construct(lc.level0)
-groups.door_group.add(lc.Door(3.5, -4.5, 0.3, 2, True, 4))
+groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
 
 day_time = calendario.Calendario()
 

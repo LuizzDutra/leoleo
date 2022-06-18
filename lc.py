@@ -90,6 +90,7 @@ print(level0.getpalette())
 
 
 def level_construct(level_image:Image.Image):
+	print("Carrengando mapa")
 	level_size = level_image.size
 	level_surface = Level_surface(level_image)
 	level_surface.image.fill((50,50,50))
@@ -108,3 +109,4 @@ def level_construct(level_image:Image.Image):
 		level_surface.image.blit(ground.image, ground.rect.topleft)
 	for wall in groups.wall_group:
 		level_surface.image.blit(wall.image, wall.rect.topleft)
+	print("Mapa Carregado")
