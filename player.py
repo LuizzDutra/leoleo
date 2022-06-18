@@ -41,8 +41,8 @@ class Player(pg.sprite.Sprite):
 		if keys_pressed[pg.K_s]:
 			self.yvel += self.yspeed
 		if keys_pressed[pg.K_LSHIFT]:
-			self.xvel /= 2
-			self.yvel /= 2
+			self.xvel //= 2
+			self.yvel //= 2
 		self.rect.x += self.xvel
 		self.rect.y += self.yvel
 		if keys_pressed[pg.K_f]:

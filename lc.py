@@ -31,7 +31,7 @@ class Ground(pg.sprite.Sprite):
 		if rot:
 			self.image = pg.transform.rotate(images.ground_list[id], rot_dict[randint(0, 3)])
 		else:
-			images.ground_list[id]
+			self.image = images.ground_list[id]
 		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
