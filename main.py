@@ -9,7 +9,7 @@ from player import Player
 import item
 import calendario
 from camera import Camera
-from cursor import Cursor
+import cursor
 from hud import Hud
 from sprite_draw import sprite_draw
 from collision import collision_check
@@ -28,7 +28,7 @@ pg.mouse.set_visible(False)
 
 player = Player()
 groups.player_group.add(player)
-player.inv_list = [item.Manguza(), item.Pacoca(), item.Key(4), item.Money(50)]
+player.inv_list = [item.Key(4), item.Money(50)]
 
 
 lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
@@ -36,7 +36,7 @@ groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
 
 day_time = calendario.Calendario()
 
-cursor = Cursor()
+
 camera = Camera(player.rect, screen)
 hud = Hud(screen)
 
@@ -85,14 +85,13 @@ while True:
 	item.ball_group.update()
 
 	day_time.update()
-	cursor.update()
+	cursor.cursor.update()
 	camera.update(player.rect, screen)
-
-	collision_check(player, collision_group_list, groups.ball_group)
+	collision_check(player, collision_group_list)
 
 	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
-	hud.draw_ui(screen, player, day_time, cursor)
+	hud.draw_ui(screen, player, day_time, cursor.cursor)
 
 	if debug_state:
 		debug.activate_debug(screen, clock, player)

@@ -1,5 +1,6 @@
 import pygame as pg
 import images
+from math import atan2, cos, sin
 from time import time
 from utils import rfl
 from lc import Door
@@ -79,21 +80,22 @@ class Pacoca(Item):
 
 #Essa classe é um projétil e não item
 class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
-	def __init__(self, player):
+	def __init__(self, player:pg.sprite.Sprite):
 		super().__init__()
 		self.image = images.bola_papel_projetil
 		self.rect = self.image.get_rect(center = player.rect.center)
 		self.speed = 10
 		self.xdir = 0
 		self.ydir = 0
-		if player.xvel > 0:
-			self.xdir = 1
-		if player.xvel < 0:
-			self.xdir = -1
-		if player.yvel > 0:
-			self.ydir = 1
-		if player.yvel < 0:
-			self.ydir = -1
+		m_ypos = (pg.mouse.get_pos()[1] - images.screen.get_height()/2)
+		m_xpos = (pg.mouse.get_pos()[0] - images.screen.get_width()/2)
+		self.angle = atan2(m_ypos, m_xpos)
+		self.xdir = cos(self.angle) 
+		self.ydir = sin(self.angle) 
+		print(m_ypos)
+		print(m_xpos)
+		print(self.xdir)
+		print(self.ydir)
 		self.time = time()
 		self.life_time = 5
 
