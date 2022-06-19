@@ -5,6 +5,17 @@ res = [(1280, 720), (1600, 900), (1920, 1080)]
 screen_res = res[0]
 screen = pg.display.set_mode(screen_res)
 
+#Barras de energia e vida
+bar_width = 100
+bar_height = 10
+empty_bar = pg.Surface((bar_width,bar_height))
+empty_bar.fill((0,0,0))
+health_bar = pg.Surface((bar_width,bar_height))
+health_bar.fill((255,0,0))
+energy_bar = pg.Surface((bar_width, bar_height))
+energy_bar.fill((255,255,0))
+
+
 player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)).convert()
 inv_select = pg.image.load(os.path.join("Assets", "inv_slots.png")).convert()
 inv_slot_selected = pg.image.load(os.path.join("Assets", "inv_slots_selected.png")).convert()
