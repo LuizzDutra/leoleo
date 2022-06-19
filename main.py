@@ -28,11 +28,12 @@ pg.mouse.set_visible(False)
 
 player = Player()
 groups.player_group.add(player)
-player.inv_list = [item.Key(4), item.Money(50)]
+player.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
 
 
 lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
-groups.door_group.add(lc.Door(19.5, 8.5, 2, 0.3, True, 4))
+groups.door_group.add(lc.Door(9, 5, 2, 0.3, True))
+groups.door_group.add(lc.Door(8, 10, 0.3, 2, True, 4))
 
 day_time = calendario.Calendario()
 
@@ -50,11 +51,14 @@ debug_state = False
 while True:
 
 	keys_pressed = pg.key.get_pressed()
-	
 	for event in pg.event.get():
 		if event.type == pg.QUIT:
 			pg.quit()
 			sys.exit()
+		if event.type == pg.MOUSEWHEEL:
+			player.mouse_control(event.y, True)
+		if event.type == pg.MOUSEBUTTONDOWN:
+			player.mouse_control(pg.mouse.get_pressed())
 		if keys_pressed[pg.K_ESCAPE]:
 			print("bye")
 			pg.quit()

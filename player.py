@@ -25,7 +25,7 @@ class Player(pg.sprite.Sprite):
 		self.energy_max = 100
 		self.energy = 100
 		self.hp_max = 100
-		self.hp = 100
+		self.hp = 90
 		self.money = 0
 		self.pickup_range = 48
 		self.interactable_list = []
@@ -69,6 +69,23 @@ class Player(pg.sprite.Sprite):
 			for i, item in enumerate(self.inv_list):
 				if item == None:
 					self.inv_list[i] = Paper_Ball()
+	
+	def mouse_control(self, mouse_events, wheel=False):
+		if not wheel:
+			if mouse_events[0]:#botão esquerdo
+				self.use_item(self.inv_list[self.inv_select])
+		if wheel:
+			if mouse_events == -1:#mouse pra baixo
+				if self.inv_select+1 == self.inv_limit:
+					self.inv_select = 0
+				else:
+					self.inv_select += 1
+			if mouse_events == 1:#mouse pra cima
+				if self.inv_select == 0:
+					self.inv_select = self.inv_limit-1
+				else:
+					self.inv_select -= 1
+
 	def get_interactable_list(self, item_group:pg.sprite.Group, interactable_group_list = []):
 		self.interactable_list = [] #reset da lista
 		#interação do personagem/ for loop usado para filtrar os interagiveis por distância.
