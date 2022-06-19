@@ -22,7 +22,7 @@ class Wall(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id):
 		super().__init__()
 		self.image = images.wall_list[id]
-		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
+		self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Ground(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id, rot=False):
@@ -32,7 +32,7 @@ class Ground(pg.sprite.Sprite):
 			self.image = pg.transform.rotate(images.ground_list[id], rot_dict[randint(0, 3)])
 		else:
 			self.image = images.ground_list[id]
-		self.rect = self.image.get_rect(center = (pos[0]*gs , pos[1]*gs))
+		self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
 	def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
@@ -119,7 +119,7 @@ def get_pallete(image:Image.Image) -> list:
 	return pallete_list
 
 
-def level_construct(level_image:Image.Image, part_quantity=36):
+def level_construct(level_image:Image.Image, part_quantity=25):
 	print("Carrengando mapa")
 	for surface in groups.level_surface_group:
 		surface.kill()

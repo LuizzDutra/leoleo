@@ -60,12 +60,7 @@ while True:
 			pg.quit()
 			sys.exit()
 		if keys_pressed[pg.K_F11]:
-			if fullscreen:
-				pg.display.set_mode(screen.get_size())
-				fullscreen = False	
-			elif fullscreen == False :
-				pg.display.set_mode(screen.get_size(), pg.FULLSCREEN)
-				fullscreen = True
+			pg.display.toggle_fullscreen()
 		if keys_pressed[pg.K_F3]:
 			debug_state = not debug_state
 		if keys_pressed[pg.K_h]:

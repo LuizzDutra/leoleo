@@ -92,10 +92,6 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.angle = atan2(m_ypos, m_xpos)
 		self.xdir = cos(self.angle) 
 		self.ydir = sin(self.angle) 
-		print(m_ypos)
-		print(m_xpos)
-		print(self.xdir)
-		print(self.ydir)
 		self.time = time()
 		self.life_time = 5
 
