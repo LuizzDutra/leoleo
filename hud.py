@@ -22,7 +22,9 @@ class Hud():
 
 	def draw_ui(self, screen:pg.display.set_mode, player, calendar, cursor):
 		screen.blit(calendar.image, (10, 10))
-		screen.blit(fontes.arial.render(str(player.hp), True, (255,0,0)), (1200,25))
-		screen.blit(fontes.arial.render(str(player.energy), True, (255,0,255)), (1200,55))
+		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,25))
+		screen.blit(pg.transform.scale(images.health_bar, (images.bar_width*(player.hp/player.hp_max), images.bar_height)), (screen.get_width()-images.bar_width-20,25))
+		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,55))
+		screen.blit(pg.transform.scale(images.energy_bar, (images.bar_width*(player.energy/player.energy_max), images.bar_height)), (screen.get_width()-images.bar_width-20,55))
 		screen.blit(fontes.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
