@@ -1,7 +1,6 @@
 import pygame as pg
 import groups
 import sons
-from math import ceil
 
 def collision_check(player:pg.sprite.Sprite, collision_group_list):
 	#colisão jogador/parede
