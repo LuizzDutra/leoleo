@@ -87,7 +87,7 @@ while True:
 
 	day_time.update()
 	cursor.cursor.update()
-	camera.update(player.rect, screen)
+	camera.update(player.rect.center, screen)
 	collision_check(player, collision_group_list)
 
 	sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
