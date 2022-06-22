@@ -3,6 +3,7 @@ import images
 from time import time
 from item import Item, Paper_Ball
 from groups import drop_item_group
+from utils import outline_image
 
 
 
@@ -12,6 +13,7 @@ class Player(pg.sprite.Sprite):
 		self.sprites = []
 		self.sprites.append(images.player_image)
 		self.image = self.sprites[0]
+		self.outline = outline_image(self.image, (255,0,0))
 		self.rect = self.image.get_rect(center = (0, 0))
 		self.xspeed = 5
 		self.yspeed = 5
@@ -26,7 +28,11 @@ class Player(pg.sprite.Sprite):
 		self.energy = 100
 		self.hp_max = 100
 		self.hp = 90
+		self.lasthp = self.hp
+		self.anim_lasthp = self.hp
+		self.anim_lastdmg = 0
 		self.money = 0
+		self.dead = False
 		self.pickup_range = 48
 		self.interactable_list = []
 	def control(self, keys_pressed):
@@ -133,5 +139,20 @@ class Player(pg.sprite.Sprite):
 			self.energy = self.energy_max
 		if self.hp > self.hp_max:
 			self.hp = self.hp_max
+		if self.hp <= 0:
+			self.dead = True
 		while len(self.inv_list) < self.inv_limit:
 			self.inv_list.append(None)
+
+		if self.hp < self.anim_lasthp:
+			self.anim_lastdmg = time()
+			self.anim_lasthp = self.hp
+		if time() - self.anim_lastdmg < 1:
+			if (time()-self.anim_lastdmg) // 0.2 % 2 == 0:
+				self.outline = outline_image(self.image, (255,0,0))
+			else:
+				self.outline = outline_image(self.image, (255,255,255))
+		else:
+			self.outline = pg.Surface((0,0))
+			self.lasthp = self.hp
+

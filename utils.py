@@ -19,3 +19,15 @@ def rfl(target, ilist, replace=True, term=None):
 			if item == target:
 				del ilist[i]
 				return
+
+def clamp(number:float, min:float, max:float) -> float:
+	if number < min:
+		number = min
+	if number > max:
+		number = max
+	return number
+
+def no_zero(number):
+	if number == 0:
+		return number+1
+	return number

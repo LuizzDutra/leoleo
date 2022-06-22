@@ -42,7 +42,7 @@ camera = Camera(player.rect, screen)
 hud = Hud(screen)
 
 
-group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group, groups.player_group]
+group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group]
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.door_group]
 
@@ -76,6 +76,8 @@ while True:
 		if keys_pressed[pg.K_F2]:
 			lc.reload_level()
 			lc.level_construct(lc.level0)
+		if keys_pressed[pg.K_l]:
+			player.hp -= 10
 
 		
 	player.control(keys_pressed)
@@ -88,7 +90,7 @@ while True:
 	camera.update(player.rect, screen)
 	collision_check(player, collision_group_list)
 
-	sprite_draw(screen, camera, group_draw_list, player.interactable_list)
+	sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
 	hud.draw_ui(screen, player, day_time, cursor.cursor)
 

@@ -12,6 +12,8 @@ empty_bar = pg.Surface((bar_width,bar_height))
 empty_bar.fill((0,0,0))
 health_bar = pg.Surface((bar_width,bar_height))
 health_bar.fill((255,0,0))
+damage_bar = pg.Surface((bar_width, bar_height))
+damage_bar.fill((255,255,255))
 energy_bar = pg.Surface((bar_width, bar_height))
 energy_bar.fill((255,255,0))
 
