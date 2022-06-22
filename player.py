@@ -29,8 +29,8 @@ class Player(pg.sprite.Sprite):
 		self.hp_max = 100
 		self.hp = 90
 		self.lasthp = self.hp
-		self.anim_lasthp = self.hp
-		self.anim_lastdmg = 0
+		self.hit_lasthp = self.hp
+		self.lastdmg = 0
 		self.money = 0
 		self.dead = False
 		self.pickup_range = 48
@@ -133,7 +133,19 @@ class Player(pg.sprite.Sprite):
 			else:
 				#print(type)
 				obj.interact(self.rect)
-
+	def dmg_blink(self):
+		if time() - self.lastdmg < 1:
+			if (time()-self.lastdmg) // 0.2 % 2 == 0:
+				self.outline = outline_image(self.image, (255,0,0))
+			else:
+				self.outline = outline_image(self.image, (255,255,255))
+		else:
+			self.outline = pg.Surface((0,0))
+			self.lasthp = self.hp
+	def got_hit(self):
+		if self.hp < self.hit_lasthp:
+			self.lastdmg = time()
+			self.hit_lasthp = self.hp
 	def update(self):
 		if self.energy > self.energy_max:
 			self.energy = self.energy_max
@@ -144,15 +156,5 @@ class Player(pg.sprite.Sprite):
 		while len(self.inv_list) < self.inv_limit:
 			self.inv_list.append(None)
 
-		if self.hp < self.anim_lasthp:
-			self.anim_lastdmg = time()
-			self.anim_lasthp = self.hp
-		if time() - self.anim_lastdmg < 1:
-			if (time()-self.anim_lastdmg) // 0.2 % 2 == 0:
-				self.outline = outline_image(self.image, (255,0,0))
-			else:
-				self.outline = outline_image(self.image, (255,255,255))
-		else:
-			self.outline = pg.Surface((0,0))
-			self.lasthp = self.hp
-
+		self.got_hit()
+		self.dmg_blink()
