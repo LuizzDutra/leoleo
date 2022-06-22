@@ -5,7 +5,7 @@ from item import Item
 
 last_draw_quantity = 0
 
-def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], interactable_list = []):
+def sprite_draw(screen:pg.display.set_mode, camera, player, group_draw_list = [], interactable_list = []):
 	global last_draw_quantity
 	screen.fill((50,50,50))
 	i = 0
@@ -16,6 +16,9 @@ def sprite_draw(screen:pg.display.set_mode, camera, group_draw_list = [], intera
 				i+=1
 				screen.blit(sprite.image, offpos)
 	last_draw_quantity = i
+	
+	screen.blit(player.image, (player.rect.x + camera.xoffset, player.rect.y + camera.yoffset))
+	screen.blit(player.outline, (player.rect.x + camera.xoffset, player.rect.y + camera.yoffset))
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))

@@ -1,7 +1,7 @@
 import pygame as pg
 import images
 import fontes
-
+from utils import clamp, no_zero
 
 class Hud():
 	def __init__(self, screen:pg.display.set_mode):
@@ -22,9 +22,14 @@ class Hud():
 
 	def draw_ui(self, screen:pg.display.set_mode, player, calendar, cursor):
 		screen.blit(calendar.image, (10, 10))
+		#barra de vida
 		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,25))
-		screen.blit(pg.transform.scale(images.health_bar, (images.bar_width*(player.hp/player.hp_max), images.bar_height)), (screen.get_width()-images.bar_width-20,25))
+		screen.blit(pg.transform.scale(images.health_bar, (images.bar_width*clamp((player.hp/player.hp_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,25))
+		#barra branca que mostra o dano tomado
+		screen.blit(pg.transform.scale(images.damage_bar, (images.bar_width*clamp((1 - player.hp/no_zero(player.lasthp)), 0, 1), images.bar_height)), ((screen.get_width()-images.bar_width)+(player.hp/player.hp_max*images.bar_width)-20,25))
+		#barra de energia
 		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,55))
-		screen.blit(pg.transform.scale(images.energy_bar, (images.bar_width*(player.energy/player.energy_max), images.bar_height)), (screen.get_width()-images.bar_width-20,55))
+		screen.blit(pg.transform.scale(images.energy_bar, (images.bar_width*clamp((player.energy/player.energy_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,55))
+
 		screen.blit(fontes.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
