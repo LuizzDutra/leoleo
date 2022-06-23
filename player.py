@@ -1,3 +1,4 @@
+from numpy import dtype
 import pygame as pg
 import images
 from time import time
@@ -15,8 +16,12 @@ class Player(pg.sprite.Sprite):
 		self.image = self.sprites[0]
 		self.outline = outline_image(self.image, (255,0,0))
 		self.rect = self.image.get_rect(center = (0, 0))
-		self.xspeed = 5
-		self.yspeed = 5
+		self.xpos = self.rect.x
+		self.ypos = self.rect.y
+		self.dt = 0
+		self.last = 0
+		self.xspeed = 300
+		self.yspeed = 300
 		self.xvel = 0
 		self.yvel = 0
 		self.use_delay = 0.2
@@ -36,6 +41,8 @@ class Player(pg.sprite.Sprite):
 		self.pickup_range = 48
 		self.interactable_list = []
 	def control(self, keys_pressed):
+		self.dt = pg.time.get_ticks()/1000 - self.last
+		self.last = pg.time.get_ticks()/1000
 		self.xvel = 0
 		self.yvel = 0
 		if keys_pressed[pg.K_a]:
@@ -49,18 +56,22 @@ class Player(pg.sprite.Sprite):
 		if keys_pressed[pg.K_LSHIFT]:
 			self.xvel //= 2
 			self.yvel //= 2
-		self.rect.x += self.xvel
-		self.rect.y += self.yvel
+		self.xvel *= self.dt
+		self.yvel *= self.dt
+		self.xpos += self.xvel
+		self.ypos += self.yvel
+		self.rect.x = round(self.xpos)
+		self.rect.y = round(self.ypos)
 		if keys_pressed[pg.K_f]:
-			if (time() - self.last_use) > self.use_delay:
+			if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
 				self.use_item(self.inv_list[self.inv_select])
-				self.last_use = time()
+				self.last_use = pg.time.get_ticks()/1000
 		if keys_pressed[pg.K_g]:
 			self.drop_item(drop_item_group)
 		if keys_pressed[pg.K_e]:
-			if (time() - self.last_use) > self.use_delay:
+			if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
 				self.interact()
-				self.last_use = time()
+				self.last_use = pg.time.get_ticks()/1000
 		if keys_pressed[pg.K_1]:
 			self.inv_select = 0
 		if keys_pressed[pg.K_2]:
@@ -134,8 +145,8 @@ class Player(pg.sprite.Sprite):
 				#print(type)
 				obj.interact(self.rect)
 	def dmg_blink(self):
-		if time() - self.lastdmg < 1:
-			if (time()-self.lastdmg) // 0.2 % 2 == 0:
+		if pg.time.get_ticks()/1000 - self.lastdmg < 1:
+			if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
 				self.outline = outline_image(self.image, (255,0,0))
 			else:
 				self.outline = outline_image(self.image, (255,255,255))
@@ -144,7 +155,7 @@ class Player(pg.sprite.Sprite):
 			self.lasthp = self.hp
 	def got_hit(self):
 		if self.hp < self.hit_lasthp:
-			self.lastdmg = time()
+			self.lastdmg = pg.time.get_ticks()/1000
 			self.hit_lasthp = self.hp
 	def update(self):
 		if self.energy > self.energy_max:
