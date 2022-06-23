@@ -1,7 +1,6 @@
 import pygame as pg
 import images
 from math import atan2, cos, sin
-from time import time
 from utils import rfl
 from lc import Door
 from groups import ball_group
@@ -84,7 +83,9 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		super().__init__()
 		self.image = images.bola_papel_projetil
 		self.rect = self.image.get_rect(center = player.rect.center)
-		self.speed = 10
+		self.speed = float(600)
+		self.xpos = self.rect.x
+		self.ypos = self.rect.y
 		self.xdir = 0
 		self.ydir = 0
 		m_ypos = (pg.mouse.get_pos()[1] - images.screen.get_height()/2)
@@ -92,11 +93,17 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.angle = atan2(m_ypos, m_xpos)
 		self.xdir = cos(self.angle) 
 		self.ydir = sin(self.angle) 
-		self.time = time()
+		self.time = pg.time.get_ticks()/1000
 		self.life_time = 5
+		self.dt = pg.time.get_ticks()/1000
+		self.last = pg.time.get_ticks()/1000
 
 	def update(self):
-		self.rect.x += self.speed * self.xdir
-		self.rect.y += self.speed * self.ydir
-		if time() - self.time > self.life_time:
+		self.dt = pg.time.get_ticks()/1000 - self.last
+		self.last = pg.time.get_ticks()/1000
+		self.xpos += self.speed * self.dt * self.xdir
+		self.ypos += self.speed * self.dt *self.ydir
+		self.rect.x = round(self.xpos)
+		self.rect.y = round(self.ypos)
+		if pg.time.get_ticks()/1000 - self.time > self.life_time:
 			self.kill()

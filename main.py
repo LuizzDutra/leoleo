@@ -97,5 +97,6 @@ while True:
 	if debug_state:
 		debug.activate_debug(screen, clock, player)
 
+	pg.display.set_caption("{:.2f} FPS".format(clock.get_fps()))
 	pg.display.update()
-	clock.tick(60)
+	clock.tick(0)
