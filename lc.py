@@ -28,7 +28,19 @@ class Wall(pg.sprite.Sprite):
 		self.width = self.corner[0] - pos[0]*gs
 		self.height = self.corner[1] - pos[1]*gs
 		self.rect = pg.Rect((pos[0]*gs, pos[1]*gs), (self.width, self.height))
-		self.image = pg.transform.scale(images.wall_list[id], (self.rect.width, self.rect.height))
+		#imagem em forma de tiles
+		self.blit_image = images.wall_list[id]
+		self.blit_image_size = self.blit_image.get_size()
+		self.image = pg.Surface((self.rect.width, self.rect.height))
+		for x in range(0, int(self.image.get_size()[0]/self.blit_image_size[0])):
+			self.image.blit(self.blit_image, (x*self.blit_image_size[0], 0))
+		for y in range(0, int(self.image.get_size()[1]/self.blit_image_size[1])):
+			self.image.blit(self.blit_image, (0, y*self.blit_image_size[1]))
+		del self.blit_image
+		del self.blit_image_size
+		del self.width
+		del self.height
+
 class Ground(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id, rot=False):
 		super().__init__()
@@ -126,6 +138,7 @@ def get_pallete(image:Image.Image) -> list:
 
 def level_construct(level_image:Image.Image, part_quantity=25):
 	print("Carrengando mapa")
+	start = time()
 	for surface in groups.level_surface_group:
 		surface.kill()
 	for wall in groups.wall_group:
@@ -137,34 +150,43 @@ def level_construct(level_image:Image.Image, part_quantity=25):
 	level_surface.image.fill((50,50,50))
 	pallete = get_pallete(level_image)
 	check_list = []
+	wide_check = False
 
 	for y in range(0, level_size[1]):
 		for x in range(0, level_size[0]):
 			if (x,y) not in check_list:
 				color = pallete[level_image.getpixel((x,y))]
 				#paredes horizontais
+				wide_check = False
 				wall_cords = []
 				if color in wall_colors_id:
 					wall_cords.append((x, y))
+					wall_cords.append((x, y))
 					for i in range(x+1, level_size[0]):
 						if pallete[level_image.getpixel((i, y))] == color:
-							wall_cords.append((i, y))
+							wall_cords[1] = (i, y)
 							check_list.append((i, y))
-							check_list.append((x, y))
+							if not wide_check:
+								check_list.append((x, y))
+								wide_check = True
 						else:
 							break
 					if (x,y) in check_list:
 						groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
 				#paredes verticais
+				wide_check = False
 				wall_cords = []
 				if color in wall_colors_id:
 					if (x,y) not in check_list:
 						wall_cords.append((x, y))
+						wall_cords.append((x,y))
 						for i in range(y+1, level_size[0]):
 							if pallete[level_image.getpixel((x, i))] == color:
-								wall_cords.append((x, i))
+								wall_cords[1] = (x, i)
 								check_list.append((x, i))
-								check_list.append((x, y))
+								if not wide_check:
+									check_list.append((x, y))
+									wide_check = True
 							else:
 								break
 						groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
@@ -189,7 +211,8 @@ def level_construct(level_image:Image.Image, part_quantity=25):
 			temp_surface.blit(level_surface.image, (-x*(level_width/rcq), -y*(level_height/rcq)))
 			groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
 			i += 1
-	print("O mapa particionado em {} partes".format(i))
-	print(len(groups.wall_group.sprites()))
-
+	print("Mapa particionado em {} partes".format(i))
+	print(len(groups.wall_group.sprites()),"paredes")
+	end = time()
 	print("Mapa Carregado")
+	print(end - start)
