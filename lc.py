@@ -1,3 +1,4 @@
+from importlib.machinery import WindowsRegistryFinder
 import pygame as pg
 from time import time
 import images
@@ -17,13 +18,17 @@ BLUE = (0,0,255) #piso
 YELLOW = (255,255,0)
 PINK = (255,0,255)
 CYAN = (0,255,255)
+wall_colors_id = {BLACK:0, RED:1}
+ground_colors_id = {GREEN:0, BLUE:1}
 
 class Wall(pg.sprite.Sprite):
-	def __init__(self, pos:tuple, id):
+	def __init__(self, pos:tuple, pos2:tuple, id):
 		super().__init__()
-		self.image = images.wall_list[id]
-		self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
-
+		self.corner = (pos2[0]*gs+gs, pos2[1]*gs+gs)
+		self.width = self.corner[0] - pos[0]*gs
+		self.height = self.corner[1] - pos[1]*gs
+		self.rect = pg.Rect((pos[0]*gs, pos[1]*gs), (self.width, self.height))
+		self.image = pg.transform.scale(images.wall_list[id], (self.rect.width, self.rect.height))
 class Ground(pg.sprite.Sprite):
 	def __init__(self, pos:tuple, id, rot=False):
 		super().__init__()
@@ -131,18 +136,44 @@ def level_construct(level_image:Image.Image, part_quantity=25):
 	level_surface = Level_sprite(level_image)
 	level_surface.image.fill((50,50,50))
 	pallete = get_pallete(level_image)
+	check_list = []
 
 	for y in range(0, level_size[1]):
 		for x in range(0, level_size[0]):
-			if pallete[level_image.getpixel((x,y))] == BLACK:
-					groups.wall_group.add(Wall((x, y), 0))
-			if pallete[level_image.getpixel((x,y))] == RED:
-				groups.wall_group.add(Wall((x,y), 1))
-			if pallete[level_image.getpixel((x,y))] == GREEN:
-					groups.ground_group.add(Ground((x, y), 0))
-			if pallete[level_image.getpixel((x,y))] == BLUE:
-				groups.ground_group.add(Ground((x,y), 1))
-			
+			if (x,y) not in check_list:
+				color = pallete[level_image.getpixel((x,y))]
+				#paredes horizontais
+				wall_cords = []
+				if color in wall_colors_id:
+					wall_cords.append((x, y))
+					for i in range(x+1, level_size[0]):
+						if pallete[level_image.getpixel((i, y))] == color:
+							wall_cords.append((i, y))
+							check_list.append((i, y))
+							check_list.append((x, y))
+						else:
+							break
+					if (x,y) in check_list:
+						groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+				#paredes verticais
+				wall_cords = []
+				if color in wall_colors_id:
+					if (x,y) not in check_list:
+						wall_cords.append((x, y))
+						for i in range(y+1, level_size[0]):
+							if pallete[level_image.getpixel((x, i))] == color:
+								wall_cords.append((x, i))
+								check_list.append((x, i))
+								check_list.append((x, y))
+							else:
+								break
+						groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+
+
+
+				if color in ground_colors_id:
+					groups.ground_group.add(Ground((x, y), ground_colors_id[color]))
+
 	for ground in groups.ground_group:
 		level_surface.image.blit(ground.image, ground.rect.topleft)
 	for wall in groups.wall_group:
@@ -159,5 +190,6 @@ def level_construct(level_image:Image.Image, part_quantity=25):
 			groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
 			i += 1
 	print("O mapa particionado em {} partes".format(i))
+	print(len(groups.wall_group.sprites()))
 
 	print("Mapa Carregado")
