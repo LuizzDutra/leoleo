@@ -90,7 +90,9 @@ class Player(pg.sprite.Sprite):
 	def mouse_control(self, mouse_events, wheel=False):
 		if not wheel:
 			if mouse_events[0]:#botão esquerdo
-				self.use_item(self.inv_list[self.inv_select])
+				if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
+					self.use_item(self.inv_list[self.inv_select])
+					self.last_use = pg.time.get_ticks()/1000
 		if wheel:
 			if mouse_events == -1:#mouse pra baixo
 				if self.inv_select+1 == self.inv_limit:
