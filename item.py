@@ -86,6 +86,8 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.speed = float(6000)
 		self.xspeed = self.speed
 		self.yspeed = self.speed
+		self.n_xspeed = self.xspeed
+		self.n_yspeed = self.yspeed
 		self.xpos = self.rect.x
 		self.ypos = self.rect.y
 		self.xdir = 0
@@ -109,15 +111,16 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		sons.play_far_effect(self.player_rect, self.rect, sons.ball_hit)
 	def bounce(self, rect:pg.Rect):
 		if self.bounce_qt < self.bounce_limit:
-			if abs(rect.bottom - self.rect.top) < 10:
+			if abs(rect.bottom - self.rect.top) < self.yspeed*self.dt+5:
 				self.yspeed *= -1
-			if abs(rect.left - self.rect.right) < 10:
+			if abs(rect.left - self.rect.right) < self.xspeed*self.dt+5:
 				self.xspeed *= -1
-			if abs(rect.right - self.rect.left) < 10:
+			if abs(rect.right - self.rect.left) < self.xspeed*self.dt+5:
 				self.xspeed *= -1
-			if abs(rect.top - self.rect.bottom) < 10:
+			if abs(rect.top - self.rect.bottom) < self.yspeed*self.dt+5:
 				self.yspeed *= -1
 			self.bounce_qt += 1
+			self.life_time *= 0.75
 		else:
 			self.drop()
 
