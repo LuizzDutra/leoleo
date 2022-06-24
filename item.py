@@ -3,7 +3,7 @@ import images
 from math import atan2, cos, sin
 from utils import rfl
 from lc import Door
-from groups import ball_group
+from groups import ball_group, drop_item_group
 import sons
 
 
@@ -83,7 +83,11 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		super().__init__()
 		self.image = images.bola_papel_projetil
 		self.rect = self.image.get_rect(center = player.rect.center)
-		self.speed = float(600)
+		self.speed = float(6000)
+		self.xspeed = self.speed
+		self.yspeed = self.speed
+		self.n_xspeed = self.xspeed
+		self.n_yspeed = self.yspeed
 		self.xpos = self.rect.x
 		self.ypos = self.rect.y
 		self.xdir = 0
@@ -94,16 +98,44 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.xdir = cos(self.angle) 
 		self.ydir = sin(self.angle) 
 		self.time = pg.time.get_ticks()/1000
-		self.life_time = 5
+		self.life_time = 1
 		self.dt = pg.time.get_ticks()/1000
 		self.last = pg.time.get_ticks()/1000
+		self.bounce_qt = 0 #quantidade de quicadas☺
+		self.bounce_limit = 2
+	def drop(self):
+		self.kill()
+		drop = Paper_Ball()
+		drop.rect.center = self.rect.center
+		drop_item_group.add(drop)
+		sons.play_far_effect(self.player_rect, self.rect, sons.ball_hit)
+	def bounce(self, rect:pg.Rect):
+		if self.bounce_qt < self.bounce_limit:
+			if abs(rect.bottom - self.rect.top) < self.yspeed*self.dt+5:
+				self.yspeed *= -1
+			if abs(rect.left - self.rect.right) < self.xspeed*self.dt+5:
+				self.xspeed *= -1
+			if abs(rect.right - self.rect.left) < self.xspeed*self.dt+5:
+				self.xspeed *= -1
+			if abs(rect.top - self.rect.bottom) < self.yspeed*self.dt+5:
+				self.yspeed *= -1
+			self.bounce_qt += 1
+			self.life_time *= 0.75
+		else:
+			self.drop()
 
-	def update(self):
+
+	def update(self, player_rect):
+		self.player_rect = player_rect #referência para som
 		self.dt = pg.time.get_ticks()/1000 - self.last
 		self.last = pg.time.get_ticks()/1000
-		self.xpos += self.speed * self.dt * self.xdir
-		self.ypos += self.speed * self.dt *self.ydir
+		self.n_xspeed = self.xspeed * (self.life_time - (pg.time.get_ticks()/1000-self.time))/5
+		self.n_yspeed = self.yspeed * (self.life_time - (pg.time.get_ticks()/1000-self.time))/5
+		self.xpos += self.n_xspeed * self.dt * self.xdir
+		self.ypos += self.n_yspeed * self.dt *self.ydir
 		self.rect.x = round(self.xpos)
 		self.rect.y = round(self.ypos)
 		if pg.time.get_ticks()/1000 - self.time > self.life_time:
-			self.kill()
+			self.drop()
+			
+

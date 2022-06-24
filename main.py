@@ -83,7 +83,7 @@ while True:
 	player.control(keys_pressed)
 	groups.player_group.update()
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
-	item.ball_group.update()
+	item.ball_group.update(player.rect)
 
 	day_time.update()
 	cursor.cursor.update()
