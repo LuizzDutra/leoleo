@@ -77,6 +77,7 @@ while True:
 			lc.reload_level()
 			lc.level_construct(lc.level0)
 		if keys_pressed[pg.K_l]:
+			player.energy = player.energy_max
 			player.hp -= 10
 
 		
