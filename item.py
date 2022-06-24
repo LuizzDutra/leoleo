@@ -106,6 +106,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		drop = Paper_Ball()
 		drop.rect.center = self.rect.center
 		drop_item_group.add(drop)
+		sons.play_far_effect(self.player_rect, self.rect, sons.ball_hit)
 	def bounce(self, rect:pg.Rect):
 		if self.bounce_qt < self.bounce_limit:
 			if abs(rect.bottom - self.rect.top) < 10:
@@ -120,7 +121,9 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		else:
 			self.drop()
 
+
 	def update(self, player_rect):
+		self.player_rect = player_rect #referência para som
 		self.dt = pg.time.get_ticks()/1000 - self.last
 		self.last = pg.time.get_ticks()/1000
 		self.n_xspeed = self.xspeed * (self.life_time - (pg.time.get_ticks()/1000-self.time))/5
@@ -131,5 +134,5 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.rect.y = round(self.ypos)
 		if pg.time.get_ticks()/1000 - self.time > self.life_time:
 			self.drop()
-			sons.play_far_effect(player_rect, self.rect, sons.ball_hit)
+			
 
