@@ -103,6 +103,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.last = pg.time.get_ticks()/1000
 		self.bounce_qt = 0 #quantidade de quicadas☺
 		self.bounce_limit = 2
+		self.last_bounce = 0
 	def drop(self):
 		self.kill()
 		drop = Paper_Ball()
@@ -121,6 +122,9 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 				self.yspeed *= -1
 			self.bounce_qt += 1
 			self.life_time *= 0.75
+			if pg.time.get_ticks()/1000 - self.last_bounce > 0.5:
+				sons.play_far_effect(rect, self.rect, sons.ball_hit)
+			self.last_bounce = pg.time.get_ticks()/1000
 		else:
 			self.drop()
 
