@@ -125,7 +125,7 @@ class Level_partition_sprite(pg.sprite.Sprite):
 
 
 #teste de criação de mapa
-level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
+level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
 
 #usado para debug, bem bugado
 def reload_level():
