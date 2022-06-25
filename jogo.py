@@ -2,7 +2,6 @@ import pygame
 import time
 from player import Jogador
 
-
 pygame.init()
 
 class Jogo:
@@ -56,7 +55,7 @@ class Jogo:
 
     def desenhar(self):
 
-        self.clock.tick(60)
+        self.clock.tick(30)
         self.tela.fill("#000000")
         self.jogador.update(self.deltatime)
         self.jogador.j_desenhar(self.tela)

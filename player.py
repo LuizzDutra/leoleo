@@ -9,7 +9,7 @@ class Jogador:
         self.down = False
         self.load_sprite()
         self.rect = self.animation_direita[0].get_rect(center=(int(x),int(y)))
-        self.vel = 4
+        self.vel = 100
         self.velx = 0
         self.vely = 0
         self.state = "idle"
@@ -70,9 +70,8 @@ class Jogador:
         else:
             self.state = "idle"
             
-
-        self.rect.x += self.velx
-        self.rect.y += self.vely
+        self.rect.x += self.velx * dt
+        self.rect.y += self.vely * dt
         self.animacao(dt)
 
     def load_sprite(self):
