@@ -26,7 +26,7 @@ class Hud():
 		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,25))
 		screen.blit(pg.transform.scale(images.health_bar, (images.bar_width*clamp((player.hp/player.hp_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,25))
 		#barra branca que mostra o dano tomado
-		screen.blit(pg.transform.scale(images.damage_bar, (images.bar_width*clamp((((player.lasthp-player.hp)/player.hp_max)), 0, 1), images.bar_height)), ((screen.get_width()-images.bar_width)+(player.hp/player.hp_max*images.bar_width)-20,25))
+		screen.blit(pg.transform.scale(images.damage_bar, (images.bar_width*clamp((((player.lasthp-player.hp)/player.hp_max)), 0, 1), images.bar_height)), ((screen.get_width()-images.bar_width)+(clamp(player.hp, 0, player.hp_max)/player.hp_max*images.bar_width)-20,25))
 		#barra de energia
 		screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,55))
 		screen.blit(pg.transform.scale(images.energy_bar, (images.bar_width*clamp((player.energy/player.energy_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,55))
