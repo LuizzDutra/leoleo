@@ -29,8 +29,7 @@ class Key(Item):
 	def use(self, player):
 		for obj in player.interactable_list:
 			if isinstance(obj, Door):
-				if self.id == obj.id:
-					obj.lock_unlock()
+				obj.lock_unlock(self.id)
 
 class Money(Item):
 	def __init__(self, quantity:int):
@@ -122,7 +121,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 			self.bounce_qt += 1
 			self.life_time *= 0.75
 			if pg.time.get_ticks()/1000 - self.last_bounce > 0.5:
-				sons.play_far_effect(self.player_rect, self.rect, sons.ball_hit)
+				sons.play_far_effect(self.rect, sons.ball_hit)
 			self.last_bounce = pg.time.get_ticks()/1000
 		else:
 			self.drop()

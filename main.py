@@ -99,6 +99,7 @@ while True:
 	groups.player_group.update()
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
 	item.ball_group.update(player.rect)
+	sons.update(player.rect.center)
 
 	day_time.update()
 	cursor.cursor.update()
