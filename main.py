@@ -47,41 +47,46 @@ collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.door_group]
 
 debug_state = False
-
 while True:
-
+	mouse_events = pg.mouse.get_pressed()
 	keys_pressed = pg.key.get_pressed()
+	scroll_event = (0, True)
 	for event in pg.event.get():
 		if event.type == pg.QUIT:
 			pg.quit()
 			sys.exit()
 		if event.type == pg.MOUSEWHEEL:
-			player.mouse_control(event.y, True)
-		if event.type == pg.MOUSEBUTTONDOWN:
-			player.mouse_control(pg.mouse.get_pressed())
-		if keys_pressed[pg.K_ESCAPE]:
-			print("bye")
-			pg.quit()
-			sys.exit()
-		if keys_pressed[pg.K_F11]:
-			pg.display.toggle_fullscreen()
-		if keys_pressed[pg.K_F3]:
-			debug_state = not debug_state
-		if keys_pressed[pg.K_h]:
-			obj = item.Item()
-			obj.rect.center = player.rect.center
-			groups.drop_item_group.add(obj)
-		if keys_pressed[pg.K_F1]:
-			player.rect.center = (0,0)
-		if keys_pressed[pg.K_F2]:
-			lc.reload_level()
-			lc.level_construct(lc.level0)
-		if keys_pressed[pg.K_l]:
-			player.energy = player.energy_max
-			player.hp -= 10
+			scroll_event = (event.y, True)
+		if event.type == pg.KEYDOWN:
+			if event.key == pg.K_ESCAPE:
+				print("bye")
+				pg.quit()
+				sys.exit()
+			if event.key == pg.K_F11:
+				pg.display.toggle_fullscreen()
+			if event.key == pg.K_F3:
+				debug_state = not debug_state
+			if event.key == pg.K_h:
+				obj = item.Item()
+				obj.rect.center = player.rect.center
+				groups.drop_item_group.add(obj)
+			if event.key == pg.K_F1:
+				player.xpos = 0
+				player.ypos = 0
+			if event.key == pg.K_F2:
+				lc.reload_level()
+				lc.level_construct(lc.level0)
+			if event.key == pg.K_l:
+				player.energy = player.energy_max
+				player.hp -= 10
+			if event.key == pg.K_j:
+				camera.transition((0,0))
+			if event.key == pg.K_h:
+				camera.clear_transition()
 
-		
 	player.control(keys_pressed)
+	player.mouse_control(mouse_events)
+	player.mouse_control(scroll_event[0], scroll_event[1])
 	groups.player_group.update()
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
 	item.ball_group.update(player.rect)
