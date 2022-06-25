@@ -46,6 +46,10 @@ group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_grou
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.door_group]
 
+key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
+			"slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
+			"slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
+
 debug_state = False
 while True:
 	mouse_events = pg.mouse.get_pressed()
@@ -83,13 +87,19 @@ while True:
 				camera.transition((0,0))
 			if event.key == pg.K_h:
 				camera.clear_transition()
+			if event.key == pg.K_t:
+				for i, obj in enumerate(player.inv_list):
+					if obj == None:
+						player.inv_list[i] = item.Paper_Ball()
+	
 
-	player.control(keys_pressed)
+	player.control(keys_pressed, key_binds)
 	player.mouse_control(mouse_events)
 	player.mouse_control(scroll_event[0], scroll_event[1])
 	groups.player_group.update()
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
 	item.ball_group.update(player.rect)
+	sons.update(player.rect.center)
 
 	day_time.update()
 	cursor.cursor.update()

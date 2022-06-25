@@ -40,20 +40,20 @@ class Player(pg.sprite.Sprite):
 		self.dead = False
 		self.pickup_range = 48
 		self.interactable_list = []
-	def control(self, keys_pressed):
+	def control(self, keys_pressed, key_binds):
 		self.dt = pg.time.get_ticks()/1000 - self.last
 		self.last = pg.time.get_ticks()/1000
 		self.xvel = 0
 		self.yvel = 0
-		if keys_pressed[pg.K_a]:
+		if keys_pressed[key_binds["w_left"]]:
 			self.xvel -= self.xspeed
-		if keys_pressed[pg.K_d]:
+		if keys_pressed[key_binds["w_right"]]:
 			self.xvel += self.xspeed
-		if keys_pressed[pg.K_w]:
+		if keys_pressed[key_binds["w_foward"]]:
 			self.yvel -= self.yspeed
-		if keys_pressed[pg.K_s]:
+		if keys_pressed[key_binds["w_back"]]:
 			self.yvel += self.yspeed
-		if keys_pressed[pg.K_LSHIFT]:
+		if keys_pressed[key_binds["slow_walk"]]:
 			self.xvel //= 2
 			self.yvel //= 2
 		self.xvel *= self.dt
@@ -62,31 +62,26 @@ class Player(pg.sprite.Sprite):
 		self.ypos += self.yvel
 		self.rect.x = round(self.xpos)
 		self.rect.y = round(self.ypos)
-		if keys_pressed[pg.K_f]:
+		if keys_pressed[key_binds["use"]]:
 			if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
 				self.use_item(self.inv_list[self.inv_select])
 				self.last_use = pg.time.get_ticks()/1000
-		if keys_pressed[pg.K_g]:
+		if keys_pressed[key_binds["drop"]]:
 			self.drop_item(drop_item_group)
-		if keys_pressed[pg.K_e]:
+		if keys_pressed[key_binds["interact"]]:
 			if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
 				self.interact()
 				self.last_use = pg.time.get_ticks()/1000
-		if keys_pressed[pg.K_1]:
+		if keys_pressed[key_binds["slot0"]]:
 			self.inv_select = 0
-		if keys_pressed[pg.K_2]:
+		if keys_pressed[key_binds["slot1"]]:
 			self.inv_select = 1
-		if keys_pressed[pg.K_3]:
+		if keys_pressed[key_binds["slot2"]]:
 			self.inv_select = 2
-		if keys_pressed[pg.K_4]:
+		if keys_pressed[key_binds["slot3"]]:
 			self.inv_select = 3
-		if keys_pressed[pg.K_5]:
+		if keys_pressed[key_binds["slot4"]]:
 			self.inv_select = 4
-		if keys_pressed[pg.K_t]:
-			for i, item in enumerate(self.inv_list):
-				if item == None:
-					self.inv_list[i] = Paper_Ball()
-	
 	def mouse_control(self, mouse_events, wheel=False):
 		if not wheel:
 			if mouse_events[0]:#botão esquerdo

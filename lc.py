@@ -73,22 +73,26 @@ class Door(pg.sprite.Sprite):
 	def lock(self):
 		if self.closed:
 			self.locked = True
-			sons.effect_play(sons.key)
+			sons.play_far_effect(self.rect, sons.key)
 	
 	def unlock(self):
 		self.locked = False
-		sons.effect_play(sons.key)
+		sons.play_far_effect(self.rect, sons.key)
 
-	def lock_unlock(self):
-		if self.locked:
-			self.unlock()
-		elif not self.locked:
-			self.lock()
+	def lock_unlock(self, id):
+		if self.id == id or id == 0: #chave de id=0 -> chave mestra
+			if self.locked:
+				self.unlock()
+			elif not self.locked:
+				self.lock()
+		else:
+			if self.locked:
+				sons.effect_play(sons.bad_key)
 
 	def interact(self, rect):
 		if time() - self.open_delta > self.open_time:
 			if self.locked:
-				sons.play_far_effect(rect, self.rect, sons.locked)
+				sons.play_far_effect(self.rect, sons.locked)
 			if not self.locked:
 				self.open_delta = time()
 				if self.closed:
@@ -96,13 +100,13 @@ class Door(pg.sprite.Sprite):
 						self.image = pg.transform.rotate(self.image, 90)
 					if not self.vertical:
 						self.image = pg.transform.rotate(self.image, -90)
-					sons.play_far_effect(rect, self.rect, sons.open_dr)
+					sons.play_far_effect(self.rect, sons.open_dr)
 				if not self.closed:
 					if self.vertical:
 						self.image = pg.transform.rotate(self.image, -90)
 					if not self.vertical:
 						self.image = pg.transform.rotate(self.image, 90)
-					sons.play_far_effect(rect, self.rect, sons.cls_dr)
+					sons.play_far_effect(self.rect, sons.cls_dr)
 				self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
 				self.closed = not self.closed
 
