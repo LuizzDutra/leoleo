@@ -12,6 +12,8 @@ class Jogador:
         self.vel = 100
         self.velx = 0
         self.vely = 0
+        self.xpos = self.rect.x
+        self.ypos = self.rect.y
         self.state = "idle"
         self.tempo = 0
 
@@ -50,28 +52,37 @@ class Jogador:
         self.velx = 0
         self.vely = 0
 
-        if self.esquerda and not self.direita:
-            self.velx = -self.vel
-            self.state = "movimento_esquerda"
+        #fix pro moonwalk
+        if self.up and self.down:
+            self.state = "idle"
+        if self.esquerda and self.direita:
+            self.state = "idle"
 
-        elif self.direita and not self.esquerda:
-            self.velx = self.vel
-            self.state = "movimento_direita"
-
-        elif self.up and not self.down:
+        if self.up and not self.down:
             self.vely = -self.vel
             self.state = "movimento_up"
             
 
-        elif self.down and not self.up:
+        if self.down and not self.up:
             self.vely = self.vel
             self.state = "movimento_down"
+
+        if self.esquerda and not self.direita:
+            self.velx = -self.vel
+            self.state = "movimento_esquerda"
+
+        if self.direita and not self.esquerda:
+            self.velx = self.vel
+            self.state = "movimento_direita"
+
             
-        else:
+        if not self.down and not self.up and not self.direita and not self.esquerda:
             self.state = "idle"
             
-        self.rect.x += self.velx * dt
-        self.rect.y += self.vely * dt
+        self.xpos += self.velx * dt
+        self.ypos += self.vely * dt
+        self.rect.x = round(self.xpos)
+        self.rect.y = round(self.ypos)
         self.animacao(dt)
 
     def load_sprite(self):
