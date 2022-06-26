@@ -60,8 +60,6 @@ class Player(pg.sprite.Sprite):
 		self.yvel *= self.dt
 		self.xpos += self.xvel
 		self.ypos += self.yvel
-		self.rect.x = round(self.xpos)
-		self.rect.y = round(self.ypos)
 		if keys_pressed[key_binds["use"]]:
 			if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
 				self.use_item(self.inv_list[self.inv_select])
@@ -163,6 +161,9 @@ class Player(pg.sprite.Sprite):
 			self.dead = True
 		while len(self.inv_list) < self.inv_limit:
 			self.inv_list.append(None)
+
+		self.rect.x = round(self.xpos)
+		self.rect.y = round(self.ypos)
 
 		self.got_hit()
 		self.dmg_blink()

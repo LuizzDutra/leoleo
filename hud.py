@@ -33,3 +33,64 @@ class Hud():
 
 		screen.blit(fontes.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
+
+class Console():
+	def __init__(self):
+		self.image = pg.Surface((images.screen.get_width(), images.screen.get_height()/3))
+		self.image.fill((0,0,0))
+		self.image.set_alpha(200)
+		self.user_input = ""
+		self.input_list = []
+		self.state = False
+		self.input = ""
+		self.input_select = -1
+
+	def draw(self, screen:pg.display.set_mode):
+		screen.blit(self.image, (0,0))
+		screen.blit(fontes.arial.render(">>", True, (255,255,255)), (0, self.image.get_height() - 30))
+		screen.blit(fontes.arial.render(self.user_input, True, (255,255,255)), (30, self.image.get_height() - 30))
+		for i, item in enumerate(self.input_list):
+			screen.blit(fontes.smallarial.render(str(self.input_list[-i-1]), True, (255,255,255)), (0, self.image.get_height()-100 - 17*i))
+	
+	def get_input(self):
+		for event in self.events:
+			if event.type == pg.KEYDOWN:
+				if event.key == pg.K_BACKSPACE:
+					if len(self.user_input) > 0:
+						self.user_input = self.user_input[:-1]
+				elif event.key == pg.K_DOWN:
+					if len(self.input_list) > 0:
+						if self.input_select > len(self.input_list)-1:
+							self.input_select = 0
+						if self.input_select < 0:
+							self.input_select = 0
+						self.user_input = self.input_list[self.input_select]
+						self.input_select += 1
+				elif event.key == pg.K_UP:
+					if len(self.input_list) > 0:
+						if self.input_select < 0:
+							self.input_select = len(self.input_list)-1
+						if self.input_select > len(self.input_list)-1:
+							self.input_select = 0
+						self.user_input = self.input_list[self.input_select]
+						self.input_select -= 1
+				elif event.key == pg.K_RETURN:
+					self.exec_command()
+				else:
+					self.user_input += event.unicode
+	def exec_command(self):
+		try:
+			exec(self.user_input, self.global_dict)
+		except Exception as error:
+			print(error)
+		self.input_list += [self.user_input]
+		self.user_input = ""
+	
+	def update(self, screen, state, events, global_dict):
+		self.state = state
+		if self.state:
+			self.global_dict = global_dict
+			self.events = events
+			self.draw(screen)
+			self.get_input()
+
