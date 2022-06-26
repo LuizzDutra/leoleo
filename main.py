@@ -10,7 +10,7 @@ import item
 import calendario
 from camera import Camera
 import cursor
-from hud import Hud
+from hud import Hud, Console
 from sprite_draw import sprite_draw
 from collision import collision_check
 import debug
@@ -40,6 +40,7 @@ day_time = calendario.Calendario()
 
 camera = Camera(player.rect, screen)
 hud = Hud(screen)
+console = Console()
 
 
 group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group]
@@ -50,12 +51,14 @@ key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right
 			"slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
 			"slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
 
+console_state = False
 debug_state = False
 while True:
 	mouse_events = pg.mouse.get_pressed()
 	keys_pressed = pg.key.get_pressed()
 	scroll_event = (0, True)
-	for event in pg.event.get():
+	events = pg.event.get()
+	for event in events:
 		if event.type == pg.QUIT:
 			pg.quit()
 			sys.exit()
@@ -70,32 +73,36 @@ while True:
 				pg.display.toggle_fullscreen()
 			if event.key == pg.K_F3:
 				debug_state = not debug_state
-			if event.key == pg.K_h:
-				obj = item.Item()
-				obj.rect.center = player.rect.center
-				groups.drop_item_group.add(obj)
 			if event.key == pg.K_F1:
 				player.xpos = 0
 				player.ypos = 0
 			if event.key == pg.K_F2:
 				lc.reload_level()
 				lc.level_construct(lc.level0)
-			if event.key == pg.K_l:
-				player.energy = player.energy_max
-				player.hp -= 10
-			if event.key == pg.K_j:
-				camera.transition((0,0))
-			if event.key == pg.K_h:
-				camera.clear_transition()
-			if event.key == pg.K_t:
-				for i, obj in enumerate(player.inv_list):
-					if obj == None:
-						player.inv_list[i] = item.Paper_Ball()
-	
+			if not console_state:
+				if event.key == pg.K_l:
+					player.energy = player.energy_max
+					player.hp -= 10
+				if event.key == pg.K_j:
+					camera.transition((0,0))
+				if event.key == pg.K_h:
+					camera.clear_transition()
+				if event.key == pg.K_t:
+					for i, obj in enumerate(player.inv_list):
+						if obj == None:
+							player.inv_list[i] = item.Paper_Ball()
+				if event.key == pg.K_h:
+					obj = item.Item()
+					obj.rect.center = player.rect.center
+					groups.drop_item_group.add(obj)
+			if event.key == pg.K_F4:
+				console_state = not console_state
 
-	player.control(keys_pressed, key_binds)
-	player.mouse_control(mouse_events)
-	player.mouse_control(scroll_event[0], scroll_event[1])
+
+	if not console_state:
+		player.control(keys_pressed, key_binds)
+		player.mouse_control(mouse_events)
+		player.mouse_control(scroll_event[0], scroll_event[1])
 	groups.player_group.update()
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
 	item.ball_group.update(player.rect)
@@ -109,10 +116,12 @@ while True:
 	sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
 	hud.draw_ui(screen, player, day_time, cursor.cursor)
+	console.update(screen, console_state, events, globals())
 
 	if debug_state:
 		debug.activate_debug(screen, clock, player)
 
 	pg.display.set_caption("{:.2f} FPS".format(clock.get_fps()))
 	pg.display.update()
+	#print(console.user_input)
 	clock.tick(0)
