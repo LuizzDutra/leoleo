@@ -22,7 +22,12 @@ class Item(pg.sprite.Sprite):
 class Key(Item):
 	def __init__(self, id:int):
 		super().__init__()
-		self.name = "Chave"
+		self.chave_name = "Chave "
+		self.name_dict = {0 : "Mestra", 1 : "Comum"}
+		if id in self.name_dict:
+			self.name = self.chave_name + self.name_dict[id]
+		else:
+			self.name = self.chave_name + str(id)
 		self.image = images.chave
 		self.rect = self.image.get_rect()
 		self.id = id
