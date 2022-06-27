@@ -22,7 +22,6 @@ pg.init()
 
 fullscreen = False
 screen = images.screen
-pg.display.set_caption("Oho")
 clock = pg.time.Clock()
 pg.mouse.set_visible(False)
 
@@ -121,7 +120,7 @@ while True:
 	if debug_state:
 		debug.activate_debug(screen, clock, player)
 
-	pg.display.set_caption("{:.2f} FPS".format(clock.get_fps()))
+	pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
 	pg.display.update()
 	#print(console.user_input)
 	clock.tick(0)

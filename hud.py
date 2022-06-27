@@ -40,21 +40,25 @@ class Console():
 		self.image.fill((0,0,0))
 		self.image.set_alpha(200)
 		self.user_input = ""
+		self.old_user_input = ""
 		self.input_list = []
 		self.state = False
 		self.input = ""
 		self.input_select = 0
 		self.input_loop = False
+		self.str_select = None
 
 	def draw(self, screen:pg.display.set_mode):
 		self.arrow_image = fontes.arial.render(">>", True, (255,255,255))
-		self.input_image = fontes.arial.render(self.user_input, True, (255,255,255))
-		self.bar_image = fontes.arial.render("|", True, (255,255,255))
+		self.input_image = [fontes.arial.render(self.user_input[:self.str_select], True, (255,255,255)), fontes.arial.render(self.user_input[self.str_select:], True, (255,255,255))]
+		self.bar_image = fontes.arial.render("|", True, (255,127,255))
 		screen.blit(self.image, (0,0))
 		screen.blit(self.arrow_image, (0, self.image.get_height() - 30))
-		screen.blit(self.input_image, (self.arrow_image.get_width(), self.image.get_height() - 30))
+		screen.blit(self.input_image[0], (self.arrow_image.get_width(), self.image.get_height() - 30))
+		if self.str_select != None:
+			screen.blit(self.input_image[1], (self.arrow_image.get_width() + self.input_image[0].get_width(), self.image.get_height() - 30))
 		if pg.time.get_ticks()/1000 // 0.5 % 2 == 0:
-			screen.blit(self.bar_image, (self.arrow_image.get_width() + self.input_image.get_width(), self.image.get_height()-30))
+			screen.blit(self.bar_image, (self.arrow_image.get_width() + self.input_image[0].get_width(), self.image.get_height()-30))
 		for i in range(len(self.input_list)):
 			screen.blit(fontes.smallarial.render(str(self.input_list[-i-1]), True, (255,255,255)), (0, self.image.get_height()-100 - 17*i))
 	
@@ -63,7 +67,10 @@ class Console():
 			if event.type == pg.KEYDOWN:
 				if event.key == pg.K_BACKSPACE:
 					if len(self.user_input) > 0:
-						self.user_input = self.user_input[:-1]
+						if self.str_select != None:
+							self.user_input = self.user_input[:self.str_select-1] + self.user_input[self.str_select:]
+						else:
+							self.user_input = self.user_input[:-1]
 				elif event.key == pg.K_DOWN:
 					if len(self.input_list) > 0:
 						if self.input_loop:
@@ -86,10 +93,23 @@ class Console():
 							self.input_loop = True
 							self.input_select = len(self.input_list)-1
 						self.user_input = self.input_list[self.input_select]
+				elif event.key == pg.K_LEFT:
+					if self.str_select == None:
+						self.str_select = -1
+					elif self.str_select > (-1*len(self.user_input)):
+						self.str_select -= 1
+				elif event.key == pg.K_RIGHT:
+					if self.str_select != None and self.str_select < -1:
+						self.str_select += 1
+					else:
+						self.str_select = None
 				elif event.key == pg.K_RETURN:
 					self.exec_command()
 				else:
-					self.user_input += event.unicode
+					if self.str_select == None:
+						self.user_input += event.unicode
+					else:
+						self.user_input = self.user_input[:self.str_select] + event.unicode + self.user_input[self.str_select:]
 	def exec_command(self):
 		try:
 			exec(self.user_input, self.global_dict)
@@ -99,6 +119,7 @@ class Console():
 		self.input_select = 0
 		self.input_loop = False
 		self.user_input = ""
+		self.str_select = None
 	
 	def update(self, screen, state, events, global_dict):
 		self.state = state
