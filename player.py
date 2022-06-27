@@ -148,6 +148,7 @@ class Player(pg.sprite.Sprite):
 		else:
 			self.outline = pg.Surface((0,0))
 			self.lasthp = self.hp
+			self.hit_lasthp = self.hp
 	def got_hit(self):
 		if self.hp < self.hit_lasthp:
 			self.lastdmg = pg.time.get_ticks()/1000

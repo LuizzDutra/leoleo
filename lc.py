@@ -130,7 +130,7 @@ level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
 #usado para debug, bem bugado
 def reload_level():
 	global level0
-	level0 = Image.open(os.path.join("Assets", "level0.png"), "r")
+	level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
 
 def get_pallete(image:Image.Image) -> list:
 	temp_pallete_list = image.getpalette()
