@@ -3,6 +3,9 @@ import os
 
 res = [(1280, 720), (1600, 900), (1920, 1080)]
 screen_res = res[0]
+caption_str = "Leo Leo"
+pg.display.set_caption(caption_str)
+pg.display.set_icon(pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)))
 screen = pg.display.set_mode(screen_res)
 
 #Barras de energia e vida
