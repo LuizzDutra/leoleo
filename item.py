@@ -103,8 +103,10 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.bounce_qt = 0 #quantidade de quicadas☺
 		self.bounce_limit = 2
 		self.last_bounce = 0
+		self.dead = False
 	def drop(self):
 		self.kill()
+		self.dead = True #usado para garantir que a bola não drope mais de uma vez em caso de múltiplas colisões
 		drop = Paper_Ball()
 		drop.rect.center = self.rect.center
 		drop_item_group.add(drop)
@@ -120,11 +122,12 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 				self.yspeed *= -1
 			self.bounce_qt += 1
 			self.life_time *= 0.75
-			if pg.time.get_ticks()/1000 - self.last_bounce > 0.5:
+			if pg.time.get_ticks()/1000 - self.last_bounce > 0.05:
 				sons.play_far_effect(self.rect, sons.ball_hit)
 			self.last_bounce = pg.time.get_ticks()/1000
 		else:
-			self.drop()
+			if not self.dead:
+				self.drop()
 
 
 	def update(self, player_rect):
