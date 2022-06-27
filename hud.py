@@ -43,7 +43,8 @@ class Console():
 		self.input_list = []
 		self.state = False
 		self.input = ""
-		self.input_select = -1
+		self.input_select = 0
+		self.input_loop = False
 
 	def draw(self, screen:pg.display.set_mode):
 		screen.blit(self.image, (0,0))
@@ -60,20 +61,26 @@ class Console():
 						self.user_input = self.user_input[:-1]
 				elif event.key == pg.K_DOWN:
 					if len(self.input_list) > 0:
-						if self.input_select > len(self.input_list)-1:
-							self.input_select = 0
-						if self.input_select < 0:
+						if self.input_loop:
+							if self.input_select == len(self.input_list)-1:
+								self.input_select = 0
+							else:
+								self.input_select += 1
+						else:
+							self.input_loop = True
 							self.input_select = 0
 						self.user_input = self.input_list[self.input_select]
-						self.input_select += 1
 				elif event.key == pg.K_UP:
 					if len(self.input_list) > 0:
-						if self.input_select < 0:
+						if self.input_loop:
+							if self.input_select == 0:
+								self.input_select = len(self.input_list)-1
+							else:
+								self.input_select -= 1
+						else:
+							self.input_loop = True
 							self.input_select = len(self.input_list)-1
-						if self.input_select > len(self.input_list)-1:
-							self.input_select = 0
 						self.user_input = self.input_list[self.input_select]
-						self.input_select -= 1
 				elif event.key == pg.K_RETURN:
 					self.exec_command()
 				else:
@@ -84,6 +91,8 @@ class Console():
 		except Exception as error:
 			print(error)
 		self.input_list += [self.user_input]
+		self.input_select = 0
+		self.input_loop = False
 		self.user_input = ""
 	
 	def update(self, screen, state, events, global_dict):
