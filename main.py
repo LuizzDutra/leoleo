@@ -102,7 +102,7 @@ while True:
 		player.control(keys_pressed, key_binds)
 		player.mouse_control(mouse_events)
 		player.mouse_control(scroll_event[0], scroll_event[1])
-	groups.player_group.update()
+	groups.player_group.update(screen.get_size())
 	player.get_interactable_list(groups.drop_item_group, interactable_group_list)
 	item.ball_group.update(player.rect)
 	sons.update(player.rect.center)

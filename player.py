@@ -5,6 +5,7 @@ from time import time
 from item import Item, Paper_Ball
 from groups import drop_item_group
 from utils import outline_image
+from math import degrees, atan2
 
 
 
@@ -153,7 +154,7 @@ class Player(pg.sprite.Sprite):
 		if self.hp < self.hit_lasthp:
 			self.lastdmg = pg.time.get_ticks()/1000
 			self.hit_lasthp = self.hp
-	def update(self):
+	def update(self, screen_size:tuple):
 		if self.energy > self.energy_max:
 			self.energy = self.energy_max
 		if self.hp > self.hp_max:
@@ -162,6 +163,8 @@ class Player(pg.sprite.Sprite):
 			self.dead = True
 		while len(self.inv_list) < self.inv_limit:
 			self.inv_list.append(None)
+		self.angle = -degrees(atan2(pg.mouse.get_pos()[1] - screen_size[1]/2, pg.mouse.get_pos()[0] - screen_size[0]/2)) - 90
+		self.image = pg.transform.rotate(self.sprites[0], self.angle)
 
 		self.rect.x = round(self.xpos)
 		self.rect.y = round(self.ypos)
