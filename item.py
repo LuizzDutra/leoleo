@@ -1,6 +1,7 @@
 import pygame as pg
 import images
 from math import atan2, cos, sin
+from random import randint
 from utils import rfl
 from lc import Door
 from groups import ball_group, drop_item_group
@@ -85,7 +86,11 @@ class Pacoca(Item):
 class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 	def __init__(self, player:pg.sprite.Sprite):
 		super().__init__()
-		self.image = images.bola_papel_projetil
+		self.og_image = images.bola_papel_projetil
+		self.image = self.og_image
+		#aleatoriedade pra ficar mais orgânico
+		self.rps = randint(1, 3) #rotações por segundo
+		self.angle = 0
 		self.rect = self.image.get_rect(center = player.rect.center)
 		self.speed = float(6000)
 		self.xspeed = self.speed
@@ -145,6 +150,8 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
 		self.ypos += self.n_yspeed * self.dt *self.ydir
 		self.rect.x = round(self.xpos)
 		self.rect.y = round(self.ypos)
+		self.angle += self.rps*360*self.dt
+		self.image = pg.transform.rotate(self.og_image, self.angle)
 		if pg.time.get_ticks()/1000 - self.time > self.life_time:
 			self.drop()
 			
