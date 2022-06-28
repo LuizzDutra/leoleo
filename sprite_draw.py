@@ -11,7 +11,7 @@ def sprite_draw(screen:pg.display.set_mode, camera, player, group_draw_list = []
 	i = 0
 	for group in group_draw_list:
 		for sprite in group:
-			offpos = (sprite.rect.x + camera.xoffset, sprite.rect.y + camera.yoffset)
+			offpos = (sprite.rect.centerx + camera.xoffset - sprite.image.get_width()/2, sprite.rect.centery + camera.yoffset - sprite.image.get_height()/2)
 			if offpos[0]+sprite.rect.width > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.rect.height > 0 and offpos[1] < screen.get_height():
 				i+=1
 				screen.blit(sprite.image, offpos)
