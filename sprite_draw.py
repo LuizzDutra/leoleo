@@ -11,14 +11,14 @@ def sprite_draw(screen:pg.display.set_mode, camera, player, group_draw_list = []
 	i = 0
 	for group in group_draw_list:
 		for sprite in group:
-			offpos = (sprite.rect.x + camera.xoffset, sprite.rect.y + camera.yoffset)
+			offpos = (sprite.rect.centerx + camera.xoffset - sprite.image.get_width()/2, sprite.rect.centery + camera.yoffset - sprite.image.get_height()/2)
 			if offpos[0]+sprite.rect.width > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.rect.height > 0 and offpos[1] < screen.get_height():
 				i+=1
 				screen.blit(sprite.image, offpos)
 	last_draw_quantity = i
-	
-	screen.blit(player.image, (player.rect.x + camera.xoffset, player.rect.y + camera.yoffset))
-	screen.blit(player.outline, (player.rect.x + camera.xoffset, player.rect.y + camera.yoffset))
+	player_draw_pos =  (player.rect.centerx + camera.xoffset - player.image.get_width()/2, player.rect.centery + camera.yoffset - player.image.get_height()/2)
+	screen.blit(player.image, player_draw_pos)
+	screen.blit(player.outline, player_draw_pos)
 
 	for obj in interactable_list:
 		screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))
