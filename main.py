@@ -41,6 +41,7 @@ day_time = calendario.Calendario()
 camera = Camera(player.rect, screen)
 hud = Hud(screen)
 console = Console()
+quest_tracker = quests.Quest_tracker()
 
 
 group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group]
@@ -117,6 +118,7 @@ while True:
 	hud.draw_inv(screen, player.inv_list, player.inv_select)
 	hud.draw_ui(screen, player, day_time, cursor.cursor)
 	console.update(screen, console_state, events, globals())
+	quest_tracker.update()
 
 	if debug_state:
 		debug.activate_debug(screen, clock, player)
