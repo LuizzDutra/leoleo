@@ -18,6 +18,8 @@ class Hud():
 		for i, item in enumerate(item_list):
 			if item != None:
 				screen.blit(item.image, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
+				if hasattr(item, "outline"):
+					screen.blit(item.outline, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
 				screen.blit(fontes.smallarial.render(str(item.name), True, (255,255,255), (127,127,127)), (self.inv_rect[i].x, self.inv_rect[i].y))
 
 	def draw_ui(self, screen:pg.display.set_mode, player, calendar, cursor):
