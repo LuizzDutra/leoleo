@@ -31,23 +31,45 @@ class Fetch(Quest): #tipo de quest onde se tem que pegar algum item e entregar p
         #O owner seria um npc que teria um inventario
         #Falar com o npc vai ter a opção de dar pra ele o item
         #Como não tem npc ainda eu vou apenas checkar uma lista
-    def get_owner_inv(self, owner):
-        self.owner = owner
     def check_completion(self):
         if self.target in self.owner:
             self.completed = True
-    def update(self, owner):
-        self.get_owner_inv(owner)
+    def fail(self):
+        self.target.kill()
+    def update(self):
         self.check_completion()
         self.check_fail()
 
+class Favor(Quest): #quest onde o npc pede qualquer item daquele tipo/ ex:ele quer uma paçoca, qualquer paçoca serve
+    def __init__(self, name, target_type:item.Item, time_limit, owner):
+        super().__init__()
+        self.name = name
+        self.time_limit = time_limit
+        self.target_type = target_type
+        self.owner = owner
+    def check_completion(self):
+        for obj in self.owner:
+            if isinstance(obj, self.target_type):
+                self.completed = True
+
+
 class Quest_tracker():
     def __init__(self):
-        self.started = [Quest]
-        self.completed = [Quest]
-        self.failed = [Quest]
+        self.started = []
+        self.completed = []
+        self.failed = []
     def start_quest(self, quest):
         self.started.append(quest)
+    def get_quests_name(self):
+        print("Started quests:")
+        for quest in self.started:
+            print(quest.name)
+        print("\nCompleted quests:")
+        for quest in self.completed:
+            print(quest.name)
+        print("\nFailed quests:")
+        for quest in self.failed:
+            print(quest.name)
     def update(self):
         for quest in self.started:
             quest.update()
