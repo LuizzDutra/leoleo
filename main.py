@@ -16,6 +16,7 @@ from collision import collision_check
 import debug
 from time import time
 import sons
+import quests
 print("Módulos importados")
 
 pg.init()

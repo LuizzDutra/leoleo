@@ -2,7 +2,7 @@ import pygame as pg
 import images
 from math import atan2, cos, sin
 from random import randint
-from utils import rfl
+from utils import rfl, outline_image
 from lc import Door
 from groups import ball_group, drop_item_group
 import sons
@@ -19,6 +19,19 @@ class Item(pg.sprite.Sprite):
 		print("Define the use function idiot")
 		print(type(self))
 		rfl(self, player.inv_list)
+
+class Quest_Item(pg.sprite.Sprite): #Item de quest que vai ter os scripts de quest
+	def __init__(self):
+		super().__init__()
+		self.name = "Unasigned"
+		self.image = images.errorimage
+		self.image.blit(outline_image(self.image, (0,200,0)))
+		self.rect = self.image.get_rect()
+	def use(self):
+		print("Não pode usar este item")
+	
+	def update(self):
+		pass
 
 class Key(Item):
 	def __init__(self, id:int):
