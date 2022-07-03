@@ -20,16 +20,16 @@ class Item(pg.sprite.Sprite):
 		print(type(self))
 		rfl(self, player.inv_list)
 
-class Quest_Item(pg.sprite.Sprite): #Item de quest que vai ter os scripts de quest
+class Quest_Item(Item): #Item de quest que vai ter os scripts de quest
 	def __init__(self):
 		super().__init__()
 		self.name = "Unasigned"
-		self.image = images.errorimage
-		self.image.blit(outline_image(self.image, (0,200,0)))
+		self.sprites = [images.errorimage]
+		self.image = self.sprites[0]
+		self.outline = outline_image(self.image, (0,255,0))
 		self.rect = self.image.get_rect()
-	def use(self):
+	def use(self, player:pg.sprite.Sprite):
 		print("Não pode usar este item")
-	
 	def update(self):
 		pass
 
