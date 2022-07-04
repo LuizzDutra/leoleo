@@ -1,4 +1,3 @@
-from importlib.machinery import WindowsRegistryFinder
 import pygame as pg
 from time import time
 import images

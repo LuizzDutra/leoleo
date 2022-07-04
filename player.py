@@ -1,4 +1,3 @@
-from numpy import dtype
 import pygame as pg
 import images
 from time import time
