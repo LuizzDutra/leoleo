@@ -39,28 +39,31 @@ class Hud():
 class Pop_up():
     def __init__(self, screen:pg.Surface):
         self.screen = screen
-        self.pop_up_queue = []
+        self.pop_queue = []
+        self.pop_time = []
         self.popping = False
-        self.pop_time = 2*1000
+        self.pop_delay = 1*1000
         self.pop_start = 0
-        self.pop_pos = (0,0)
+        self.pop_pos = (640,650)
     def add_pop(self, message:str):
-        self.pop_up_queue.append(message)
+        self.pop_queue.append(message)
+        self.pop_time.append(pg.time.get_ticks())
     def pop_up(self):
         if not self.popping:
-            self.pop_start = pg.time.get_ticks()
             self.popping = True
-        if pg.time.get_ticks() - self.pop_start < self.pop_time:
-            self.screen.blit(fontes.arial.render(self.pop_up_queue[0], True, (255,255,255), (10,10,10)), self.pop_pos)
-        else:
-            del self.pop_up_queue[0]
-            self.popping = False
+        for i, text in enumerate(self.pop_queue):
+            if pg.time.get_ticks() - self.pop_time[i] < self.pop_delay:
+                self.screen.blit(fontes.arial.render(text, True, (255,255,255), (10,10,10)), (self.pop_pos[0], self.pop_pos[1] - i*25))
+            else:
+                del self.pop_queue[i]
+                del self.pop_time[i]
+                self.popping = False
     def update(self):
-         if len(self.pop_up_queue) > 0:
+         if len(self.pop_queue) > 0:
             self.pop_up()
          else:
             self.popping = False
-        
+pop_up = Pop_up(images.screen)
 
 
 class Console():
