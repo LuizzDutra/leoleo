@@ -8,8 +8,8 @@ effect_volume = 0.3
 
 musica = pg.mixer.Channel(0)
 def musica_fila(channel = pg.mixer.Channel, *musicas):
-	for musica in musicas:
-		channel.queue(musica)
+    for musica in musicas:
+        channel.queue(musica)
 pg.mixer.set_reserved(0)
 
 throw = pg.mixer.Sound(os.path.join("Assets", "Sounds", "throw_sound.wav"))
@@ -25,17 +25,17 @@ bad_key = pg.mixer.Sound(os.path.join("Assets", "Sounds", "bad_key.wav"))
 player_center = (0,0)
 
 def effect_play(sound_file:pg.mixer.Sound):
-	sound_file.set_volume(effect_volume*volume)
-	pg.mixer.find_channel(True).play(sound_file)
+    sound_file.set_volume(effect_volume*volume)
+    pg.mixer.find_channel(True).play(sound_file)
 
 def play_far_effect(sound:pg.Rect, sound_file:pg.mixer.Sound):
-	distance = ((player_center[0] - sound.centerx)**2 + (player_center[1] - sound.centery)**2)**(1/2)
-	dis_vol = 1 - distance/1000
-	if dis_vol < 0:
-		dis_vol = 0
-	sound_file.set_volume(dis_vol*effect_volume*volume)
-	pg.mixer.find_channel(True).play(sound_file)
+    distance = ((player_center[0] - sound.centerx)**2 + (player_center[1] - sound.centery)**2)**(1/2)
+    dis_vol = 1 - distance/1000
+    if dis_vol < 0:
+        dis_vol = 0
+    sound_file.set_volume(dis_vol*effect_volume*volume)
+    pg.mixer.find_channel(True).play(sound_file)
 
 def update(center:tuple):
-	global player_center
-	player_center = center
+    global player_center
+    player_center = center
