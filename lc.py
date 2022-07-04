@@ -86,7 +86,7 @@ class Door(pg.sprite.Sprite):
             elif not self.locked:
                 self.lock()
         else:
-            if self.locked:
+            if self.closed:
                 sons.effect_play(sons.bad_key)
                 pop_up.add_pop("Chave errada")
 

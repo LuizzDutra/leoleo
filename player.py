@@ -40,6 +40,8 @@ class Player(pg.sprite.Sprite):
         self.dead = False
         self.pickup_range = 48
         self.interactable_list = []
+        self.iteration_delay = 50 #milisegundos
+        self.iteration_last = 0
     def control(self, keys_pressed, key_binds):
         self.dt = pg.time.get_ticks()/1000 - self.last
         self.last = pg.time.get_ticks()/1000
@@ -153,7 +155,7 @@ class Player(pg.sprite.Sprite):
         if self.hp < self.hit_lasthp:
             self.lastdmg = pg.time.get_ticks()/1000
             self.hit_lasthp = self.hp
-    def update(self, screen_size:tuple):
+    def update(self, screen_size:tuple, drop_item_group, interactable_group_list):
         if self.energy > self.energy_max:
             self.energy = self.energy_max
         if self.hp > self.hp_max:
@@ -167,6 +169,8 @@ class Player(pg.sprite.Sprite):
 
         self.rect.x = round(self.xpos)
         self.rect.y = round(self.ypos)
-
+        if pg.time.get_ticks() - self.iteration_last > self.iteration_delay:
+            self.iteration_last = pg.time.get_ticks()
+            self.get_interactable_list(drop_item_group, interactable_group_list)
         self.got_hit()
         self.dmg_blink()
