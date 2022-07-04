@@ -10,7 +10,7 @@ import item
 import calendario
 from camera import Camera
 import cursor
-from hud import Hud, Console
+from hud import Hud, Console, Pop_up
 from sprite_draw import sprite_draw
 from collision import collision_check
 import debug
@@ -40,6 +40,7 @@ day_time = calendario.Calendario()
 
 camera = Camera(player.rect, screen)
 hud = Hud(screen)
+pop_up = Pop_up(screen)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
@@ -119,6 +120,7 @@ while True:
 	hud.draw_ui(screen, player, day_time, cursor.cursor)
 	console.update(screen, console_state, events, globals())
 	quest_tracker.update()
+	pop_up.update()
 
 	if debug_state:
 		debug.activate_debug(screen, clock, player)
