@@ -133,7 +133,7 @@ while True:
 
 
 
-    pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
+    #pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
 
     #print(console.user_input)
     clock.tick(0)
