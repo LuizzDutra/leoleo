@@ -125,7 +125,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         self.last = pg.time.get_ticks()/1000
         self.bounce_qt = 0 #quantidade de quicadas☺
         self.bounce_limit = 2
-        self.bounce_delay = 0.1
+        self.bounce_delay = 0.01
         self.last_bounce = 0
         self.dead = False
     def drop(self):
