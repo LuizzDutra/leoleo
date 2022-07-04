@@ -32,7 +32,7 @@ player.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
 
 
 lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
-groups.door_group.add(lc.Door(9, 5, 2, 0.3, True))
+groups.door_group.add(lc.Door(9, 5, 2, 0.3))
 groups.door_group.add(lc.Door(8, 10, 0.3, 2, True, 4))
 
 day_time = calendario.Calendario()
@@ -52,8 +52,15 @@ key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right
             "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
             "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
 
+def evil_spawn():
+    obj = item.Item()
+    obj.rect.center = player.rect.center
+    groups.drop_item_group.add(obj)
+
 console_state = False
 debug_state = False
+render_delay = 10 #milisegundos
+render_last = 0
 while True:
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()
@@ -92,10 +99,6 @@ while True:
                     for i, obj in enumerate(player.inv_list):
                         if obj == None:
                             player.inv_list[i] = item.Paper_Ball()
-                if event.key == pg.K_h:
-                    obj = item.Item()
-                    obj.rect.center = player.rect.center
-                    groups.drop_item_group.add(obj)
             if event.key == pg.K_F4:
                 console_state = not console_state
 
@@ -104,8 +107,7 @@ while True:
         player.control(keys_pressed, key_binds)
         player.mouse_control(mouse_events)
         player.mouse_control(scroll_event[0], scroll_event[1])
-    groups.player_group.update(screen.get_size())
-    player.get_interactable_list(groups.drop_item_group, interactable_group_list)
+    groups.player_group.update(screen.get_size(), groups.drop_item_group, interactable_group_list)
     item.ball_group.update(player.rect)
     sons.update(player.rect.center)
 
@@ -114,17 +116,24 @@ while True:
     camera.update(player.rect.center, screen)
     collision_check(player, collision_group_list)
 
-    sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
-    hud.draw_inv(screen, player.inv_list, player.inv_select)
-    hud.draw_ui(screen, player, day_time, cursor.cursor)
+    if pg.time.get_ticks() - render_last > render_delay:
+        render_last = pg.time.get_ticks()
+        sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
+        hud.draw_inv(screen, player.inv_list, player.inv_select)
+        hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
+        pop_up.update()
+        if debug_state:
+            debug.activate_debug(screen, clock, player)
+        pg.display.update()
+
+
     console.update(screen, console_state, events, globals())
     quest_tracker.update()
-    pop_up.update()
 
-    if debug_state:
-        debug.activate_debug(screen, clock, player)
+
+
 
     pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
-    pg.display.update()
+
     #print(console.user_input)
     clock.tick(0)
