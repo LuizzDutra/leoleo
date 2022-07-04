@@ -36,6 +36,33 @@ class Hud():
 		screen.blit(fontes.arial.render(str(player.money), True, (0, 200, 0)), (screen.get_width()-80, 85))
 		screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 
+class Pop_up():
+    def __init__(self, screen:pg.Surface):
+        self.screen = screen
+        self.pop_up_queue = []
+        self.popping = False
+        self.pop_time = 2*1000
+        self.pop_start = 0
+        self.pop_pos = (0,0)
+    def add_pop(self, message:str):
+        self.pop_up_queue.append(message)
+    def pop_up(self):
+        if not self.popping:
+            self.pop_start = pg.time.get_ticks()
+            self.popping = True
+        if pg.time.get_ticks() - self.pop_start < self.pop_time:
+            self.screen.blit(fontes.arial.render(self.pop_up_queue[0], True, (255,255,255), (10,10,10)), self.pop_pos)
+        else:
+            del self.pop_up_queue[0]
+            self.popping = False
+    def update(self):
+         if len(self.pop_up_queue) > 0:
+            self.pop_up()
+         else:
+            self.popping = False
+        
+
+
 class Console():
 	def __init__(self):
 		self.image = pg.Surface((images.screen.get_width(), images.screen.get_height()/3))
