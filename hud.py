@@ -53,7 +53,8 @@ class Pop_up():
             self.popping = True
         for i, text in enumerate(self.pop_queue):
             if pg.time.get_ticks() - self.pop_time[i] < self.pop_delay:
-                self.screen.blit(fontes.arial.render(text, True, (255,255,255), (10,10,10)), (self.pop_pos[0], self.pop_pos[1] - i*25))
+                blit_image = fontes.arial.render(text, True, (255,255,255), (10,10,10))
+                self.screen.blit(blit_image, (self.pop_pos[0] - blit_image.get_width()/2, self.pop_pos[1] - i*25))
             else:
                 del self.pop_queue[i]
                 del self.pop_time[i]
