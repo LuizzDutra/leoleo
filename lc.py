@@ -2,6 +2,7 @@ from importlib.machinery import WindowsRegistryFinder
 import pygame as pg
 from time import time
 import images
+from hud import pop_up
 import sons
 import groups
 from PIL import Image
@@ -88,11 +89,13 @@ class Door(pg.sprite.Sprite):
 		else:
 			if self.locked:
 				sons.effect_play(sons.bad_key)
+				pop_up.add_pop("Chave errada")
 
 	def interact(self, rect):
 		if time() - self.open_delta > self.open_time:
 			if self.locked:
 				sons.play_far_effect(self.rect, sons.locked)
+				pop_up.add_pop("Trancada")
 			if not self.locked:
 				self.open_delta = time()
 				if self.closed:
