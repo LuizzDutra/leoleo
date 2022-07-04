@@ -125,6 +125,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         self.last = pg.time.get_ticks()/1000
         self.bounce_qt = 0 #quantidade de quicadas☺
         self.bounce_limit = 2
+        self.bounce_delay = 0.1
         self.last_bounce = 0
         self.dead = False
     def drop(self):
@@ -134,20 +135,20 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         drop.rect.center = self.rect.center
         drop_item_group.add(drop)
     def bounce(self, rect:pg.Rect):
-        if self.bounce_qt < self.bounce_limit:
-            if abs(rect.bottom - self.rect.top) < self.yspeed*self.dt+5:
-                self.yspeed *= -1
-            if abs(rect.left - self.rect.right) < self.xspeed*self.dt+5:
-                self.xspeed *= -1
-            if abs(rect.right - self.rect.left) < self.xspeed*self.dt+5:
-                self.xspeed *= -1
-            if abs(rect.top - self.rect.bottom) < self.yspeed*self.dt+5:
-                self.yspeed *= -1
-            self.bounce_qt += 1
-            self.life_time *= 0.75
-            if pg.time.get_ticks()/1000 - self.last_bounce > 0.05:
+        if self.bounce_qt < self.bounce_limit: 
+            if pg.time.get_ticks()/1000 - self.last_bounce > self.bounce_delay:
+                self.last_bounce = pg.time.get_ticks()/1000
+                if abs(rect.bottom - self.rect.top) < self.yspeed*self.dt+5:
+                    self.yspeed *= -1
+                if abs(rect.left - self.rect.right) < self.xspeed*self.dt+5:
+                    self.xspeed *= -1
+                if abs(rect.right - self.rect.left) < self.xspeed*self.dt+5:
+                    self.xspeed *= -1
+                if abs(rect.top - self.rect.bottom) < self.yspeed*self.dt+5:
+                    self.yspeed *= -1
+                self.bounce_qt += 1
+                self.life_time *= 0.75
                 sons.play_far_effect(self.rect, sons.ball_hit)
-            self.last_bounce = pg.time.get_ticks()/1000
         else:
             if not self.dead:
                 self.drop()
