@@ -8,7 +8,7 @@ from PIL import Image
 import os
 from random import randint
 #Decidi que a escala vai ser 64p:1m
-gs = 32 #cada grid tem meio metro
+gs = 16 #cada grid tem meio metro
 
 #paleta vai estar aqui e não no mapa
 BLACK = (0,0,0) #parede0
@@ -29,14 +29,28 @@ class Wall(pg.sprite.Sprite):
         self.height = self.corner[1] - pos[1]*gs
         self.rect = pg.Rect((pos[0]*gs, pos[1]*gs), (self.width, self.height))
         #imagem em forma de tiles
-        self.blit_image = images.wall_list[id]
-        self.blit_image_size = self.blit_image.get_size()
+        self.blit_images = images.wall_list[id]
+        self.blit_h_image = self.blit_images[0] #parede horizontal
+        self.blit_v_image = pg.transform.rotate(self.blit_images[0], 90) #parede vertical
+        self.blit_image_size = self.blit_images[0].get_size()
         self.image = pg.Surface((self.rect.width, self.rect.height))
-        for x in range(0, int(self.image.get_size()[0]/self.blit_image_size[0])):
-            self.image.blit(self.blit_image, (x*self.blit_image_size[0], 0))
-        for y in range(0, int(self.image.get_size()[1]/self.blit_image_size[1])):
-            self.image.blit(self.blit_image, (0, y*self.blit_image_size[1]))
-        del self.blit_image
+        if self.width > self.height:
+            range_max = int(self.image.get_size()[0]/self.blit_image_size[0])
+            for x in range(0, range_max):
+                if x == range_max-1 or x == 0:
+                    self.image.blit(self.blit_images[1], (x*self.blit_image_size[0], 0))
+                else:
+                    self.image.blit(self.blit_h_image, (x*self.blit_image_size[0], 0))
+        if self.width < self.height:
+            range_max = int(self.image.get_size()[1]/self.blit_image_size[1])
+            for y in range(0, range_max):
+                if y == range_max - 1 or y == 0:
+                    self.image.blit(self.blit_images[1], (0, y*self.blit_image_size[1]))
+                else:
+                    self.image.blit(self.blit_v_image, (0, y*self.blit_image_size[1]))
+        else:
+            self.image.blit(self.blit_images[1], (0, 0))
+        del self.blit_images
         del self.blit_image_size
         del self.width
         del self.height
@@ -141,6 +155,24 @@ def get_pallete(image:Image.Image) -> list:
         pallete_list.append((temp_pallete_list[i], temp_pallete_list[i+1],temp_pallete_list[i+2]))
     return pallete_list
 
+def draw_level(level_image, part_quantity):
+    level_surface = Level_sprite(level_image)
+    level_surface.image.fill((50,50,50))
+    for ground in groups.ground_group:
+        level_surface.image.blit(ground.image, ground.rect.topleft)
+    for wall in groups.wall_group:
+        level_surface.image.blit(wall.image, wall.rect.topleft)
+
+    level_width = level_surface.image.get_width()
+    level_height = level_surface.image.get_height()
+    rcq = int(part_quantity**(1/2)) #quantidades de colunas/linhas no quadrado
+    i = 0
+    for y in range(0,rcq):
+        for x in range(0,rcq):
+            temp_surface = pg.Surface((level_width/rcq, level_height/rcq))
+            temp_surface.blit(level_surface.image, (-x*(level_width/rcq), -y*(level_height/rcq)))
+            groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
+            i += 1
 
 def level_construct(level_image:Image.Image, part_quantity=25):
     print("Carrengando mapa")
@@ -152,8 +184,6 @@ def level_construct(level_image:Image.Image, part_quantity=25):
     for ground in groups.ground_group:
         ground.kill()
     level_size = level_image.size
-    level_surface = Level_sprite(level_image)
-    level_surface.image.fill((50,50,50))
     pallete = get_pallete(level_image)
     check_list = []
     wide_check = False
@@ -166,7 +196,10 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                 wide_check = False
                 wall_cords = []
                 if color in wall_colors_id:
-                    wall_cords.append((x, y))
+                    if (x-1, y) in check_list:
+                        wall_cords.append((x-1, y))
+                    else:
+                        wall_cords.append((x, y))
                     wall_cords.append((x, y))
                     for i in range(x+1, level_size[0]):
                         if pallete[level_image.getpixel((i, y))] == color:
@@ -184,7 +217,10 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                 wall_cords = []
                 if color in wall_colors_id:
                     if (x,y) not in check_list:
-                        wall_cords.append((x, y))
+                        if (x, y-1) in check_list:
+                            wall_cords.append((x, y-1))
+                        else:
+                            wall_cords.append((x,y))
                         wall_cords.append((x,y))
                         for i in range(y+1, level_size[0]):
                             if pallete[level_image.getpixel((x, i))] == color:
@@ -202,21 +238,8 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                 if color in ground_colors_id:
                     groups.ground_group.add(Ground((x, y), ground_colors_id[color]))
 
-    for ground in groups.ground_group:
-        level_surface.image.blit(ground.image, ground.rect.topleft)
-    for wall in groups.wall_group:
-        level_surface.image.blit(wall.image, wall.rect.topleft)
+    draw_level(level0, part_quantity)
 
-    level_width = level_surface.image.get_width()
-    level_height = level_surface.image.get_height()
-    rcq = int(part_quantity**(1/2)) #quantidades de colunas/linhas no quadrado
-    i = 0
-    for y in range(0,rcq):
-        for x in range(0,rcq):
-            temp_surface = pg.Surface((level_width/rcq, level_height/rcq))
-            temp_surface.blit(level_surface.image, (-x*(level_width/rcq), -y*(level_height/rcq)))
-            groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
-            i += 1
     print("Mapa particionado em {} partes".format(i))
     print(len(groups.wall_group.sprites()),"paredes")
     end = time()
