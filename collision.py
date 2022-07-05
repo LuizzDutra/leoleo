@@ -8,14 +8,13 @@ def collision_check(player:pg.sprite.Sprite, collision_group_list):
         for player in col_dict:
             for obj in col_dict[player]:
                 if abs(obj.rect.bottom - player.rect.top) < player.yspeed*player.dt+5:
-                    player.ypos = obj.rect.bottom
+                    player.ypos += abs(player.yvel)*player.dt
                 if abs(obj.rect.left - player.rect.right) < player.xspeed*player.dt+5:
-                    player.xpos = obj.rect.left - player.rect.width
+                    player.xpos -= abs(player.xvel)*player.dt
                 if abs(obj.rect.right - player.rect.left) < player.xspeed*player.dt+5:
-                    player.xpos = obj.rect.right
+                    player.xpos += abs(player.xvel)*player.dt
                 if abs(obj.rect.top - player.rect.bottom) < player.yspeed*player.dt+5:
-                    player.ypos = obj.rect.top - player.rect.height
-                    
+                    player.ypos -= abs(player.yvel)*player.dt
     #colisão bola/parede -> https://www.youtube.com/watch?v=1_H7InPMjaY
     for group in collision_group_list:
         col_dict2 = pg.sprite.groupcollide(groups.ball_group, group, False, False)

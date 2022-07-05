@@ -59,10 +59,8 @@ class Player(pg.sprite.Sprite):
         if keys_pressed[key_binds["slow_walk"]]:
             self.xvel //= 2
             self.yvel //= 2
-        self.xvel *= self.dt
-        self.yvel *= self.dt
-        self.xpos += self.xvel
-        self.ypos += self.yvel
+        self.xpos += self.xvel * self.dt
+        self.ypos += self.yvel * self.dt
         if keys_pressed[key_binds["use"]]:
             if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
                 self.use_item(self.inv_list[self.inv_select])
