@@ -22,8 +22,7 @@ energy_bar = pg.Surface((bar_width, bar_height))
 energy_bar.fill((255,255,0))
 
 
-player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)).convert()
-player_image.set_colorkey((0,0,0))
+player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)).convert_alpha()
 inv_select = pg.image.load(os.path.join("Assets", "Images", "Hud", "inv_slots.png")).convert()
 inv_select.set_colorkey(default_colorkey)
 inv_slot_selected = pg.image.load(os.path.join("Assets", "Images", "Hud", "inv_slots_selected.png")).convert()
@@ -36,11 +35,12 @@ bola_papel = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "
 bola_papel.set_colorkey(default_colorkey)
 bola_papel_projetil =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Items", "ball.png")), (16,16)).convert()
 bola_papel_projetil.set_colorkey(default_colorkey)
-wall = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "wall.png")), (32,32)).convert()
-brick = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "brick.png")), (32,32)).convert()
-grass =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "grass.png")), (32,32)).convert()
-concrete =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "concrete.png")), (32,32)).convert()
-wall_list = [wall, brick]
+wall = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "wall.png")), (16,16)).convert()
+wall_beam = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "wall_beam.png")), (16,16)).convert()
+brick = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "brick.png")), (16,16)).convert()
+grass =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "grass.png")), (16,16)).convert()
+concrete =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "concrete.png")), (16,16)).convert()
+wall_list = [(wall, wall_beam), (brick, brick)]
 ground_list = [grass, concrete]
 door = pg.image.load(os.path.join("Assets", "Images", "Textures", "door.png")).convert()
 chave = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Items", "chave.png")), (48,48)).convert()
