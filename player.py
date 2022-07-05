@@ -1,3 +1,4 @@
+from code import interact
 import pygame as pg
 import images
 from time import time
@@ -141,6 +142,7 @@ class Player(pg.sprite.Sprite):
             else:
                 #print(type)
                 obj.interact(self.rect)
+            self.interactable_list.remove(obj)
     def dmg_blink(self):
         if pg.time.get_ticks()/1000 - self.lastdmg < 1:
             if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
