@@ -35,13 +35,24 @@ bola_papel = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "
 bola_papel.set_colorkey(default_colorkey)
 bola_papel_projetil =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Items", "ball.png")), (16,16)).convert()
 bola_papel_projetil.set_colorkey(default_colorkey)
+#paleta vai estar aqui e não no mapa
+BLACK = (0,0,0) #parede0
+RED = (255,0,0) #parede1
+GREEN = (0,255,0) #grama
+BLUE = (0,0,255) #piso
+YELLOW = (255,255,0)
+PINK = (255,0,255)
+CYAN = (0,255,255)
 wall = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "wall.png")), (16,16)).convert()
 wall_beam = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "wall_beam.png")), (16,16)).convert()
 brick = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "brick.png")), (16,16)).convert()
 grass =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "grass.png")), (16,16)).convert()
 concrete =  pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Textures", "concrete.png")), (16,16)).convert()
-wall_list = [(wall, wall_beam), (brick, brick)]
-ground_list = [grass, concrete]
+
+wall_list = {BLACK:(wall, wall_beam), RED:(brick, brick)}
+ground_list = {GREEN:grass, BLUE:concrete}
+
+
 door = pg.image.load(os.path.join("Assets", "Images", "Textures", "door.png")).convert()
 chave = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Items", "chave.png")), (48,48)).convert()
 chave.set_colorkey(default_colorkey)

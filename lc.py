@@ -9,18 +9,6 @@ import os
 from random import randint
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
-
-#paleta vai estar aqui e não no mapa
-BLACK = (0,0,0) #parede0
-RED = (255,0,0) #parede1
-GREEN = (0,255,0) #grama
-BLUE = (0,0,255) #piso
-YELLOW = (255,255,0)
-PINK = (255,0,255)
-CYAN = (0,255,255)
-wall_colors_id = {BLACK:0, RED:1}
-ground_colors_id = {GREEN:0, BLUE:1}
-
 class Wall(pg.sprite.Sprite):
     def __init__(self, pos:tuple, pos2:tuple, id):
         super().__init__()
@@ -66,7 +54,7 @@ class Ground(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
+    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True, mirror = False):
         super().__init__()
         if width > height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
@@ -77,6 +65,11 @@ class Door(pg.sprite.Sprite):
         if width == height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
             self.vertical = True
+        self.mirror = mirror
+        self.mirror_factor = 1
+        if self.mirror:
+            self.image = pg.transform.rotate(self.image, 180)
+            self.mirror_factor = -1
         self.rect = self.image.get_rect(x = x*gs, y = y*gs)
         self.open_time = 0.5
         self.open_delta = 0
@@ -103,6 +96,36 @@ class Door(pg.sprite.Sprite):
             if self.closed:
                 sons.effect_play(sons.bad_key)
                 pop_up.add_pop("Chave errada")
+    def open_close(self):
+        self.open_delta = time()
+        if self.closed:
+            if self.vertical:
+                self.image = pg.transform.rotate(self.image, 90 * self.mirror_factor)
+            if not self.vertical:
+                self.image = pg.transform.rotate(self.image, -90 * self.mirror_factor)
+            sons.play_far_effect(self.rect, sons.open_dr)
+            if self.mirror:
+                if self.vertical:
+                    self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+                if not self.vertical:
+                    self.rect = self.image.get_rect(topright = self.rect.topright)
+            if not self.mirror:
+                self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        if not self.closed:
+            if self.vertical:
+                self.image = pg.transform.rotate(self.image, -90 * self.mirror_factor)
+            if not self.vertical:
+                self.image = pg.transform.rotate(self.image, 90 * self.mirror_factor)
+            if self.mirror:
+                if self.vertical:
+                    self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+                if not self.vertical:
+                    self.rect = self.image.get_rect(topright = self.rect.topright)
+            if not self.mirror:
+                self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
+
+            sons.play_far_effect(self.rect, sons.cls_dr)
+        self.closed = not self.closed
 
     def interact(self, rect):
         if time() - self.open_delta > self.open_time:
@@ -110,21 +133,7 @@ class Door(pg.sprite.Sprite):
                 sons.play_far_effect(self.rect, sons.locked)
                 pop_up.add_pop("Trancada")
             if not self.locked:
-                self.open_delta = time()
-                if self.closed:
-                    if self.vertical:
-                        self.image = pg.transform.rotate(self.image, 90)
-                    if not self.vertical:
-                        self.image = pg.transform.rotate(self.image, -90)
-                    sons.play_far_effect(self.rect, sons.open_dr)
-                if not self.closed:
-                    if self.vertical:
-                        self.image = pg.transform.rotate(self.image, -90)
-                    if not self.vertical:
-                        self.image = pg.transform.rotate(self.image, 90)
-                    sons.play_far_effect(self.rect, sons.cls_dr)
-                self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
-                self.closed = not self.closed
+                self.open_close()
 
 class Level_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
@@ -195,7 +204,7 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                 #paredes horizontais
                 wide_check = False
                 wall_cords = []
-                if color in wall_colors_id:
+                if color in images.wall_list:
                     if (x-1, y) in check_list:
                         wall_cords.append((x-1, y))
                     else:
@@ -211,11 +220,11 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                         else:
                             break
                     if (x,y) in check_list:
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
                 #paredes verticais
                 wide_check = False
                 wall_cords = []
-                if color in wall_colors_id:
+                if color in images.wall_list:
                     if (x,y) not in check_list:
                         if (x, y-1) in check_list:
                             wall_cords.append((x, y-1))
@@ -231,12 +240,12 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                                     wide_check = True
                             else:
                                 break
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
 
 
 
-                if color in ground_colors_id:
-                    groups.ground_group.add(Ground((x, y), ground_colors_id[color]))
+                if color in images.ground_list:
+                    groups.ground_group.add(Ground((x, y), color))
 
     draw_level(level0, part_quantity)
 
