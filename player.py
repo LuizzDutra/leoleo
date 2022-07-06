@@ -99,7 +99,7 @@ class Player(pg.sprite.Sprite):
                 else:
                     self.inv_select -= 1
 
-    def get_interactable_list(self, item_group:pg.sprite.Group, interactable_group_list = []):
+    def get_interactable_list(self, interactable_group_list = []):
         self.interactable_list = [] #reset da lista
         #interação do personagem/ for loop usado para filtrar os interagiveis por distância.
         #Objetos no alcançe são colocados em uma lista de interação
@@ -109,10 +109,7 @@ class Player(pg.sprite.Sprite):
                         if abs(self.rect.centerx - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - obj.rect.center[1]) < self.pickup_range/i:
                             if len(self.interactable_list) == 0:
                                 self.interactable_list.append(obj)
-            for item in item_group:
-                if abs(self.rect.centerx - item.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - item.rect.center[1]) < self.pickup_range/i:
-                    if len(self.interactable_list) == 0:
-                        self.interactable_list.append(item)
+                                return
 
 
     def add_item(self, item:pg.sprite.Sprite):
@@ -155,7 +152,7 @@ class Player(pg.sprite.Sprite):
         if self.hp < self.hit_lasthp:
             self.lastdmg = pg.time.get_ticks()/1000
             self.hit_lasthp = self.hp
-    def update(self, screen_size:tuple, drop_item_group, interactable_group_list):
+    def update(self, screen_size:tuple, interactable_group_list):
         if self.energy > self.energy_max:
             self.energy = self.energy_max
         if self.hp > self.hp_max:
@@ -171,6 +168,6 @@ class Player(pg.sprite.Sprite):
         self.rect.y = round(self.ypos)
         if pg.time.get_ticks() - self.iteration_last > self.iteration_delay:
             self.iteration_last = pg.time.get_ticks()
-            self.get_interactable_list(drop_item_group, interactable_group_list)
+            self.get_interactable_list(interactable_group_list)
         self.got_hit()
         self.dmg_blink()

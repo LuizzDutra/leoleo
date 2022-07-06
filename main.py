@@ -48,7 +48,7 @@ quest_tracker = quests.Quest_tracker()
 
 group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group]
 collision_group_list = [groups.wall_group, groups.door_group]
-interactable_group_list = [groups.door_group]
+interactable_group_list = [groups.drop_item_group, groups.door_group]
 
 key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
             "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
@@ -109,7 +109,7 @@ while True:
         player.control(keys_pressed, key_binds)
         player.mouse_control(mouse_events)
         player.mouse_control(scroll_event[0], scroll_event[1])
-    groups.player_group.update(screen.get_size(), groups.drop_item_group, interactable_group_list)
+    groups.player_group.update(screen.get_size(), interactable_group_list)
     item.ball_group.update(player.rect)
     sons.update(player.rect.center)
 
