@@ -66,7 +66,7 @@ class Ground(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True):
+    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True, mirror = False):
         super().__init__()
         if width > height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
@@ -77,6 +77,11 @@ class Door(pg.sprite.Sprite):
         if width == height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
             self.vertical = True
+        self.mirror = mirror
+        self.mirror_factor = 1
+        if self.mirror:
+            self.image = pg.transform.rotate(self.image, 180)
+            self.mirror_factor = -1
         self.rect = self.image.get_rect(x = x*gs, y = y*gs)
         self.open_time = 0.5
         self.open_delta = 0
@@ -103,6 +108,36 @@ class Door(pg.sprite.Sprite):
             if self.closed:
                 sons.effect_play(sons.bad_key)
                 pop_up.add_pop("Chave errada")
+    def open_close(self):
+        self.open_delta = time()
+        if self.closed:
+            if self.vertical:
+                self.image = pg.transform.rotate(self.image, 90 * self.mirror_factor)
+            if not self.vertical:
+                self.image = pg.transform.rotate(self.image, -90 * self.mirror_factor)
+            sons.play_far_effect(self.rect, sons.open_dr)
+            if self.mirror:
+                if self.vertical:
+                    self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+                if not self.vertical:
+                    self.rect = self.image.get_rect(topright = self.rect.topright)
+            if not self.mirror:
+                self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        if not self.closed:
+            if self.vertical:
+                self.image = pg.transform.rotate(self.image, -90 * self.mirror_factor)
+            if not self.vertical:
+                self.image = pg.transform.rotate(self.image, 90 * self.mirror_factor)
+            if self.mirror:
+                if self.vertical:
+                    self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+                if not self.vertical:
+                    self.rect = self.image.get_rect(topright = self.rect.topright)
+            if not self.mirror:
+                self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
+
+            sons.play_far_effect(self.rect, sons.cls_dr)
+        self.closed = not self.closed
 
     def interact(self, rect):
         if time() - self.open_delta > self.open_time:
@@ -110,21 +145,7 @@ class Door(pg.sprite.Sprite):
                 sons.play_far_effect(self.rect, sons.locked)
                 pop_up.add_pop("Trancada")
             if not self.locked:
-                self.open_delta = time()
-                if self.closed:
-                    if self.vertical:
-                        self.image = pg.transform.rotate(self.image, 90)
-                    if not self.vertical:
-                        self.image = pg.transform.rotate(self.image, -90)
-                    sons.play_far_effect(self.rect, sons.open_dr)
-                if not self.closed:
-                    if self.vertical:
-                        self.image = pg.transform.rotate(self.image, -90)
-                    if not self.vertical:
-                        self.image = pg.transform.rotate(self.image, 90)
-                    sons.play_far_effect(self.rect, sons.cls_dr)
-                self.rect = self.image.get_rect(x = self.rect.x, y = self.rect.y)
-                self.closed = not self.closed
+                self.open_close()
 
 class Level_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
