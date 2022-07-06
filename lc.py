@@ -9,18 +9,6 @@ import os
 from random import randint
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
-
-#paleta vai estar aqui e não no mapa
-BLACK = (0,0,0) #parede0
-RED = (255,0,0) #parede1
-GREEN = (0,255,0) #grama
-BLUE = (0,0,255) #piso
-YELLOW = (255,255,0)
-PINK = (255,0,255)
-CYAN = (0,255,255)
-wall_colors_id = {BLACK:0, RED:1}
-ground_colors_id = {GREEN:0, BLUE:1}
-
 class Wall(pg.sprite.Sprite):
     def __init__(self, pos:tuple, pos2:tuple, id):
         super().__init__()
@@ -216,7 +204,7 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                 #paredes horizontais
                 wide_check = False
                 wall_cords = []
-                if color in wall_colors_id:
+                if color in images.wall_list:
                     if (x-1, y) in check_list:
                         wall_cords.append((x-1, y))
                     else:
@@ -232,11 +220,11 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                         else:
                             break
                     if (x,y) in check_list:
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
                 #paredes verticais
                 wide_check = False
                 wall_cords = []
-                if color in wall_colors_id:
+                if color in images.wall_list:
                     if (x,y) not in check_list:
                         if (x, y-1) in check_list:
                             wall_cords.append((x, y-1))
@@ -252,12 +240,12 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                                     wide_check = True
                             else:
                                 break
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], wall_colors_id[color]))
+                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
 
 
 
-                if color in ground_colors_id:
-                    groups.ground_group.add(Ground((x, y), ground_colors_id[color]))
+                if color in images.ground_list:
+                    groups.ground_group.add(Ground((x, y), color))
 
     draw_level(level0, part_quantity)
 
