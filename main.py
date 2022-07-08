@@ -14,7 +14,7 @@ from hud import Hud, Console, pop_up
 from sprite_draw import sprite_draw
 from collision import collision_check
 import debug
-from time import sleep
+from time import sleep, perf_counter
 import sons
 import quests
 import config
@@ -66,7 +66,11 @@ render_delay = 10 #milisegundos
 render_last = 0
 config.save(player, day_time)
 config.load_s(player, day_time)
+start = 0
+end = 0
+frametime = 0
 while True:
+    start = perf_counter()
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()
     scroll_event = (0, True)
@@ -128,7 +132,7 @@ while True:
         hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
         pop_up.update()
         if debug_state:
-            debug.activate_debug(screen, clock, player)
+            debug.activate_debug(screen, player, frametime)
         pg.display.update()
 
 
@@ -137,7 +141,8 @@ while True:
 
 
 
-
+    end = perf_counter()
+    frametime = (end - start) * 1000
     #pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
     #print(console.user_input)
     sleep(0.001)
