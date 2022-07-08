@@ -38,8 +38,10 @@ def key_from_value(d:dict, v):
     for key,value in d.items():
         if value == v:
             temp_list.append(key)
-    if len(temp_list) >= 1:
+    if len(temp_list) == 1:
         return temp_list[0]
+    elif len(temp_list) == 0:
+        return None
     else:
         return temp_list
 
