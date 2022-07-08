@@ -8,9 +8,10 @@ from cryptography.fernet import Fernet
 debugger = False #essa variavel serve para guardar o save sem encriptação
 #key pra criptografação
 e_key = Fernet(b'93bHQ0LCUsjmVKWta8wK2VTJlSQqTR0SeTjDmjk6OUo=')
+extension = ".save" #extensão do save
 #salva o jogo
 def save(player, day_time):
-    with open("c_save.txt", "wb") as f:
+    with open("c_save"+extension, "wb") as f:
         save_dict = {}
 
         #info do player
@@ -58,11 +59,11 @@ def save(player, day_time):
 def load_s(player, day_time):
     #descriptografa o save
     try:
-        with open("c_save.txt", "rb") as f:
+        with open("c_save"+extension, "rb") as f:
             crypted_save = f.read()
             save = bytes.decode(e_key.decrypt(crypted_save), "utf-8")
     except:
-        print("Save inválido")
+        print("Não foi possível carregar seu save")
         return
     #tranforma save em json válido
     save_json = json.loads(save)
