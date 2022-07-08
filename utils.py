@@ -46,7 +46,7 @@ def key_from_value(d:dict, v):
         return temp_list
 
 #key do dicionario por atributo
-def kfa(d:dict, obj, attr:str):
+def key_from_atribute(d:dict, obj, attr:str):
     attr_value = getattr(obj, attr, None)
     if attr_value != None:
         d[attr] = attr_value
