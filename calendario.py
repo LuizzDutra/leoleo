@@ -1,4 +1,3 @@
-import pygame as pg
 import fontes
 from time import time
 
@@ -27,6 +26,9 @@ class Calendario():
             self.image = self.font.render(("{:.0f}:0{:.0f}".format(self.hour, self.min)), True, (255,255,0))
         else:
             self.image = self.font.render(("{:.0f}:{:.0f}".format(self.hour, self.min)), True, (255,255,0))
+    #função que vai ser usada quando carregar um save
+    def load(self, old_time):
+        self.start_time = time() - old_time/self.timescale
     def update(self):
         self.day_end_check()
         self.cur_time = (time() - self.start_time) * self.timescale
