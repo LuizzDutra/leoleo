@@ -64,8 +64,8 @@ console_state = False
 debug_state = False
 render_delay = 10 #milisegundos
 render_last = 0
-config.save(player)
-config.load_s(player)
+config.save(player, day_time)
+config.load_s(player, day_time)
 while True:
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()
@@ -90,7 +90,7 @@ while True:
                 player.xpos = 0
                 player.ypos = 0
             if event.key == pg.K_F2:
-                lc.reload_level()
+                lc.load_levels()
                 lc.level_construct(lc.level0)
             if not console_state:
                 if event.key == pg.K_l:
@@ -139,6 +139,5 @@ while True:
 
 
     #pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
-
     #print(console.user_input)
     sleep(0.001)
