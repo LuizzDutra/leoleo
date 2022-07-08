@@ -17,6 +17,7 @@ import debug
 from time import sleep
 import sons
 import quests
+import config
 print("Módulos importados")
 
 pg.init()
@@ -63,6 +64,8 @@ console_state = False
 debug_state = False
 render_delay = 10 #milisegundos
 render_last = 0
+config.save(player)
+config.load_s(player)
 while True:
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()

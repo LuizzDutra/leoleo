@@ -31,3 +31,20 @@ def no_zero(number):
     if number == 0:
         return number+1
     return number
+
+#acha key do dicionario dado um valor
+def key_from_value(d:dict, v):
+    temp_list = [] #lista temporaria para multiplos achados
+    for key,value in d.items():
+        if value == v:
+            temp_list.append(key)
+    if len(temp_list) >= 1:
+        return temp_list[0]
+    else:
+        return temp_list
+
+#key do dicionario por atributo
+def kfa(d:dict, obj, attr:str):
+    attr_value = getattr(obj, attr, None)
+    if attr_value != None:
+        d[attr] = attr_value
