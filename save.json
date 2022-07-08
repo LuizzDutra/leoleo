@@ -1,1 +1,1 @@
-{"inv": [null, null, null, null, null], "player_data": {"xpos": 29.000000000001464, "ypos": -276.10000000000093, "hp_max": 100, "hp": 40, "energy_max": 100, "energy": 30, "money": 50}}
+{"player_data": {"xpos": -16, "ypos": -16, "hp_max": 100, "hp": 90, "energy_max": 100, "energy": 100, "money": 0}, "inv": [{"2": 4}, {"3": 50}, 5, 6], "date": {"day": 1, "day_end": false, "day_duration": 34200, "cur_time": 0}}
