@@ -3,10 +3,14 @@ import json
 from utils import key_from_atribute, key_from_value
 import item
 import groups
+from cryptography.fernet import Fernet
 
+debugger = False #essa variavel serve para guardar o save sem encriptação
+#key pra criptografação
+e_key = Fernet(b'93bHQ0LCUsjmVKWta8wK2VTJlSQqTR0SeTjDmjk6OUo=')
 #salva o jogo
 def save(player, day_time):
-    with open("save.json", "w") as f:
+    with open("c_save.txt", "wb") as f:
         save_dict = {}
 
         #info do player
@@ -42,12 +46,26 @@ def save(player, day_time):
 
         save_dict["date"] = date_dict
 
-        json.dump(save_dict, f)
+        #encripta e salva 
+        crypted_save = e_key.encrypt(bytes(json.dumps(save_dict), "utf-8"))
+        f.write(crypted_save)
+
+        if debugger:
+            with open("save.json", "w") as e:
+                json.dump(save_dict, e)
 
 #carrega save
 def load_s(player, day_time):
-    f = open("save.json")
-    save_json = json.load(f)
+    #descriptografa o save
+    try:
+        with open("c_save.txt", "rb") as f:
+            crypted_save = f.read()
+            save = bytes.decode(e_key.decrypt(crypted_save), "utf-8")
+    except:
+        print("Save inválido")
+        return
+    #tranforma save em json válido
+    save_json = json.loads(save)
 
     #limpando os itens no chão
     groups.drop_item_group.empty()
