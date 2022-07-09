@@ -1,11 +1,18 @@
 #Nesse módulo estará as configurações do jogo e o sistema de save/load
+import pygame as pg
 import json
 from utils import key_from_atribute, key_from_value
 import item
 import groups
 from cryptography.fernet import Fernet
 
-debugger = False #essa variavel serve para guardar o save sem encriptação
+debugger = True #essa variavel serve para guardar o save sem encriptação
+
+#teclas
+key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
+            "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
+            "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
+
 #key pra criptografação
 e_key = Fernet(b'93bHQ0LCUsjmVKWta8wK2VTJlSQqTR0SeTjDmjk6OUo=')
 extension = ".save" #extensão do save

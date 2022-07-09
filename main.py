@@ -51,9 +51,7 @@ group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_grou
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.drop_item_group, groups.door_group]
 
-key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
-            "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
-            "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
+
 
 def evil_spawn():
     obj = item.Item()
@@ -113,7 +111,7 @@ while True:
 
 
     if not console_state:
-        player.control(keys_pressed, key_binds)
+        player.control(keys_pressed, config.key_binds)
         player.mouse_control(mouse_events)
         player.mouse_control(scroll_event[0], scroll_event[1])
     groups.player_group.update(screen.get_size(), interactable_group_list)
