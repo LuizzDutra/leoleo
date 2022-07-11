@@ -60,10 +60,10 @@ def evil_spawn():
 
 console_state = False
 debug_state = False
-render_delay = 10 #milisegundos
-render_last = 0
-config.save(player, day_time)
+#config.save(player, day_time) ##debug
 config.load_s(player, day_time)
+#config.save_cfg() ##debug
+config.load_cfg()
 start = 0
 end = 0
 frametime = 0
@@ -75,13 +75,16 @@ while True:
     events = pg.event.get()
     for event in events:
         if event.type == pg.QUIT:
+            config.save(player, day_time)
+            config.save_cfg()
             pg.quit()
             sys.exit()
         if event.type == pg.MOUSEWHEEL:
             scroll_event = (event.y, True)
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
-                print("bye")
+                config.save(player, day_time)
+                config.save_cfg()
                 pg.quit()
                 sys.exit()
             if event.key == pg.K_F11:
@@ -123,8 +126,8 @@ while True:
     camera.update(player.rect.center, screen)
     collision_check(player, collision_group_list)
 
-    if pg.time.get_ticks() - render_last > render_delay:
-        render_last = pg.time.get_ticks()
+    if pg.time.get_ticks() - config.render_last > config.render_delay:
+        config.render_last = pg.time.get_ticks()
         sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
         hud.draw_inv(screen, player.inv_list, player.inv_select)
         hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
