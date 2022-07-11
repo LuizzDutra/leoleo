@@ -88,7 +88,7 @@ while True:
                 pg.quit()
                 sys.exit()
             if event.key == pg.K_F11:
-                pg.display.toggle_fullscreen()
+                config.set_res(toggle= True) #fullscreen e janela
             if event.key == pg.K_F3:
                 debug_state = not debug_state
             if event.key == pg.K_F1:
