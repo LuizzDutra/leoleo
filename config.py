@@ -15,6 +15,22 @@ debugger = True #essa variavel serve para guardar o save sem encriptação
 render_delay = 5 #milisegundos
 render_last = 0
 
+#resoluções
+res_list = [(1280, 720), (1920, 1080)]
+res = res_list[0]
+fullscr = False
+
+def set_res(toggle = False):
+    global fullscr
+    global res
+    if toggle:
+        fullscr = not fullscr
+    if fullscr:
+        pg.display.set_mode(res, pg.FULLSCREEN)
+    if not fullscr:
+        pg.display.set_mode(res)
+
+
 #teclas
 key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
             "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
@@ -117,7 +133,7 @@ def load_s(player, day_time):
 def save_cfg():
 
     #lista para todas as variáveis de cfg que serão salvas
-    save_list = ["key_binds", "render_delay"]
+    save_list = ["key_binds", "render_delay", "res", "fullscr"]
 
     with open("config.json", "w") as f:
         save_dict = {}
@@ -145,5 +161,7 @@ def load_cfg():
             global_dict[key] = value 
         else:
             print(f"Variável {key} não encontrada para load")
+    
+    set_res()
 
     f.close()
