@@ -1,1 +1,1 @@
-{"key_binds": {"w_foward": 119, "w_back": 115, "w_left": 97, "w_right": 100, "slow_walk": 1073742049, "use": 102, "interact": 101, "drop": 103, "slot0": 49, "slot1": 50, "slot2": 51, "slot3": 52, "slot4": 53}, "render_delay": 5}
+{"key_binds": {"w_foward": 119, "w_back": 115, "w_left": 97, "w_right": 100, "slow_walk": 1073742049, "use": 102, "interact": 101, "drop": 103, "slot0": 49, "slot1": 50, "slot2": 51, "slot3": 52, "slot4": 53}, "render_delay": 5, "res": [1280, 720], "fullscr": false}
