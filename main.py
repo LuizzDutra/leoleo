@@ -115,8 +115,8 @@ while True:
 
     if not console_state:
         player.control(keys_pressed, config.key_binds)
-        player.mouse_control(mouse_events)
-        player.mouse_control(scroll_event[0], scroll_event[1])
+        player.mouse_control(mouse_events, config.key_binds)
+        player.mouse_control(scroll_event[0], config.key_binds,scroll_event[1])
     groups.player_group.update(screen.get_size(), interactable_group_list)
     item.ball_group.update(player.rect)
     sons.update(player.rect.center)

@@ -81,9 +81,9 @@ class Player(pg.sprite.Sprite):
             self.inv_select = 3
         if keys_pressed[key_binds["slot4"]]:
             self.inv_select = 4
-    def mouse_control(self, mouse_events, wheel=False):
+    def mouse_control(self, mouse_events, key_binds ,wheel=False):
         if not wheel:
-            if mouse_events[0]:#botão esquerdo
+            if mouse_events[key_binds["left_click"]]:#botão esquerdo
                 if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
                     self.use_item(self.inv_list[self.inv_select])
                     self.last_use = pg.time.get_ticks()/1000
