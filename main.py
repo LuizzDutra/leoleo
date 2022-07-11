@@ -14,9 +14,10 @@ from hud import Hud, Console, pop_up
 from sprite_draw import sprite_draw
 from collision import collision_check
 import debug
-from time import sleep
+from time import sleep, perf_counter
 import sons
 import quests
+import config
 print("Módulos importados")
 
 pg.init()
@@ -50,9 +51,7 @@ group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_grou
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.drop_item_group, groups.door_group]
 
-key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
-            "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
-            "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
+
 
 def evil_spawn():
     obj = item.Item()
@@ -61,22 +60,31 @@ def evil_spawn():
 
 console_state = False
 debug_state = False
-render_delay = 10 #milisegundos
-render_last = 0
+#config.save(player, day_time) ##debug
+config.load_s(player, day_time)
+#config.save_cfg() ##debug
+config.load_cfg()
+start = 0
+end = 0
+frametime = 0
 while True:
+    start = perf_counter()
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()
     scroll_event = (0, True)
     events = pg.event.get()
     for event in events:
         if event.type == pg.QUIT:
+            config.save(player, day_time)
+            config.save_cfg()
             pg.quit()
             sys.exit()
         if event.type == pg.MOUSEWHEEL:
             scroll_event = (event.y, True)
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
-                print("bye")
+                config.save(player, day_time)
+                config.save_cfg()
                 pg.quit()
                 sys.exit()
             if event.key == pg.K_F11:
@@ -87,7 +95,7 @@ while True:
                 player.xpos = 0
                 player.ypos = 0
             if event.key == pg.K_F2:
-                lc.reload_level()
+                lc.load_levels()
                 lc.level_construct(lc.level0)
             if not console_state:
                 if event.key == pg.K_l:
@@ -106,7 +114,7 @@ while True:
 
 
     if not console_state:
-        player.control(keys_pressed, key_binds)
+        player.control(keys_pressed, config.key_binds)
         player.mouse_control(mouse_events)
         player.mouse_control(scroll_event[0], scroll_event[1])
     groups.player_group.update(screen.get_size(), interactable_group_list)
@@ -118,14 +126,14 @@ while True:
     camera.update(player.rect.center, screen)
     collision_check(player, collision_group_list)
 
-    if pg.time.get_ticks() - render_last > render_delay:
-        render_last = pg.time.get_ticks()
+    if pg.time.get_ticks() - config.render_last > config.render_delay:
+        config.render_last = pg.time.get_ticks()
         sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
         hud.draw_inv(screen, player.inv_list, player.inv_select)
         hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
         pop_up.update()
         if debug_state:
-            debug.activate_debug(screen, clock, player)
+            debug.activate_debug(screen, player, frametime)
         pg.display.update()
 
 
@@ -134,8 +142,8 @@ while True:
 
 
 
-
+    end = perf_counter()
+    frametime = (end - start) * 1000
     #pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
-
     #print(console.user_input)
     sleep(0.001)

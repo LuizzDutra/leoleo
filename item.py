@@ -34,24 +34,24 @@ class Quest_Item(Item): #Item de quest que vai ter os scripts de quest
         pass
 
 class Key(Item):
-    def __init__(self, id:int):
+    def __init__(self, id:list):
         super().__init__()
         self.chave_name = "Chave "
         self.name_dict = {0 : "Mestra", 1 : "Comum"}
-        if id in self.name_dict:
-            self.name = self.chave_name + self.name_dict[id]
+        self.id = id
+        if self.id in self.name_dict:
+            self.name = self.chave_name + self.name_dict[self.id]
         else:
-            self.name = self.chave_name + str(id)
+            self.name = self.chave_name + str(self.id)
         self.image = images.chave
         self.rect = self.image.get_rect()
-        self.id = id
     def use(self, player):
         for obj in player.interactable_list:
             if isinstance(obj, Door):
                 obj.lock_unlock(self.id)
 
 class Money(Item):
-    def __init__(self, quantity:int):
+    def __init__(self, quantity:int = 10):
         super().__init__()
         self.name = "Dinheiro"
         self.image = images.money
@@ -170,3 +170,5 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
             self.drop()
             
 
+#ids dos itens
+item_dict = {0:Item, 1:Quest_Item, 2:Key, 3:Money, 4:Paper_Ball, 5:Manguza, 6:Pacoca}
