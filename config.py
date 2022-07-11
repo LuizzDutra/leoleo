@@ -31,10 +31,13 @@ def set_res(toggle = False):
         pg.display.set_mode(res)
 
 
-#teclas
+#teclas e mouse
 key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
             "slow_walk" : pg.K_LSHIFT, "use" : pg.K_f, "interact" : pg.K_e, "drop" : pg.K_g, 
-            "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5}
+            "slot0" : pg.K_1, "slot1" : pg.K_2, "slot2" : pg.K_3, "slot3" : pg.K_4, "slot4" : pg.K_5
+            ,"left_click" : 0, "right_click" : 2, "middle_click" : 1}
+#cliques do mouse devem seguir o formato do pg.mouse.get_pressed
+#0 : botão esquerdo, 1 : botão do meio, 2 : botão direito
 
 #key pra criptografação
 e_key = Fernet(b'93bHQ0LCUsjmVKWta8wK2VTJlSQqTR0SeTjDmjk6OUo=')
@@ -150,18 +153,26 @@ def save_cfg():
 
 #carrega configurações
 def load_cfg():
-    f = open("config.json")
-    config_json = json.load(f)
-    
-    #dicionario desse módulo para carregar as variáveis
-    global_dict = globals()
+    try:
+        with open("config.json", "r") as f:
+            config_json = json.load(f)
+            
+            #dicionario desse módulo para carregar as variáveis
+            global_dict = globals()
 
-    for key, value in config_json.items():
-        if key in global_dict:
-            global_dict[key] = value 
-        else:
-            print(f"Variável {key} não encontrada para load")
-    
+            #carregando as variaveis
+            for key, value in config_json.items():
+                if key in global_dict:
+                    #exceção das key_binds que evita a falta de teclas associadas
+                    if key == "key_binds":
+                        for i, j in global_dict[key].items(): 
+                            if i not in value:#check de variaveis que não estão presentes no load
+                                value[i] = j
+                        global_dict[key] = value
+                    else:
+                        global_dict[key] = value 
+                else:
+                    print(f"Variável {key} não encontrada para load")
+    except Exception as error:
+        print(error)
     set_res()
-
-    f.close()
