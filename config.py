@@ -23,13 +23,17 @@ fullscr = False
 def set_res(toggle = False):
     global fullscr
     global res
-    if toggle:
-        fullscr = not fullscr
-    if fullscr:
-        pg.display.set_mode(res, pg.FULLSCREEN)
-    if not fullscr:
-        pg.display.set_mode(res)
-
+    try:
+        if toggle:
+            fullscr = not fullscr
+        if fullscr:
+            pg.display.set_mode(res, pg.FULLSCREEN)
+        if not fullscr:
+            pg.display.set_mode(res)
+    except Exception as error:
+        print(error)
+        print("Resolução não disponível")
+        res = res_list[0] #reset pro valor padrão
 
 #teclas e mouse
 key_binds = {"w_foward" : pg.K_w, "w_back" : pg.K_s, "w_left" : pg.K_a, "w_right" : pg.K_d,
