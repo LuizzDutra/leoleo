@@ -7,6 +7,7 @@ import groups
 from PIL import Image
 import os
 from random import randint
+from utils import outline_image
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
 class Wall(pg.sprite.Sprite):
@@ -162,7 +163,7 @@ def get_pallete(image:Image.Image) -> list:
         pallete_list.append((temp_pallete_list[i], temp_pallete_list[i+1],temp_pallete_list[i+2]))
     return pallete_list
 
-def draw_level(level_image, part_quantity):
+def draw_level(level_image, part_quantity, outline=False):
     level_surface = Level_sprite(level_image)
     level_surface.image.fill((50,50,50))
     for ground in groups.ground_group:
@@ -178,8 +179,11 @@ def draw_level(level_image, part_quantity):
         for x in range(0,rcq):
             temp_surface = pg.Surface((level_width/rcq, level_height/rcq))
             temp_surface.blit(level_surface.image, (-x*(level_width/rcq), -y*(level_height/rcq)))
+            if outline:
+                temp_surface.blit(outline_image(temp_surface, (255,255,0)), (0,0))
             groups.level_surface_group.add(Level_partition_sprite(temp_surface, x*(level_width/rcq), y*(level_height/rcq)))
             i += 1
+    print("Mapa particionado em {}".format(i))
 
 def level_construct(level_image:Image.Image, part_quantity=25):
     print("Carrengando mapa")
@@ -247,7 +251,6 @@ def level_construct(level_image:Image.Image, part_quantity=25):
 
     draw_level(level0, part_quantity)
 
-    print("Mapa particionado em {} partes".format(i))
     print(len(groups.wall_group.sprites()),"paredes")
     end = time()
     print("Mapa Carregado")
