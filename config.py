@@ -86,7 +86,7 @@ def save(player, day_time):
 
         if debugger:
             with open("save.json", "w") as e:
-                json.dump(save_dict, e)
+                json.dump(save_dict, e, indent=2)
 
 #carrega save
 def load_s(player, day_time):
@@ -149,7 +149,7 @@ def save_cfg():
             except Exception as error:
                 print(f"Variável {error} não encontrada para save")
 
-        json.dump(save_dict, f)
+        json.dump(save_dict, f, indent=2)
 
 #carrega configurações
 def load_cfg():
