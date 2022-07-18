@@ -42,7 +42,7 @@ day_time = calendario.Calendario()
 
 
 camera = Camera(player.rect, screen)
-hud = Hud(screen)
+hud = Hud(player.inv_limit)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
