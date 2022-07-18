@@ -4,7 +4,7 @@ import images
 from time import time
 from item import Item, Paper_Ball
 from groups import drop_item_group
-from utils import outline_image
+from utils import outline_image, center_blit
 from math import degrees, atan2
 
 
@@ -14,9 +14,28 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self.sprites = []
         self.sprites.append(images.player_image)
-        self.image = self.sprites[0]
+        self.image = pg.Surface((68,68))
+        self.image.set_colorkey((0,255,0)) #colorkey para vários layers
+        self.body_surf = pg.Surface((48, 48)) #layer do corpo
+        self.leg_surf = pg.Surface((48,48)) #layer da perna
+        self.foot_sprites = []
+        self.foot_sprites.append(images.idle_foot)
+        self.foot_sprites.append(images.step1)
+        self.foot_sprites.append(images.idle_foot)
+        self.foot_sprites.append(images.step2)
+        self.anim_state = {"idle" : False, "left" : False, "right" : False, "up" : False, "down" : False}
+        #parametros das animações dos pés
+        self.foot_anim_time = 200 #time para animação #milisegundos
+        self.foot_anim_time_modifier = 1 #modificador de velocidade quanto menor mais rápido
+        self.foot_anim_last = 0 
+        self.foot_anim_frame = 0
+
+        self.cur_body_sprite = self.sprites[0]
+        self.cur_foot_sprite = self.foot_sprites[1]
         self.outline = outline_image(self.image, (255,0,0))
-        self.rect = self.image.get_rect(center = (0, 0))
+        self.angle = 0
+        self.foot_angle = 0
+        self.rect = pg.Rect((0,0), (32,32))
         self.xpos = self.rect.x
         self.ypos = self.rect.y
         self.dt = 0
@@ -111,7 +130,6 @@ class Player(pg.sprite.Sprite):
                                 self.interactable_list.append(obj)
                                 return
 
-
     def add_item(self, item:pg.sprite.Sprite):
         if len(self.inv_list) < self.inv_limit:
             item.kill()
@@ -152,6 +170,70 @@ class Player(pg.sprite.Sprite):
         if self.hp < self.hit_lasthp:
             self.lastdmg = pg.time.get_ticks()/1000
             self.hit_lasthp = self.hp
+
+    def get_anim_state(self):
+        #estado horizontal
+        if self.xvel > 0:
+            self.anim_state["right"] = True
+        else:
+            self.anim_state["right"] = False
+        if self.xvel < 0:
+            self.anim_state["left"] = True
+        else:
+            self.anim_state["left"] = False
+        #estado vertical
+        if self.yvel > 0:
+            self.anim_state["down"] = True
+        else:
+            self.anim_state["down"] = False
+        if self.yvel < 0:
+            self.anim_state["up"] = True
+        else:
+            self.anim_state["up"] = False
+        if self.yvel == 0 and self.xvel == 0:
+            self.anim_state["idle"] = True
+        else:
+            self.anim_state["idle"] = False
+
+    def get_cur_sprite(self):
+        #sprite perna
+        if not self.anim_state["idle"] and pg.time.get_ticks() - self.foot_anim_last > self.foot_anim_time * self.foot_anim_time_modifier:
+            self.foot_anim_last = pg.time.get_ticks()
+            self.foot_anim_frame = (self.foot_anim_frame + 1) % len(self.foot_sprites)
+            self.cur_foot_sprite = self.foot_sprites[self.foot_anim_frame]
+        if self.anim_state["idle"]:
+            self.cur_foot_sprite = self.foot_sprites[0]
+            self.foot_anim_frame = 0
+
+    def animate(self, screen_size):
+        self.angle = -degrees(atan2(pg.mouse.get_pos()[1] - screen_size[1]/2, pg.mouse.get_pos()[0] - screen_size[0]/2))
+        if self.angle < 0: #garante que o ângulo seja positivo
+            self.angle += 360 
+
+        #surface da perna
+        if self.anim_state["idle"]:
+            self.foot_angle = self.angle
+        else:
+            self.foot_angle = -degrees(atan2(self.yvel, self.xvel)) #ângulo de acordo com a velocidade
+            if self.foot_angle < 0: #garante que o ângulo seja positivo
+                self.foot_angle += 360 
+
+            if abs(self.foot_angle - self.angle) > 180 - 45  and abs(self.foot_angle - self.angle) < 180 + 45: #suavização para as pernas não virarem 180 para trás
+                self.foot_angle -= 180
+                self.foot_anim_time_modifier = 2
+            else:
+                self.foot_anim_time_modifier = 1
+
+        #surface da perna
+        self.leg_surf = pg.transform.rotate(self.cur_foot_sprite, self.foot_angle)
+
+        #surface do corpo
+        self.body_surf = pg.transform.rotate(self.cur_body_sprite, self.angle)
+        #processando imagem final
+        self.image.fill((0,255,0))
+        self.image.blit(self.leg_surf, center_blit(self.image.get_size(), self.leg_surf.get_size()))
+        #self.image.blit(self.body_surf, center_blit(self.image.get_size(), self.body_surf.get_size()))
+
     def update(self, screen_size:tuple, interactable_group_list):
         if self.energy > self.energy_max:
             self.energy = self.energy_max
@@ -161,8 +243,10 @@ class Player(pg.sprite.Sprite):
             self.dead = True
         while len(self.inv_list) < self.inv_limit:
             self.inv_list.append(None)
-        self.angle = -degrees(atan2(pg.mouse.get_pos()[1] - screen_size[1]/2, pg.mouse.get_pos()[0] - screen_size[0]/2)) - 90
-        self.image = pg.transform.rotate(self.sprites[0], self.angle)
+        
+        self.get_cur_sprite()
+        self.get_anim_state()
+        self.animate(screen_size)
 
         self.rect.x = round(self.xpos)
         self.rect.y = round(self.ypos)
