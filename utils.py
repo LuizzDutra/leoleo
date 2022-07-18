@@ -50,3 +50,9 @@ def key_from_atribute(d:dict, obj, attr:str):
     attr_value = getattr(obj, attr, None)
     if attr_value != None:
         d[attr] = attr_value
+
+
+#(self.base_surf.get_width()/2 - self., self.base_surf.get_height()/2)
+#retorna coordenada para blit onde a imagem blitada fica no centro
+def center_blit(surface_size : tuple, image_size : tuple) -> tuple:
+    return (surface_size[0]/2 - image_size[0]/2, surface_size[1]/2 - image_size[1]/2)
