@@ -4,7 +4,7 @@ import images
 from time import time
 from item import Item, Paper_Ball
 from groups import drop_item_group
-from utils import outline_image, center_blit
+from utils import outline_image, center_blit, wobble_sprites
 from math import degrees, atan2
 
 
@@ -14,6 +14,13 @@ class Player(pg.sprite.Sprite):
         super().__init__()
         self.body_sprites = []
         self.body_sprites.append(images.player_image)
+
+        #animação de dano
+        self.body_hit_anim_time = 400/32
+        self.body_hit_anim_last = 0
+        self.body_hit_anim_frame = 0
+        self.body_hit_sprites = wobble_sprites(images.player_image, 32, 1)
+
         self.image = pg.Surface((68,68))
         self.image.set_colorkey((0,255,0)) #colorkey para vários layers
         self.body_surf = pg.Surface((48, 48)) #layer do corpo
@@ -23,14 +30,14 @@ class Player(pg.sprite.Sprite):
         self.foot_sprites.append(images.step1)
         self.foot_sprites.append(images.idle_foot)
         self.foot_sprites.append(images.step2)
-        self.anim_state = {"idle" : False, "left" : False, "right" : False, "up" : False, "down" : False}
+        self.anim_state = {"idle" : False, "hit" : True, "left" : False, "right" : False, "up" : False, "down" : False}
         #parametros das animações dos pés
         self.foot_anim_time = 200 #time para animação #milisegundos
         self.foot_anim_time_modifier = 1 #modificador de velocidade quanto maior mais rápido
         self.foot_anim_last = 0 
         self.foot_anim_frame = 0
         #paramentros das animações do corpo
-        self.body_anim_time = 200
+        self.body_anim_time = 8
         self.body_anim_time_modifier = 1
         self.body_anim_last = 0
         self.body_anim_frame = 0
@@ -61,6 +68,7 @@ class Player(pg.sprite.Sprite):
         self.lasthp = self.hp
         self.hit_lasthp = self.hp
         self.lastdmg = 0
+        self.dmg_delay = 0.4
         self.money = 0
         self.dead = False
         self.pickup_range = 48
@@ -162,18 +170,22 @@ class Player(pg.sprite.Sprite):
                 obj.interact(self.rect)
             self.interactable_list.remove(obj)
     def dmg_blink(self):
-        if pg.time.get_ticks()/1000 - self.lastdmg < 1:
-            if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
-                self.outline = outline_image(self.image, (255,0,0))
-            else:
-                self.outline = outline_image(self.image, (255,255,255))
+        if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
+            self.outline = outline_image(self.image, (255,0,0))
         else:
-            self.outline = pg.Surface((0,0))
-            self.lasthp = self.hp
-            self.hit_lasthp = self.hp
-    def got_hit(self):
-        if self.hp < self.hit_lasthp:
+            self.outline = outline_image(self.image, (255,255,255))
+        
+    def got_hit_scripts(self):
+        if self.hp < self.hit_lasthp: #identifica se foi atingido
             self.lastdmg = pg.time.get_ticks()/1000
+            self.hit_lasthp = self.hp
+        if pg.time.get_ticks()/1000 - self.lastdmg < self.dmg_delay:
+            self.anim_state["hit"] = True
+            self.dmg_blink()
+        else:
+            self.anim_state["hit"] = False
+            self.outline = pg.Surface((0,0))
+            self.lasthp = self.hp #variável de dano cumulativo(lasthp - hp), delay definido pela variável dmg_delay
             self.hit_lasthp = self.hp
 
     def get_anim_state(self):
@@ -210,13 +222,19 @@ class Player(pg.sprite.Sprite):
             self.cur_foot_sprite = self.foot_sprites[0]
             self.foot_anim_frame = 0
         #sprite do corpo
-        if not self.anim_state["idle"] and pg.time.get_ticks() - self.body_anim_last > self.body_anim_time * 1/self.body_anim_time_modifier:
+        if self.anim_state["hit"]:
+            if pg.time.get_ticks() - self.body_hit_anim_last > self.body_hit_anim_time:
+                self.body_hit_anim_last = pg.time.get_ticks()
+                self.body_hit_anim_frame = (self.body_hit_anim_frame + 1) % len(self.body_hit_sprites)
+                self.cur_body_sprite = self.body_hit_sprites[self.body_hit_anim_frame]
+        elif self.anim_state["idle"]:
+            self.cur_body_sprite = self.body_sprites[0]
+            self.body_anim_frame = 0
+            self.body_hit_anim_frame = 0
+        elif not self.anim_state["idle"] and pg.time.get_ticks() - self.body_anim_last > self.body_anim_time * 1/self.body_anim_time_modifier:
             self.body_anim_last = pg.time.get_ticks()
             self.body_anim_frame = (self.body_anim_frame + 1) % len(self.body_sprites)
             self.cur_body_sprite = self.body_sprites[self.body_anim_frame]
-        if self.anim_state["idle"]:
-            self.cur_body_sprite = self.body_sprites[0]
-            self.body_anim_frame = 0
 
 
     def animate(self, screen_size):
@@ -267,5 +285,4 @@ class Player(pg.sprite.Sprite):
         if pg.time.get_ticks() - self.iteration_last > self.iteration_delay:
             self.iteration_last = pg.time.get_ticks()
             self.get_interactable_list(interactable_group_list)
-        self.got_hit()
-        self.dmg_blink()
+        self.got_hit_scripts()
