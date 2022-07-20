@@ -1,4 +1,5 @@
 import pygame as pg
+from time import time
 
 def outline_image(image, color=(0,0,0) , threshold=127):
     out_image = pg.Surface(image.get_size()).convert_alpha()
@@ -77,3 +78,23 @@ def wobble_sprites(surface:pg.Surface, frames:int, intensity = 1) -> list: #faz 
     
 
     return sprites_list
+
+class Animator():
+    def __init__(self, sprite_list:list, t:float): #tempo em segundos
+        self.sprites = sprite_list
+        self.cur_sprite = pg.Surface((sprite_list[0].get_width()*1.5, sprite_list[0].get_height()*1.5))
+        self.anim_total_time = t
+        self.anim_time = t/len(sprite_list)
+        self.anim_last = 0
+        self.anim_frame = 0
+        self.anim_start = 0
+
+    def animate(self, modifier = 1) -> pg.Surface:#lógica da animação
+        if time() - self.anim_last > self.anim_time * 1/modifier: #o modificador altera a velocidade da animação
+                self.anim_last = time()
+                self.anim_frame = (self.anim_frame + 1) % len(self.sprites)
+                self.cur_sprite = self.sprites[self.anim_frame]
+        return self.cur_sprite
+
+    def stop(self):#reseta a animação
+        self.anim_frame = 0
