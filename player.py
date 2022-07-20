@@ -4,7 +4,7 @@ import images
 from time import time
 from item import Item, Paper_Ball
 from groups import drop_item_group
-from utils import outline_image
+from utils import Animator, outline_image, center_blit, wobble_sprites
 from math import degrees, atan2
 
 
@@ -12,11 +12,38 @@ from math import degrees, atan2
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.sprites = []
-        self.sprites.append(images.player_image)
-        self.image = self.sprites[0]
+        self.body_sprites = []
+        self.body_sprites.append(images.player_image)
+        self.body_animator = Animator(self.body_sprites, 1)
+
+        self.body_hit_sprites = wobble_sprites(images.player_image, 32, 1)
+        self.body_hit_animator = Animator(self.body_hit_sprites, 0.4)
+
+        self.foot_sprites = []
+        self.foot_sprites.append(images.idle_foot)
+        self.foot_sprites.append(images.step1)
+        self.foot_sprites.append(images.idle_foot)
+        self.foot_sprites.append(images.step2)
+        self.foot_animator = Animator(self.foot_sprites, 0.6)
+        self.foot_anim_time_modifier = 1
+
+        self.idle_body_sprites = [images.player_image]
+        self.idle_body_animator =Animator(self.idle_body_sprites, 0.5)
+
+        self.idle_foot_sprites = [images.idle_foot]
+        self.idle_foot_animator = Animator(self.idle_foot_sprites, 0.5)
+
+        self.image = pg.Surface((self.body_sprites[0].get_width()*2, self.body_sprites[0].get_height()*2))
+        self.image.set_colorkey((0,255,0)) #colorkey para vários layers
+        self.cur_foot_sprite = pg.Surface((0,0))
+        self.cur_body_sprite = pg.Surface((0,0))
+
+        self.anim_state = {"idle" : False, "hit" : False, "left" : False, "right" : False, "up" : False, "down" : False}
+
         self.outline = outline_image(self.image, (255,0,0))
-        self.rect = self.image.get_rect(center = (0, 0))
+        self.angle = 0
+        self.foot_angle = 0
+        self.rect = pg.Rect((0,0), (32,32))
         self.xpos = self.rect.x
         self.ypos = self.rect.y
         self.dt = 0
@@ -37,6 +64,7 @@ class Player(pg.sprite.Sprite):
         self.lasthp = self.hp
         self.hit_lasthp = self.hp
         self.lastdmg = 0
+        self.dmg_delay = 0.4
         self.money = 0
         self.dead = False
         self.pickup_range = 48
@@ -48,14 +76,31 @@ class Player(pg.sprite.Sprite):
         self.last = pg.time.get_ticks()/1000
         self.xvel = 0
         self.yvel = 0
-        if keys_pressed[key_binds["w_left"]]:
+
+        #reset dos estados
+        self.anim_state["left"] = False
+        self.anim_state["right"] = False
+        self.anim_state["up"] = False
+        self.anim_state["down"] = False
+        self.anim_state["idle"] = True
+        #kybinds e estados de animação
+        if keys_pressed[key_binds["w_left"]] and not keys_pressed[key_binds["w_right"]]:
+            self.anim_state["left"] = True
+            self.anim_state["idle"] = False
             self.xvel -= self.xspeed
-        if keys_pressed[key_binds["w_right"]]:
+        if keys_pressed[key_binds["w_right"]] and not keys_pressed[key_binds["w_left"]]:
+            self.anim_state["right"] = True
+            self.anim_state["idle"] = False
             self.xvel += self.xspeed
-        if keys_pressed[key_binds["w_foward"]]:
+        if keys_pressed[key_binds["w_foward"]] and not keys_pressed[key_binds["w_back"]]:
+            self.anim_state["up"] = True
+            self.anim_state["idle"] = False
             self.yvel -= self.yspeed
-        if keys_pressed[key_binds["w_back"]]:
+        if keys_pressed[key_binds["w_back"]] and not keys_pressed[key_binds["w_foward"]]:
+            self.anim_state["down"] = True
+            self.anim_state["idle"] = False
             self.yvel += self.yspeed
+
         if keys_pressed[key_binds["slow_walk"]]:
             self.xvel //= 2
             self.yvel //= 2
@@ -111,7 +156,6 @@ class Player(pg.sprite.Sprite):
                                 self.interactable_list.append(obj)
                                 return
 
-
     def add_item(self, item:pg.sprite.Sprite):
         if len(self.inv_list) < self.inv_limit:
             item.kill()
@@ -139,19 +183,74 @@ class Player(pg.sprite.Sprite):
                 obj.interact(self.rect)
             self.interactable_list.remove(obj)
     def dmg_blink(self):
-        if pg.time.get_ticks()/1000 - self.lastdmg < 1:
-            if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
-                self.outline = outline_image(self.image, (255,0,0))
-            else:
-                self.outline = outline_image(self.image, (255,255,255))
+        if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
+            self.outline = outline_image(self.image, (255,0,0))
         else:
-            self.outline = pg.Surface((0,0))
-            self.lasthp = self.hp
-            self.hit_lasthp = self.hp
-    def got_hit(self):
-        if self.hp < self.hit_lasthp:
+            self.outline = outline_image(self.image, (255,255,255))
+        
+    def got_hit_scripts(self):
+        if self.hp < self.hit_lasthp: #identifica se foi atingido
             self.lastdmg = pg.time.get_ticks()/1000
             self.hit_lasthp = self.hp
+        if pg.time.get_ticks()/1000 - self.lastdmg < self.dmg_delay:
+            self.anim_state["hit"] = True
+            self.dmg_blink()
+        else:
+            self.anim_state["hit"] = False
+            self.outline = pg.Surface((0,0))
+            self.lasthp = self.hp #variável de dano cumulativo(lasthp - hp), delay definido pela variável dmg_delay
+            self.hit_lasthp = self.hp
+
+    def get_anim_state(self):
+        #estado horizontal
+        pass
+        #estado vertical
+        pass
+
+    def get_cur_sprite(self):
+        #sprite perna
+        if not self.anim_state["idle"]:
+            self.cur_foot_sprite = self.foot_animator.animate(self.foot_anim_time_modifier)
+        if self.anim_state["idle"]:
+            self.cur_foot_sprite = self.idle_foot_animator.animate(self.foot_anim_time_modifier)
+        #sprite do corpo
+        if self.anim_state["hit"]:
+            self.cur_body_sprite = self.body_hit_animator.animate()
+        elif self.anim_state["idle"]:
+            self.cur_body_sprite = self.idle_body_animator.animate()
+        elif not self.anim_state["idle"]:
+            self.cur_body_sprite = self.body_animator.animate()
+
+
+    def animate(self, screen_size):#animação pós processamento
+        self.angle = -degrees(atan2(pg.mouse.get_pos()[1] - screen_size[1]/2, pg.mouse.get_pos()[0] - screen_size[0]/2))
+        if self.angle < 0: #garante que o ângulo seja positivo
+            self.angle += 360 
+
+        #surface da perna
+        if self.anim_state["idle"]:
+            self.foot_angle = self.angle
+        else:
+            self.foot_angle = -degrees(atan2(self.yvel, self.xvel)) #ângulo de acordo com a velocidade
+            if self.foot_angle < 0: #garante que o ângulo seja positivo
+                self.foot_angle += 360 
+
+            if abs(self.foot_angle - self.angle) > 180 - 45  and abs(self.foot_angle - self.angle) < 180 + 45: #suavização para as pernas não virarem 180 para trás
+                self.foot_angle -= 180
+                self.foot_anim_time_modifier = 0.5
+            else:
+                self.foot_anim_time_modifier = 1
+
+        #surface da perna
+        self.leg_surf = pg.transform.rotate(self.cur_foot_sprite, self.foot_angle)
+
+        #surface do corpo
+        self.body_surf = pg.transform.rotate(self.cur_body_sprite, self.angle)
+        #processando imagem final
+        self.image.fill((0,255,0))#fill com o colorkey
+        self.image.blit(self.leg_surf, center_blit(self.image.get_size(), self.leg_surf.get_size()))
+        self.image.blit(self.body_surf, center_blit(self.image.get_size(), self.body_surf.get_size()))
+
     def update(self, screen_size:tuple, interactable_group_list):
         if self.energy > self.energy_max:
             self.energy = self.energy_max
@@ -161,13 +260,14 @@ class Player(pg.sprite.Sprite):
             self.dead = True
         while len(self.inv_list) < self.inv_limit:
             self.inv_list.append(None)
-        self.angle = -degrees(atan2(pg.mouse.get_pos()[1] - screen_size[1]/2, pg.mouse.get_pos()[0] - screen_size[0]/2)) - 90
-        self.image = pg.transform.rotate(self.sprites[0], self.angle)
+        
+        self.get_cur_sprite()
+        self.get_anim_state()
+        self.animate(screen_size)
 
         self.rect.x = round(self.xpos)
         self.rect.y = round(self.ypos)
         if pg.time.get_ticks() - self.iteration_last > self.iteration_delay:
             self.iteration_last = pg.time.get_ticks()
             self.get_interactable_list(interactable_group_list)
-        self.got_hit()
-        self.dmg_blink()
+        self.got_hit_scripts()

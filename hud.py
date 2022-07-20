@@ -4,11 +4,14 @@ import fontes
 from utils import clamp, no_zero
 
 class Hud():
-    def __init__(self, screen:pg.display.set_mode):
+    def __init__(self, inv_limit):
         self.inv_sprites = []
         self.inv_sprites.append(images.inv_select)
         self.inv_sprites.append(images.inv_slot_selected)
-        self.inv_rect = [self.inv_sprites[0].get_rect(x = 100, y = 650), self.inv_sprites[0].get_rect(x = 174, y = 650), self.inv_sprites[0].get_rect(x =248, y = 650), self.inv_sprites[0].get_rect(x =322, y = 650), self.inv_sprites[0].get_rect(x =322+74, y = 650)]
+        self.inv_rect = []
+        self.get_inv_rect(inv_limit)
+
+        #self.inv_rect = [self.inv_sprites[0].get_rect(x = 100, y = 650), self.inv_sprites[0].get_rect(x = 174, y = 650), self.inv_sprites[0].get_rect(x =248, y = 650), self.inv_sprites[0].get_rect(x =322, y = 650), self.inv_sprites[0].get_rect(x =322+74, y = 650)]
     def draw_inv(self, screen, item_list, inv_select):
         for rect in self.inv_rect:
             screen.blit(self.inv_sprites[0], rect.topleft)
@@ -37,6 +40,11 @@ class Hud():
         screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 
         console_draw(screen)
+    
+    def get_inv_rect(self, inv_limit):
+        for i in range(inv_limit):
+            self.inv_rect.append(self.inv_sprites[0].get_rect(x = 100 + i*64 + i*10, y = 650))
+
 
 class Pop_up():
     def __init__(self, screen:pg.Surface):

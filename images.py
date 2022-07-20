@@ -21,7 +21,11 @@ energy_bar = pg.Surface((bar_width, bar_height))
 energy_bar.fill((255,255,0))
 
 
-player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)).convert_alpha()
+player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)).convert()
+player_image.set_colorkey((0,255,0))
+step1 = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "step1.png")), (48, 48)).convert_alpha()
+step2 = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "step2.png")), (48, 48)).convert_alpha()
+idle_foot = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "idle.png")), (48, 48)).convert_alpha()
 inv_select = pg.image.load(os.path.join("Assets", "Images", "Hud", "inv_slots.png")).convert()
 inv_select.set_colorkey(default_colorkey)
 inv_slot_selected = pg.image.load(os.path.join("Assets", "Images", "Hud", "inv_slots_selected.png")).convert()
