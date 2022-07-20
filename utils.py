@@ -82,12 +82,10 @@ def wobble_sprites(surface:pg.Surface, frames:int, intensity = 1) -> list: #faz 
 class Animator():
     def __init__(self, sprite_list:list, t:float): #tempo em segundos
         self.sprites = sprite_list
-        self.cur_sprite = pg.Surface((sprite_list[0].get_width()*1.5, sprite_list[0].get_height()*1.5))
-        self.anim_total_time = t
+        self.cur_sprite = sprite_list[0]
         self.anim_time = t/len(sprite_list)
         self.anim_last = 0
         self.anim_frame = 0
-        self.anim_start = 0
 
     def animate(self, modifier = 1) -> pg.Surface:#lógica da animação
         if time() - self.anim_last > self.anim_time * 1/modifier: #o modificador altera a velocidade da animação
