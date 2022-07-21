@@ -152,8 +152,12 @@ class Level_partition_sprite(pg.sprite.Sprite):
 
 #função usada para carregar os niveis inicialmente e os recarregar posteriormente
 def load_levels():
-    global level0
-    level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
+    try:
+        global level0
+        level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
+    except Exception as error:
+        level0 = None
+        print("Level missing")
 load_levels() 
 
 def get_pallete(image:Image.Image) -> list:
@@ -187,71 +191,74 @@ def draw_level(level_image, part_quantity, outline=False):
 
 def level_construct(level_image:Image.Image, part_quantity=25):
     print("Carrengando mapa")
-    start = time()
-    for surface in groups.level_surface_group:
-        surface.kill()
-    for wall in groups.wall_group:
-        wall.kill()
-    for ground in groups.ground_group:
-        ground.kill()
-    level_size = level_image.size
-    pallete = get_pallete(level_image)
-    check_list = []
-    wide_check = False
+    try:
+        start = time()
+        for surface in groups.level_surface_group:
+            surface.kill()
+        for wall in groups.wall_group:
+            wall.kill()
+        for ground in groups.ground_group:
+            ground.kill()
+        level_size = level_image.size
+        pallete = get_pallete(level_image)
+        check_list = []
+        wide_check = False
 
-    for y in range(0, level_size[1]):
-        for x in range(0, level_size[0]):
-            if (x,y) not in check_list:
-                color = pallete[level_image.getpixel((x,y))]
-                #paredes horizontais
-                wide_check = False
-                wall_cords = []
-                if color in images.wall_list:
-                    if (x-1, y) in check_list:
-                        wall_cords.append((x-1, y))
-                    else:
+        for y in range(0, level_size[1]):
+            for x in range(0, level_size[0]):
+                if (x,y) not in check_list:
+                    color = pallete[level_image.getpixel((x,y))]
+                    #paredes horizontais
+                    wide_check = False
+                    wall_cords = []
+                    if color in images.wall_list:
+                        if (x-1, y) in check_list:
+                            wall_cords.append((x-1, y))
+                        else:
+                            wall_cords.append((x, y))
                         wall_cords.append((x, y))
-                    wall_cords.append((x, y))
-                    for i in range(x+1, level_size[0]):
-                        if pallete[level_image.getpixel((i, y))] == color:
-                            wall_cords[1] = (i, y)
-                            check_list.append((i, y))
-                            if not wide_check:
-                                check_list.append((x, y))
-                                wide_check = True
-                        else:
-                            break
-                    if (x,y) in check_list:
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
-                #paredes verticais
-                wide_check = False
-                wall_cords = []
-                if color in images.wall_list:
-                    if (x,y) not in check_list:
-                        if (x, y-1) in check_list:
-                            wall_cords.append((x, y-1))
-                        else:
-                            wall_cords.append((x,y))
-                        wall_cords.append((x,y))
-                        for i in range(y+1, level_size[0]):
-                            if pallete[level_image.getpixel((x, i))] == color:
-                                wall_cords[1] = (x, i)
-                                check_list.append((x, i))
+                        for i in range(x+1, level_size[0]):
+                            if pallete[level_image.getpixel((i, y))] == color:
+                                wall_cords[1] = (i, y)
+                                check_list.append((i, y))
                                 if not wide_check:
                                     check_list.append((x, y))
                                     wide_check = True
                             else:
                                 break
-                        groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
+                        if (x,y) in check_list:
+                            groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
+                    #paredes verticais
+                    wide_check = False
+                    wall_cords = []
+                    if color in images.wall_list:
+                        if (x,y) not in check_list:
+                            if (x, y-1) in check_list:
+                                wall_cords.append((x, y-1))
+                            else:
+                                wall_cords.append((x,y))
+                            wall_cords.append((x,y))
+                            for i in range(y+1, level_size[0]):
+                                if pallete[level_image.getpixel((x, i))] == color:
+                                    wall_cords[1] = (x, i)
+                                    check_list.append((x, i))
+                                    if not wide_check:
+                                        check_list.append((x, y))
+                                        wide_check = True
+                                else:
+                                    break
+                            groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
 
 
 
-                if color in images.ground_list:
-                    groups.ground_group.add(Ground((x, y), color))
+                    if color in images.ground_list:
+                        groups.ground_group.add(Ground((x, y), color))
 
-    draw_level(level0, part_quantity)
+        draw_level(level0, part_quantity)
 
-    print(len(groups.wall_group.sprites()),"paredes")
-    end = time()
-    print("Mapa Carregado")
-    print(end - start)
+        print(len(groups.wall_group.sprites()),"paredes")
+        end = time()
+        print("Mapa Carregado")
+        print(end - start)
+    except Exception as error:
+        print(error)
