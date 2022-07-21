@@ -4,7 +4,6 @@ import os
 screen_res = (1280, 720)
 caption_str = "Leo Leo"
 pg.display.set_caption(caption_str)
-pg.display.set_icon(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)))
 screen = pg.display.set_mode(screen_res)
 
 default_colorkey = (0,255,0)
@@ -27,6 +26,8 @@ def image_loader(path, image_name:str, alpha=False) -> pg.Surface:
     except Exception as error:
         print(error)
         return errorimage
+
+pg.display.set_icon(image_loader("Assets", "bob.png"))
 
 #paleta vai estar aqui e não no mapa
 BLACK = (0,0,0) #parede0

@@ -12,29 +12,46 @@ def musica_fila(channel = pg.mixer.Channel, *musicas):
         channel.queue(musica)
 pg.mixer.set_reserved(0)
 
-throw = pg.mixer.Sound(os.path.join("Assets", "Sounds", "throw_sound.wav"))
-throw.set_volume
-ball_hit = pg.mixer.Sound(os.path.join("Assets", "Sounds", "ball_hit.wav"))
-cashing = pg.mixer.Sound(os.path.join("Assets", "Sounds", "cashing.mp3"))
-key = pg.mixer.Sound(os.path.join("Assets", "Sounds", "unlock.wav"))
-locked = pg.mixer.Sound(os.path.join("Assets", "Sounds", "locked.wav"))
-open_dr = pg.mixer.Sound(os.path.join("Assets", "Sounds", "open.wav"))
-cls_dr = pg.mixer.Sound(os.path.join("Assets", "Sounds", "close.wav"))
-bad_key = pg.mixer.Sound(os.path.join("Assets", "Sounds", "bad_key.wav"))
+
+sound_path = os.path.join("Assets", "Sounds")
+
+def sound_loader(path, sound_name, volume = 1) -> pg.mixer.Sound:
+    try:
+        return_sound = pg.mixer.Sound(os.path.join(path, sound_name)) #carrega
+        return_sound.set_volume(volume)#muda volume
+        return return_sound
+    except Exception as error:
+        print(error)
+        return None
+
+throw = sound_loader(sound_path, "throw_sound.wav")
+ball_hit = sound_loader(sound_path, "ball_hit.wav")
+cashing = sound_loader(sound_path, "cashing.mp3")
+key = sound_loader(sound_path, "unlock.wav")
+locked = sound_loader(sound_path, "locked.wav")
+open_dr = sound_loader(sound_path, "open.wav")
+cls_dr = sound_loader(sound_path, "close.wav")
+bad_key = sound_loader(sound_path, "bad_key.wav")
 
 player_center = (0,0)
 
 def effect_play(sound_file:pg.mixer.Sound):
-    sound_file.set_volume(effect_volume*volume)
-    pg.mixer.find_channel(True).play(sound_file)
+    try:
+        sound_file.set_volume(effect_volume*volume)
+        pg.mixer.find_channel(True).play(sound_file)
+    except:
+        print("sound missing")
 
 def play_far_effect(sound:pg.Rect, sound_file:pg.mixer.Sound):
     distance = ((player_center[0] - sound.centerx)**2 + (player_center[1] - sound.centery)**2)**(1/2)
     dis_vol = 1 - distance/1000
     if dis_vol < 0:
         dis_vol = 0
-    sound_file.set_volume(dis_vol*effect_volume*volume)
-    pg.mixer.find_channel(True).play(sound_file)
+    try:
+        sound_file.set_volume(dis_vol*effect_volume*volume)
+        pg.mixer.find_channel(True).play(sound_file)
+    except:
+        print("sound missing")
 
 def update(center:tuple):
     global player_center
