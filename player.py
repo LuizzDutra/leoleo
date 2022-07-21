@@ -25,7 +25,8 @@ class Player(pg.sprite.Sprite):
         self.foot_sprites.append(images.step2)
         self.foot_animator = Animator(self.foot_sprites, 0.6)
         self.foot_anim_time_modifier = 1
-
+        #limite da virada das pernas para a suavização
+        self.leg_turn_degree = 60  #as pernas só podem virar até 180 - x graus
         self.idle_body_sprites = [images.player_image]
         self.idle_body_animator =Animator(self.idle_body_sprites, 0.5)
 
@@ -218,7 +219,7 @@ class Player(pg.sprite.Sprite):
         elif self.anim_state["idle"]:
             self.cur_body_sprite = self.idle_body_animator.animate()
         elif not self.anim_state["idle"]:
-            self.cur_body_sprite = self.body_animator.animate()
+            self.cur_body_sprite = self.body_animator.animate(self.foot_anim_time_modifier)
 
 
     def animate(self, screen_size):#animação pós processamento
@@ -234,7 +235,7 @@ class Player(pg.sprite.Sprite):
             if self.foot_angle < 0: #garante que o ângulo seja positivo
                 self.foot_angle += 360 
 
-            if abs(self.foot_angle - self.angle) > 180 - 45  and abs(self.foot_angle - self.angle) < 180 + 45: #suavização para as pernas não virarem 180 para trás
+            if abs(self.foot_angle - self.angle) > 180 - self.leg_turn_degree  and abs(self.foot_angle - self.angle) < 180 + self.leg_turn_degree: #suavização para as pernas não virarem 180 para trás
                 self.foot_angle -= 180
                 self.foot_anim_time_modifier = 0.5
             else:
