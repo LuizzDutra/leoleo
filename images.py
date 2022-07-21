@@ -4,7 +4,7 @@ import os
 screen_res = (1280, 720)
 caption_str = "Leo Leo"
 pg.display.set_caption(caption_str)
-pg.display.set_icon(pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)))
+pg.display.set_icon(pg.transform.scale(pg.image.load(os.path.join("Assets", "bob.png")), (32, 32)))
 screen = pg.display.set_mode(screen_res)
 default_colorkey = (0,255,0)
 
@@ -21,8 +21,8 @@ energy_bar = pg.Surface((bar_width, bar_height))
 energy_bar.fill((255,255,0))
 
 
-player_image = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "bob.png")), (32, 32)).convert()
-player_image.set_colorkey((0,255,0))
+player_image = pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "ademar.png")).convert()
+player_image.set_colorkey((0,0,0))#o preto será a transparência
 step1 = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "step1.png")), (48, 48)).convert_alpha()
 step2 = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "step2.png")), (48, 48)).convert_alpha()
 idle_foot = pg.transform.scale(pg.image.load(os.path.join("Assets", "Images", "Sprites", "Player", "idle.png")), (48, 48)).convert_alpha()
