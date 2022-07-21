@@ -12,9 +12,8 @@ from math import degrees, atan2
 class Player(pg.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.body_sprites = []
-        self.body_sprites.append(images.player_image)
-        self.body_animator = Animator(self.body_sprites, 1)
+        self.body_sprites = [images.player_image]
+        self.body_animator = Animator(wobble_sprites(images.player_image, 60, 0.5), 0.5)
 
         self.body_hit_sprites = wobble_sprites(images.player_image, 32, 1)
         self.body_hit_animator = Animator(self.body_hit_sprites, 0.4)
@@ -26,15 +25,16 @@ class Player(pg.sprite.Sprite):
         self.foot_sprites.append(images.step2)
         self.foot_animator = Animator(self.foot_sprites, 0.6)
         self.foot_anim_time_modifier = 1
-
+        #limite da virada das pernas para a suavização
+        self.leg_turn_degree = 60  #as pernas só podem virar até 180 - x graus
         self.idle_body_sprites = [images.player_image]
         self.idle_body_animator =Animator(self.idle_body_sprites, 0.5)
 
         self.idle_foot_sprites = [images.idle_foot]
         self.idle_foot_animator = Animator(self.idle_foot_sprites, 0.5)
 
-        self.image = pg.Surface((self.body_sprites[0].get_width()*2, self.body_sprites[0].get_height()*2))
-        self.image.set_colorkey((0,255,0)) #colorkey para vários layers
+        self.image = pg.Surface((self.body_sprites[0].get_width()*1.5, self.body_sprites[0].get_height()*1.5)) #esse resize serve para a diagonal caber na surface
+        self.image.set_colorkey((0,0,0)) #colorkey para vários layers
         self.cur_foot_sprite = pg.Surface((0,0))
         self.cur_body_sprite = pg.Surface((0,0))
 
@@ -219,7 +219,7 @@ class Player(pg.sprite.Sprite):
         elif self.anim_state["idle"]:
             self.cur_body_sprite = self.idle_body_animator.animate()
         elif not self.anim_state["idle"]:
-            self.cur_body_sprite = self.body_animator.animate()
+            self.cur_body_sprite = self.body_animator.animate(self.foot_anim_time_modifier)
 
 
     def animate(self, screen_size):#animação pós processamento
@@ -235,7 +235,7 @@ class Player(pg.sprite.Sprite):
             if self.foot_angle < 0: #garante que o ângulo seja positivo
                 self.foot_angle += 360 
 
-            if abs(self.foot_angle - self.angle) > 180 - 45  and abs(self.foot_angle - self.angle) < 180 + 45: #suavização para as pernas não virarem 180 para trás
+            if abs(self.foot_angle - self.angle) > 180 - self.leg_turn_degree  and abs(self.foot_angle - self.angle) < 180 + self.leg_turn_degree: #suavização para as pernas não virarem 180 para trás
                 self.foot_angle -= 180
                 self.foot_anim_time_modifier = 0.5
             else:
@@ -247,7 +247,7 @@ class Player(pg.sprite.Sprite):
         #surface do corpo
         self.body_surf = pg.transform.rotate(self.cur_body_sprite, self.angle)
         #processando imagem final
-        self.image.fill((0,255,0))#fill com o colorkey
+        self.image.fill((0,0,0))
         self.image.blit(self.leg_surf, center_blit(self.image.get_size(), self.leg_surf.get_size()))
         self.image.blit(self.body_surf, center_blit(self.image.get_size(), self.body_surf.get_size()))
 
