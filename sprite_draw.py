@@ -37,7 +37,7 @@ def sprite_draw(screen:pg.Surface, camera, player, group_draw_list = [], interac
                     for particle in sprite.particleHandler.particles:
                         particleOffpos = get_offpos(camera, particle.pos, particle.surf.get_size())
                         screen.blit(particle.surf, particleOffpos)
-                        if hasattr(particle, "glow"):
+                        if particle.glows:#ve se a partícula brilha
                             screen.blit(particle.glow, get_center_pos(particleOffpos, particle.surf.get_size(), particle.glow.get_size()), special_flags=pg.BLEND_RGB_ADD)
                         i += 1
     last_draw_quantity = i

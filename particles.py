@@ -14,6 +14,7 @@ class Particle:
         self.color = color
         self.glowIntensity = glowIntensity
         self.radius = radius
+        self.glows = glow #indica se brilha
         if glow:
             self.glow_color = (color[0]/2 , color[1]/2 , color[2]/2)
             self.glow = pg.Surface((radius*2 * glowIntensity, radius*2 * glowIntensity))
@@ -43,7 +44,7 @@ class Particle:
             self.sizeModifier = ((self.lifeTime + self.creationTime) - time()) / self.lifeTime
             self.surf.fill((0,0,0))
             pg.draw.circle(self.surf, self.color, (self.surf.get_width()/2, self.surf.get_height()/2), self.radius * self.sizeModifier)
-            if self.glow:
+            if self.glows:
                 self.glow.fill((0,0,0))
                 pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width()/2, self.glow.get_height()/2), self.radius * self.glowIntensity * self.sizeModifier)
 
