@@ -70,7 +70,5 @@ class Particles_Handler:
         for particle in self.particles:
             if time() - particle.creationTime > particle.lifeTime:
                 self.particles.remove(particle)
-            if particle.radius * particle.sizeModifier < 1:
-                self.particles.remove(particle)
-            if len(self.particles) > self.particleLimit:
-                self.particles = remove_items_left_to_right(self.particles, len(self.particles) - self.particleLimit)
+        if len(self.particles) > self.particleLimit:
+            self.particles = remove_items_left_to_right(self.particles, len(self.particles) - self.particleLimit)
