@@ -32,6 +32,7 @@ locked = sound_loader(sound_path, "locked.wav")
 open_dr = sound_loader(sound_path, "open.wav")
 cls_dr = sound_loader(sound_path, "close.wav")
 bad_key = sound_loader(sound_path, "bad_key.wav")
+explosion = sound_loader(sound_path, "explosion.wav")
 
 player_center = (0,0)
 

@@ -101,6 +101,7 @@ while True:
             if not console_state:
                 if event.key == pg.K_l:
                     player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30), glowIntensity=2, vanish=True)
+                    sons.effect_play(sons.explosion)
                 if event.key == pg.K_j:
                     camera.transition((0,0))
                 if event.key == pg.K_h:
