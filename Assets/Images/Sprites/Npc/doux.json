@@ -1,0 +1,36 @@
+{
+    "frame":
+    {
+        "sprite_dino_idle_1.png":
+        {
+            "p":
+            {
+                "x":0,"y":0,"w":24,"h":24
+            }
+        },
+
+        "sprite_dino_idle_2.png":
+        {
+            "p":
+            {
+                "x":24,"y":0,"w":24,"h":24
+            }
+        },
+
+        "sprite_dino_idle_3.png":
+        {
+            "p":
+            {
+                "x":48,"y":0,"w":24,"h":24
+            }
+        },
+
+        "sprite_dino_idle_4.png":
+        {
+            "p":
+            {
+                "x":72,"y":0,"w":24,"h":24
+            }
+        }
+    }
+}

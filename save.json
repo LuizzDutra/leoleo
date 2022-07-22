@@ -1,1 +1,24 @@
-{"player_data": {"xpos": 1508.3000000000266, "ypos": -4.9000000000021515, "hp_max": 100, "hp": 90, "energy_max": 100, "energy": 100, "money": 50}, "inv": [null, null, null, null, null], "date": {"day": 1, "day_end": false, "day_duration": 34200, "cur_time": 1007.4121284484863}}
+{
+  "player_data": {
+    "xpos": 46.99999999997736,
+    "ypos": -8.200000000074624,
+    "hp_max": 100,
+    "hp": -90,
+    "energy_max": 100,
+    "energy": 95,
+    "money": 50
+  },
+  "inv": [
+    null,
+    4,
+    4,
+    4,
+    4
+  ],
+  "date": {
+    "day": 1,
+    "day_end": true,
+    "day_duration": 34200,
+    "cur_time": 58976.13555908203
+  }
+}
