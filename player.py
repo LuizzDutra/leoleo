@@ -6,6 +6,7 @@ from item import Item, Paper_Ball
 from groups import drop_item_group
 from utils import Animator, outline_image, center_blit, wobble_sprites
 from math import degrees, atan2
+import particles
 
 
 
@@ -71,6 +72,7 @@ class Player(pg.sprite.Sprite):
         self.interactable_list = []
         self.iteration_delay = 50 #milisegundos
         self.iteration_last = 0
+        self.particleHandler = particles.Particles_Handler()
     def control(self, keys_pressed, key_binds):
         self.dt = pg.time.get_ticks()/1000 - self.last
         self.last = pg.time.get_ticks()/1000

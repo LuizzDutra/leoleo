@@ -3,6 +3,7 @@ import pygame as pg
 import sys
 import groups
 import images
+import particles
 import fontes
 import lc
 from player import Player
@@ -99,8 +100,7 @@ while True:
                 lc.level_construct(lc.level0)
             if not console_state:
                 if event.key == pg.K_l:
-                    player.energy = player.energy_max
-                    player.hp -= 10
+                    player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30), glowIntensity=2, vanish=True)
                 if event.key == pg.K_j:
                     camera.transition((0,0))
                 if event.key == pg.K_h:

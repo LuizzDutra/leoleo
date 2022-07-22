@@ -96,3 +96,6 @@ class Animator():
 
     def stop(self):#reseta a animação
         self.anim_frame = 0
+
+def remove_items_left_to_right(t_list:list, quantity:int):
+    return t_list[quantity:]
