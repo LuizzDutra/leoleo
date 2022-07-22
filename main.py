@@ -47,7 +47,7 @@ console = Console()
 quest_tracker = quests.Quest_tracker()
 
 
-group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group]
+group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group ,item.ball_group, groups.drop_item_group]
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.drop_item_group, groups.door_group]
 
