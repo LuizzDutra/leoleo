@@ -51,9 +51,10 @@ class Particle:
 
 
 class Particles_Handler:
-    def __init__(self, particleLimit = 50):
+    def __init__(self, particleLimit = 50, backLayer = False):
         self.particles = []
         self.particleLimit = particleLimit
+        self.backLayer = backLayer #variavel que define se a parícula renderiza atrás ou na frente do sprite
 
     def emit(self):
         for particle in self.particles:
