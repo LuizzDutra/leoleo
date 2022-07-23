@@ -12,6 +12,8 @@ import json
 gs = 16 #cada grid tem meio metro
 mapExtension = ".map"
 
+level_path = os.path.join("Assets", "Levels")
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, pos:tuple, pos2:tuple, id):
         super().__init__()
@@ -158,7 +160,7 @@ class Level_Loader:
         self.load_levels()
     def load_levels(self):
         self.levels = []
-        self.levels.append(pg.image.load(os.path.join("Assets", "Levels", "level0.png"), "r"))
+        self.levels.append(pg.image.load(os.path.join(level_path, "level0.png"), "r"))
 level_loader = Level_Loader()
 
 def draw_level(level_image, part_quantity, outline=False):#desenha o nível
@@ -186,7 +188,7 @@ def draw_level(level_image, part_quantity, outline=False):#desenha o nível
 
 def load_level(name):#carrega o nível do arquivo
     try:
-        with open(name + mapExtension, "r") as f:
+        with open(os.path.join(level_path, name + mapExtension), "r") as f:
             metadataDict = json.load(f)
             wallDict = metadataDict["walls"]
             groundDict = metadataDict["grounds"]
@@ -274,7 +276,7 @@ def level_construct(level_image:pg.Surface, name):#construção do arquivo do ma
 
         metadataDict["walls"] = wallDict
         metadataDict["grounds"] = groundDict
-        with open(name + mapExtension, "w") as f:
+        with open(os.path.join(level_path, name + mapExtension), "w") as f:
             json.dump(metadataDict, f)
 
         print(len(wallDict),"paredes")
