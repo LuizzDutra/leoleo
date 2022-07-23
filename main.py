@@ -101,6 +101,7 @@ while True:
                 player.xpos = 0
                 player.ypos = 0
             if event.key == pg.K_F2:
+                lc.level_loader.load_levels()
                 lc.construct_load(lc.level_loader.levels[0], "mapaTeste")
             if not console_state:
                 if event.key == pg.K_l:

@@ -4,7 +4,6 @@ import images
 from hud import pop_up
 import sons
 import groups
-from PIL import Image
 import os
 from random import randint
 from utils import outline_image
@@ -142,7 +141,7 @@ class Door(pg.sprite.Sprite):
 class Level_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
         super().__init__()
-        self.image = pg.Surface((image.size[0]*gs, image.size[1]*gs))
+        self.image = pg.Surface((image.get_size()[0]*gs, image.get_size()[1]*gs))
         self.rect = self.image.get_rect(x = x, y = y)
 class Level_partition_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
@@ -159,15 +158,8 @@ class Level_Loader:
         self.load_levels()
     def load_levels(self):
         self.levels = []
-        self.levels.append(Image.open(os.path.join("Assets", "Levels", "level0.png"), "r"))
+        self.levels.append(pg.image.load(os.path.join("Assets", "Levels", "level0.png"), "r"))
 level_loader = Level_Loader()
-
-def get_pallete(image:Image.Image) -> list:
-    temp_pallete_list = image.getpalette()
-    pallete_list = []
-    for i in range(0, len(temp_pallete_list), 3):
-        pallete_list.append((temp_pallete_list[i], temp_pallete_list[i+1],temp_pallete_list[i+2]))
-    return pallete_list
 
 def draw_level(level_image, part_quantity, outline=False):#desenha o nível
     groups.level_surface_group.empty()
@@ -206,12 +198,10 @@ def load_level(name):#carrega o nível do arquivo
             
             for key, value in groundDict.items():
                 groups.ground_group.add(Ground(value[0], tuple(value[1])))
-
-
     except Exception as error:
         print(error)
 
-def level_construct(level_image:Image.Image, name):#construção do arquivo do mapa
+def level_construct(level_image:pg.Surface, name):#construção do arquivo do mapa
     print("Carrengando mapa")
     metadataDict = {}
     wallDict = {}
@@ -222,15 +212,14 @@ def level_construct(level_image:Image.Image, name):#construção do arquivo do m
         start = time()
         groups.wall_group.empty()
         groups.ground_group.empty()
-        level_size = level_image.size
-        pallete = get_pallete(level_image)
+        level_size = level_image.get_size()
         check_list = []
         wide_check = False
 
         for y in range(0, level_size[1]):
             for x in range(0, level_size[0]):
                 if (x,y) not in check_list:
-                    color = pallete[level_image.getpixel((x,y))]
+                    color = tuple(level_image.get_at((x,y)))
                     #paredes horizontais
                     wide_check = False
                     wall_cords = []
@@ -241,7 +230,7 @@ def level_construct(level_image:Image.Image, name):#construção do arquivo do m
                             wall_cords.append((x, y))
                         wall_cords.append((x, y))
                         for i in range(x+1, level_size[0]):
-                            if pallete[level_image.getpixel((i, y))] == color:
+                            if level_image.get_at((i, y)) == color:
                                 wall_cords[1] = (i, y)
                                 check_list.append((i, y))
                                 if not wide_check:
@@ -262,7 +251,7 @@ def level_construct(level_image:Image.Image, name):#construção do arquivo do m
                                 wall_cords.append((x,y))
                             wall_cords.append((x,y))
                             for i in range(y+1, level_size[0]):
-                                if pallete[level_image.getpixel((x, i))] == color:
+                                if level_image.get_at((x, i)) == color:
                                     wall_cords[1] = (x, i)
                                     check_list.append((x, i))
                                     if not wide_check:
@@ -298,7 +287,6 @@ def level_construct(level_image:Image.Image, name):#construção do arquivo do m
 
 
 def construct_load(levelImage, name):#serve para construir, carregar e desenhar/útil para debug
-    level_loader.load_levels()
     level_construct(levelImage, name)
     load_level(name)
     draw_level(levelImage, 25)
