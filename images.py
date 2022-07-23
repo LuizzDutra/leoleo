@@ -32,13 +32,13 @@ def image_loader(path, image_name:str, alpha=False) -> pg.Surface:
 pg.display.set_icon(image_loader("Assets", "bob.png"))
 
 #paleta vai estar aqui e não no mapa
-BLACK = (0,0,0) #parede0
-RED = (255,0,0) #parede1
-GREEN = (0,255,0) #grama
-BLUE = (0,0,255) #piso
-YELLOW = (255,255,0)
-PINK = (255,0,255)
-CYAN = (0,255,255)
+BLACK = (0,0,0,255) #parede0
+RED = (255,0,0,255) #parede1
+GREEN = (0,255,0,255) #grama
+BLUE = (0,0,255,255) #piso
+YELLOW = (255,255,0,255)
+PINK = (255,0,255,255)
+CYAN = (0,255,255,255)
 
 
 #Barras de energia e vida

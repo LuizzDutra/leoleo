@@ -4,12 +4,16 @@ import images
 from hud import pop_up
 import sons
 import groups
-from PIL import Image
 import os
 from random import randint
 from utils import outline_image
+import json
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
+mapExtension = ".map"
+
+level_path = os.path.join("Assets", "Levels")
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, pos:tuple, pos2:tuple, id):
         super().__init__()
@@ -139,7 +143,7 @@ class Door(pg.sprite.Sprite):
 class Level_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
         super().__init__()
-        self.image = pg.Surface((image.size[0]*gs, image.size[1]*gs))
+        self.image = pg.Surface((image.get_size()[0]*gs, image.get_size()[1]*gs))
         self.rect = self.image.get_rect(x = x, y = y)
 class Level_partition_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
@@ -151,23 +155,16 @@ class Level_partition_sprite(pg.sprite.Sprite):
 
 
 #função usada para carregar os niveis inicialmente e os recarregar posteriormente
-def load_levels():
-    try:
-        global level0
-        level0 = Image.open(os.path.join("Assets", "Levels", "level0.png"), "r")
-    except Exception as error:
-        level0 = None
-        print("Level missing")
-load_levels() 
+class Level_Loader:
+    def __init__(self):
+        self.load_levels()
+    def load_levels(self):
+        self.levels = []
+        self.levels.append(pg.image.load(os.path.join(level_path, "level0.png"), "r"))
+level_loader = Level_Loader()
 
-def get_pallete(image:Image.Image) -> list:
-    temp_pallete_list = image.getpalette()
-    pallete_list = []
-    for i in range(0, len(temp_pallete_list), 3):
-        pallete_list.append((temp_pallete_list[i], temp_pallete_list[i+1],temp_pallete_list[i+2]))
-    return pallete_list
-
-def draw_level(level_image, part_quantity, outline=False):
+def draw_level(level_image, part_quantity, outline=False):#desenha o nível
+    groups.level_surface_group.empty()
     level_surface = Level_sprite(level_image)
     level_surface.image.fill((50,50,50))
     for ground in groups.ground_group:
@@ -189,25 +186,42 @@ def draw_level(level_image, part_quantity, outline=False):
             i += 1
     print("Mapa particionado em {}".format(i))
 
-def level_construct(level_image:Image.Image, part_quantity=25):
+def load_level(name):#carrega o nível do arquivo
+    try:
+        with open(os.path.join(level_path, name + mapExtension), "r") as f:
+            metadataDict = json.load(f)
+            wallDict = metadataDict["walls"]
+            groundDict = metadataDict["grounds"]
+            groups.wall_group.empty()
+            groups.ground_group.empty()
+
+            for key, value in wallDict.items():
+                groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
+            
+            for key, value in groundDict.items():
+                groups.ground_group.add(Ground(value[0], tuple(value[1])))
+    except Exception as error:
+        print(error)
+
+def level_construct(level_image:pg.Surface, name):#construção do arquivo do mapa
     print("Carrengando mapa")
+    metadataDict = {}
+    wallDict = {}
+    groundDict = {}
+    tempWallList = []
+    tempGroundList = []
     try:
         start = time()
-        for surface in groups.level_surface_group:
-            surface.kill()
-        for wall in groups.wall_group:
-            wall.kill()
-        for ground in groups.ground_group:
-            ground.kill()
-        level_size = level_image.size
-        pallete = get_pallete(level_image)
+        groups.wall_group.empty()
+        groups.ground_group.empty()
+        level_size = level_image.get_size()
         check_list = []
         wide_check = False
 
         for y in range(0, level_size[1]):
             for x in range(0, level_size[0]):
                 if (x,y) not in check_list:
-                    color = pallete[level_image.getpixel((x,y))]
+                    color = tuple(level_image.get_at((x,y)))
                     #paredes horizontais
                     wide_check = False
                     wall_cords = []
@@ -218,7 +232,7 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                             wall_cords.append((x, y))
                         wall_cords.append((x, y))
                         for i in range(x+1, level_size[0]):
-                            if pallete[level_image.getpixel((i, y))] == color:
+                            if level_image.get_at((i, y)) == color:
                                 wall_cords[1] = (i, y)
                                 check_list.append((i, y))
                                 if not wide_check:
@@ -227,7 +241,7 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                             else:
                                 break
                         if (x,y) in check_list:
-                            groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
+                            tempWallList.append([wall_cords[0], wall_cords[-1], color])
                     #paredes verticais
                     wide_check = False
                     wall_cords = []
@@ -239,7 +253,7 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                                 wall_cords.append((x,y))
                             wall_cords.append((x,y))
                             for i in range(y+1, level_size[0]):
-                                if pallete[level_image.getpixel((x, i))] == color:
+                                if level_image.get_at((x, i)) == color:
                                     wall_cords[1] = (x, i)
                                     check_list.append((x, i))
                                     if not wide_check:
@@ -247,18 +261,34 @@ def level_construct(level_image:Image.Image, part_quantity=25):
                                         wide_check = True
                                 else:
                                     break
-                            groups.wall_group.add(Wall(wall_cords[0], wall_cords[-1], color))
-
-
+                            tempWallList.append([wall_cords[0], wall_cords[-1], color])
 
                     if color in images.ground_list:
-                        groups.ground_group.add(Ground((x, y), color))
+                        tempGroundList.append([(x, y), color])
+                        
+                        
+        for i, value in enumerate(tempWallList):
+            wallDict[i] = value
+        
+        for i, value in enumerate(tempGroundList):
+            groundDict[i] = value
+        #draw_level(level0, part_quantity)
 
-        draw_level(level0, part_quantity)
+        metadataDict["walls"] = wallDict
+        metadataDict["grounds"] = groundDict
+        with open(os.path.join(level_path, name + mapExtension), "w") as f:
+            json.dump(metadataDict, f)
 
-        print(len(groups.wall_group.sprites()),"paredes")
+        print(len(wallDict),"paredes")
         end = time()
         print("Mapa Carregado")
         print(end - start)
+
     except Exception as error:
         print(error)
+
+
+def construct_load(levelImage, name):#serve para construir, carregar e desenhar/útil para debug
+    level_construct(levelImage, name)
+    load_level(name)
+    draw_level(levelImage, 25)

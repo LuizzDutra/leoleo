@@ -37,7 +37,8 @@ player.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
 npc = Npc(0,0)
 groups.npc_group.add(npc)
 
-lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
+lc.load_level("level0")
+lc.draw_level(lc.level_loader.levels[0], 25)
 groups.door_group.add(lc.Door(9, 5, 4, 0.6))
 groups.door_group.add(lc.Door(13, 5, 4, 0.6, mirror=True))
 groups.door_group.add(lc.Door(8, 10, 0.6, 4, True, 4))
@@ -100,8 +101,8 @@ while True:
                 player.xpos = 0
                 player.ypos = 0
             if event.key == pg.K_F2:
-                lc.load_levels()
-                lc.level_construct(lc.level0)
+                lc.level_loader.load_levels()
+                lc.construct_load(lc.level_loader.levels[0], "mapaTeste")
             if not console_state:
                 if event.key == pg.K_l:
                     player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30), glowIntensity=2, vanish=True)
