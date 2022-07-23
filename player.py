@@ -73,7 +73,7 @@ class Player(pg.sprite.Sprite):
         self.iteration_delay = 50 #milisegundos
         self.iteration_last = 0
         self.particleHandler = particles.Particles_Handler()
-        self.footStepsTime = 0.4
+        self.footStepsTime = 0.2
         self.footStepsLast = 0
     def control(self, keys_pressed, key_binds):
         self.dt = pg.time.get_ticks()/1000 - self.last
@@ -217,7 +217,7 @@ class Player(pg.sprite.Sprite):
             self.cur_foot_sprite = self.foot_animator.animate(self.foot_anim_time_modifier)
             if time() - self.footStepsLast > self.footStepsTime:
                 self.footStepsLast = time()
-                self.particleHandler.add_explosion(self.rect.center, 5, 20, 1, 1, (75,75,75), glow=False, backLayer=True)
+                self.particleHandler.add_explosion(self.rect.center, 5, 40, 0.5, 0.5, (255,255,255), glow=False, backLayer=True)
 
         if self.anim_state["idle"]:
             self.cur_foot_sprite = self.idle_foot_animator.animate(self.foot_anim_time_modifier)
