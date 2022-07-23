@@ -1,3 +1,4 @@
+from turtle import back
 import pygame as pg
 from random import randint
 from math import atan2, cos, sin
@@ -8,13 +9,14 @@ from utils import remove_items_left_to_right
 #objeto da particula que sera usado um conjunto
 #do manuseador de partículas
 class Particle:
-    def __init__(self, pos:list, radius:int, direction:tuple, speed:int ,lifeTime:int, color, glow = False, glowIntensity = 1.5, vanish = True):
+    def __init__(self, pos:list, radius:int, direction:tuple, speed:int ,lifeTime:int, color, glow = False, glowIntensity = 1.5, vanish = True, backLayer = False):
         self.surf = pg.Surface((radius*2, radius*2))
         self.surf.set_colorkey((0,0,0))
         self.color = color
         self.glowIntensity = glowIntensity
         self.radius = radius
         self.glows = glow #indica se brilha
+        self.backLayer = backLayer #variavel que define se a partícula renderiza atrás ou na frente do sprite
         if glow:
             self.glow_color = (color[0]/2 , color[1]/2 , color[2]/2)
             self.glow = pg.Surface((radius*2 * glowIntensity, radius*2 * glowIntensity))
@@ -51,22 +53,21 @@ class Particle:
 
 
 class Particles_Handler:
-    def __init__(self, particleLimit = 50, backLayer = False):
+    def __init__(self, particleLimit = 50):
         self.particles = []
         self.particleLimit = particleLimit
-        self.backLayer = backLayer #variavel que define se a parícula renderiza atrás ou na frente do sprite
 
     def emit(self):
         for particle in self.particles:
             particle.update()
 
-    def add(self, pos, radius, direction, speed, lifeTime, color = (255,255,255), glow = False, glowIntensity = 1.5, vanish = False):
-        self.particles.append(Particle(pos, radius, direction, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish))
+    def add(self, pos, radius, direction, speed, lifeTime, color = (255,255,255), glow = False, glowIntensity = 1.5, vanish = False, backLayer = False):
+        self.particles.append(Particle(pos, radius, direction, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish, backLayer=backLayer))
     
-    def add_explosion(self, pos, radius, speed, lifeTime, intensity = 1, color = (255,255,255), glow = True, glowIntensity = 1.5, vanish=True):
+    def add_explosion(self, pos, radius, speed, lifeTime, intensity = 1, color = (255,255,255), glow = True, glowIntensity = 1.5, vanish=True, backLayer = False):
         for i in range(int(intensity*10)):
             randDir = (randint(-10, 10)/10, randint(-10, 10)/10)
-            self.particles.append(Particle(pos, radius, randDir, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish))
+            self.particles.append(Particle(pos, radius, randDir, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish, backLayer=backLayer))
 
     def delete(self):
         for particle in self.particles:
