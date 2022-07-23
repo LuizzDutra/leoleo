@@ -19,6 +19,8 @@ from time import sleep, perf_counter
 import sons
 import quests
 import config
+from npc import Npc
+
 print("Módulos importados")
 
 pg.init()
@@ -32,6 +34,8 @@ player = Player()
 groups.player_group.add(player)
 player.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
 
+npc = Npc(0,0)
+groups.npc_group.add(npc)
 
 lc.level_construct(lc.level0, 25) #cuidado, garanta que a raíz do número de partições divida sem resto a largura e a altura o nível
 groups.door_group.add(lc.Door(9, 5, 4, 0.6))
@@ -41,18 +45,16 @@ groups.door_group.add(lc.Door(8, 14, 0.6, 4, True, 4, mirror=True))
 
 day_time = calendario.Calendario()
 
-
 camera = Camera(player.rect, screen)
 hud = Hud(player.inv_limit)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
 
-group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group ,item.ball_group, groups.drop_item_group]
+group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group, groups.ball_group, groups.drop_item_group, groups.npc_group]
+
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.drop_item_group, groups.door_group]
-
-
 
 def evil_spawn():
     obj = item.Item()
@@ -68,10 +70,12 @@ config.load_cfg()
 start = 0
 end = 0
 frametime = 0
+
 while True:
     start = perf_counter()
     mouse_events = pg.mouse.get_pressed()
     keys_pressed = pg.key.get_pressed()
+
     scroll_event = (0, True)
     events = pg.event.get()
     for event in events:
@@ -113,7 +117,6 @@ while True:
             if event.key == pg.K_F4:
                 console_state = not console_state
 
-
     if not console_state:
         player.control(keys_pressed, config.key_binds)
         player.mouse_control(mouse_events, config.key_binds)
@@ -133,18 +136,19 @@ while True:
         hud.draw_inv(screen, player.inv_list, player.inv_select)
         hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
         pop_up.update()
+        npc.update()
+
         if debug_state:
             debug.activate_debug(screen, player, frametime)
         pg.display.update()
 
-
     console.update(screen, console_state, events, globals())
     quest_tracker.update()
 
-
-
     end = perf_counter()
     frametime = (end - start) * 1000
-    #pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
-    #print(console.user_input)
+
+    pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
+    print(console.user_input)
+
     sleep(0.001)

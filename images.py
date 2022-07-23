@@ -1,5 +1,6 @@
 import pygame as pg
 import os
+from spritesheet import Spritesheet
 
 screen_res = (1280, 720)
 caption_str = "Leo Leo"
@@ -13,6 +14,7 @@ errorimage.fill((255,0,255))
 
 sprite_path = os.path.join("Assets", "Images", "Sprites")
 player_sprite_path = os.path.join(sprite_path, "Player")
+npc_sprite_path = os.path.join(sprite_path, "Npc")
 texture_path = os.path.join("Assets", "Images", "Textures")
 item_path = os.path.join("Assets", "Images", "Items")
 hud_path = os.path.join("Assets", "Images", "Hud")
@@ -83,3 +85,8 @@ door = image_loader(texture_path, "door.png")
 chave = pg.transform.scale(image_loader(item_path, "chave.png"), (48,48))
 chave.set_colorkey(default_colorkey)
 money = image_loader(item_path, "money.png")
+
+npc_lista = []
+sprite_obj = Spritesheet(os.path.join(npc_sprite_path,"doux.png"))
+for num in range(1,5):
+    npc_lista.append(sprite_obj.sprite_load(f"sprite_dino_idle_{num}.png",(0,0,0)))
