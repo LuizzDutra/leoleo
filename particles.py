@@ -63,7 +63,7 @@ class Particles_Handler:
         self.particles.append(Particle(pos, radius, direction, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish))
     
     def add_explosion(self, pos, radius, speed, lifeTime, intensity = 1, color = (255,255,255), glow = True, glowIntensity = 1.5, vanish=True):
-        for i in range(intensity*10):
+        for i in range(int(intensity*10)):
             randDir = (randint(-10, 10)/10, randint(-10, 10)/10)
             self.particles.append(Particle(pos, radius, randDir, speed, lifeTime, color, glow = glow, glowIntensity = glowIntensity, vanish=vanish))
 
