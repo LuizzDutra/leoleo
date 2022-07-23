@@ -148,7 +148,5 @@ while True:
     end = perf_counter()
     frametime = (end - start) * 1000
 
-    pg.display.set_caption(f"{images.caption_str}    {clock.get_fps():.2f}")
-    print(console.user_input)
 
     sleep(0.001)
