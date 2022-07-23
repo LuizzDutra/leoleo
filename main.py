@@ -3,6 +3,7 @@ import pygame as pg
 import sys
 import groups
 import images
+import particles
 import fontes
 import lc
 from player import Player
@@ -49,7 +50,9 @@ hud = Hud(player.inv_limit)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
-group_draw_list = [groups.level_surface_group, groups.door_group, item.ball_group, groups.drop_item_group,groups.npc_group]
+
+group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group, groups.ball_group, groups.drop_item_group, groups.npc_group]
+
 collision_group_list = [groups.wall_group, groups.door_group]
 interactable_group_list = [groups.drop_item_group, groups.door_group]
 
@@ -101,8 +104,8 @@ while True:
                 lc.level_construct(lc.level0)
             if not console_state:
                 if event.key == pg.K_l:
-                    player.energy = player.energy_max
-                    player.hp -= 10
+                    player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30), glowIntensity=2, vanish=True)
+                    sons.effect_play(sons.explosion)
                 if event.key == pg.K_j:
                     camera.transition((0,0))
                 if event.key == pg.K_h:
