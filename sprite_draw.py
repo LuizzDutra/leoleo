@@ -22,7 +22,7 @@ def sprite_draw(screen:pg.Surface, camera, player, group_draw_list = [], interac
     for group in group_draw_list:
         for sprite in group:
             offpos = get_offpos(camera, sprite.rect.center, sprite.image.get_size())
-            if offpos[0]+sprite.rect.width > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.rect.height > 0 and offpos[1] < screen.get_height():
+            if offpos[0]+sprite.image.get_width() > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.image.get_height() > 0 and offpos[1] < screen.get_height():
                 i += 1
                 #desenha a particula do objeto manuseador de partículas
                 if hasattr(sprite, "particleHandler"):
