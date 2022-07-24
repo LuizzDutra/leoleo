@@ -184,7 +184,7 @@ class Player(pg.sprite.Sprite):
                 self.add_item(obj)
             else:
                 #print(type)
-                obj.interact(self.rect)
+                obj.interact()
             self.interactable_list.remove(obj)
     def dmg_blink(self):
         if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
