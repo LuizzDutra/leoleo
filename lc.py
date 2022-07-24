@@ -132,7 +132,7 @@ class Door(pg.sprite.Sprite):
             sons.play_far_effect(self.rect, sons.cls_dr)
         self.closed = not self.closed
 
-    def interact(self, rect):
+    def interact(self):
         if time() - self.open_delta > self.open_time:
             if self.locked:
                 sons.play_far_effect(self.rect, sons.locked)
