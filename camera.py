@@ -37,8 +37,8 @@ class Camera():
             self.xoffset = screen.get_width()/2 - self.t_point[0]
             self.yoffset = screen.get_height()/2 - self.t_point[1]
         else:
-            self.xoffset = screen.get_width()/2 - self.focus[0]
-            self.yoffset = screen.get_height()/2 - self.focus[1]
+            self.xoffset = (screen.get_width()/2 - self.focus[0]) - round(((pg.mouse.get_pos()[0] - screen.get_width()/2)/2)/1.5)
+            self.yoffset = (screen.get_height()/2 - self.focus[1]) -  round(((pg.mouse.get_pos()[1] - screen.get_height()/2)/2)/1.5)
         
 
     #A transição só soma o offset, note a câmera não irá mudar o foco
