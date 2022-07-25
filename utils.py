@@ -1,5 +1,6 @@
 import pygame as pg
 from time import time
+from math import sin, pi
 
 def outline_image(image, color=(0,0,0) , threshold=127):
     out_image = pg.Surface(image.get_size()).convert_alpha()
@@ -58,25 +59,17 @@ def key_from_atribute(d:dict, obj, attr:str):
 def center_blit(surface_size : tuple, image_size : tuple) -> tuple:
     return (surface_size[0]/2 - image_size[0]/2, surface_size[1]/2 - image_size[1]/2)
 
-#essa anijmação tá uma bosta mas é o que tem por hoje
-def wobble_sprites(surface:pg.Surface, frames:int, intensity = 1) -> list: #faz uma lista de sprites que balança o a surface passada
-    sprites_list = []
-    surface.convert_alpha()
-    md_surface = surface
-    angle_change = (180*intensity)/frames
 
-    for i in range(frames-1):
-        if i <= frames/4:
-            angle = angle_change * i
-        if i >= frames/4:
-            angle = angle_change * (frames/4 - (i - frames/4))
-        if i >= frames/1.5:
-            angle = angle_change * (-frames/4 + (i - frames/1.5))
-        #print(angle)
+def wobble_sprites(surface:pg.Surface, frames, intensity = 1):
+    turnAngle = 30 * intensity
+
+    sprites_list = []
+
+    for i in range(frames):
+        angle = sin(2*pi*(i/frames))*turnAngle
+        print(angle)
         md_surface = pg.transform.rotate(surface, angle)
         sprites_list.append(md_surface)
-    
-
     return sprites_list
 
 class Animator():
