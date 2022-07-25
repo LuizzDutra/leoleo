@@ -16,7 +16,7 @@ class Player(pg.sprite.Sprite):
         self.body_sprites = [images.player_image]
         self.body_animator = Animator(wobble_sprites(images.player_image, 60, 0.5), 0.5)
 
-        self.body_hit_sprites = wobble_sprites(images.player_image, 32, 1)
+        self.body_hit_sprites = wobble_sprites(images.player_image, 60, 1)
         self.body_hit_animator = Animator(self.body_hit_sprites, 0.4)
 
         self.foot_sprites = []
@@ -39,7 +39,7 @@ class Player(pg.sprite.Sprite):
         self.cur_foot_sprite = pg.Surface((0,0))
         self.cur_body_sprite = pg.Surface((0,0))
 
-        self.anim_state = {"idle" : False, "hit" : False, "left" : False, "right" : False, "up" : False, "down" : False}
+        self.anim_state = {"idle" : False, "slow" : False, "hit" : False, "left" : False, "right" : False, "up" : False, "down" : False}
 
         self.outline = outline_image(self.image, (255,0,0))
         self.angle = 0
@@ -87,6 +87,7 @@ class Player(pg.sprite.Sprite):
         self.anim_state["up"] = False
         self.anim_state["down"] = False
         self.anim_state["idle"] = True
+        self.anim_state["slow"] = False
         #kybinds e estados de animação
         if keys_pressed[key_binds["w_left"]] and not keys_pressed[key_binds["w_right"]]:
             self.anim_state["left"] = True
@@ -106,6 +107,7 @@ class Player(pg.sprite.Sprite):
             self.yvel += self.yspeed
 
         if keys_pressed[key_binds["slow_walk"]]:
+            self.anim_state["slow"] = True
             self.xvel //= 2
             self.yvel //= 2
         self.xpos += self.xvel * self.dt
@@ -205,29 +207,31 @@ class Player(pg.sprite.Sprite):
             self.lasthp = self.hp #variável de dano cumulativo(lasthp - hp), delay definido pela variável dmg_delay
             self.hit_lasthp = self.hp
 
-    def get_anim_state(self):
-        #estado horizontal
-        pass
-        #estado vertical
-        pass
-
     def get_cur_sprite(self):
         #sprite perna
         if not self.anim_state["idle"]:
             self.cur_foot_sprite = self.foot_animator.animate(self.foot_anim_time_modifier)
-            if time() - self.footStepsLast > self.footStepsTime:
-                self.footStepsLast = time()
-                self.particleHandler.add_explosion(self.rect.center, 5, 40, 0.5, 0.5, (255,255,255), glow=False, backLayer=True)
-
+            self.idle_foot_animator.stop()
         if self.anim_state["idle"]:
             self.cur_foot_sprite = self.idle_foot_animator.animate(self.foot_anim_time_modifier)
+            self.foot_animator.stop()
+
         #sprite do corpo
         if self.anim_state["hit"]:
             self.cur_body_sprite = self.body_hit_animator.animate()
         elif self.anim_state["idle"]:
             self.cur_body_sprite = self.idle_body_animator.animate()
+            self.body_hit_animator.stop()
+            self.body_animator.stop()
         elif not self.anim_state["idle"]:
             self.cur_body_sprite = self.body_animator.animate(self.foot_anim_time_modifier)
+            self.idle_body_animator.stop()
+
+    
+    def get_footstep_particle(self):
+        if not self.anim_state["idle"] and time() - self.footStepsLast > self.footStepsTime and not self.anim_state["slow"]:
+                self.footStepsLast = time()
+                self.particleHandler.add_explosion(self.rect.center, 5, 40, 0.5, 0.5, (255,255,255), glow=False, backLayer=True)
 
 
     def animate(self, screen_size):#animação pós processamento
@@ -245,6 +249,9 @@ class Player(pg.sprite.Sprite):
 
             if abs(self.foot_angle - self.angle) > 180 - self.leg_turn_degree  and abs(self.foot_angle - self.angle) < 180 + self.leg_turn_degree: #suavização para as pernas não virarem 180 para trás
                 self.foot_angle -= 180
+                self.foot_anim_time_modifier = 0.5
+                self.anim_state["slow"] = True
+            elif self.anim_state["slow"]:
                 self.foot_anim_time_modifier = 0.5
             else:
                 self.foot_anim_time_modifier = 1
@@ -270,8 +277,8 @@ class Player(pg.sprite.Sprite):
             self.inv_list.append(None)
         
         self.get_cur_sprite()
-        self.get_anim_state()
         self.animate(screen_size)
+        self.get_footstep_particle()
 
         self.rect.x = round(self.xpos)
         self.rect.y = round(self.ypos)
