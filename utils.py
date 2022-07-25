@@ -67,7 +67,6 @@ def wobble_sprites(surface:pg.Surface, frames, intensity = 1):
 
     for i in range(frames):
         angle = sin(2*pi*(i/frames))*turnAngle
-        print(angle)
         md_surface = pg.transform.rotate(surface, angle)
         sprites_list.append(md_surface)
     return sprites_list
