@@ -10,17 +10,18 @@ def outline_image(image, color=(0,0,0) , threshold=127):
         out_image.set_at(point,color)
     return out_image
 
-#Remove/replace from list
-def rfl(target, ilist, replace=True, term=None): 
-        if replace:
-            for i,item in enumerate(ilist):
-                if item == target:
-                    ilist[i] = term
-                    return
-        for i,item in enumerate(ilist):
-            if item == target:
-                del ilist[i]
+
+# Remove/replace from list
+def rfl(target, ilist: list, replace=True, term=None):
+    if replace:
+        for i, item in enumerate(ilist):
+            if id(item) == id(target):
+                ilist[i] = term
                 return
+    for i, item in enumerate(ilist):
+        if id(item) == id(target):
+            ilist.remove(item)
+            return
 
 def clamp(number:float, min:float, max:float) -> float:
     if number < min:

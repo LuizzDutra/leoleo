@@ -15,14 +15,14 @@ mapExtension = ".map"
 level_path = os.path.join("Assets", "Levels")
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, pos:tuple, pos2:tuple, id):
+    def __init__(self, pos:tuple, pos2:tuple, color_id):
         super().__init__()
         self.corner = (pos2[0]*gs+gs, pos2[1]*gs+gs)
         self.width = self.corner[0] - pos[0]*gs
         self.height = self.corner[1] - pos[1]*gs
         self.rect = pg.Rect((pos[0]*gs, pos[1]*gs), (self.width, self.height))
         #imagem em forma de tiles
-        self.blit_images = images.wall_list[id]
+        self.blit_images = images.wall_list[color_id]
         self.blit_h_image = self.blit_images[0] #parede horizontal
         self.blit_v_image = pg.transform.rotate(self.blit_images[0], 90) #parede vertical
         self.blit_image_size = self.blit_images[0].get_size()
@@ -49,17 +49,17 @@ class Wall(pg.sprite.Sprite):
         del self.height
 
 class Ground(pg.sprite.Sprite):
-    def __init__(self, pos:tuple, id, rot=False):
+    def __init__(self, pos:tuple, color_id, rot=False):
         super().__init__()
         rot_dict = {0:90, 1:180, 2:270, 3:0}
         if rot:
-            self.image = pg.transform.rotate(images.ground_list[id], rot_dict[randint(0, 3)])
+            self.image = pg.transform.rotate(images.ground_list[color_id], rot_dict[randint(0, 3)])
         else:
-            self.image = images.ground_list[id]
+            self.image = images.ground_list[color_id]
         self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True, mirror = False):
+    def __init__(self, x, y, width, height, locked=False, key_id = 0, closed = True, mirror = False):
         super().__init__()
         if width > height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
@@ -79,7 +79,7 @@ class Door(pg.sprite.Sprite):
         self.open_time = 0.5
         self.open_delta = 0
         self.locked = locked
-        self.id = id
+        self.key_id = key_id
         self.closed = closed
 
     def lock(self):
@@ -92,7 +92,7 @@ class Door(pg.sprite.Sprite):
         sons.play_far_effect(self.rect, sons.key)
 
     def lock_unlock(self, id):
-        if self.id == id or id == 0: #chave de id=0 -> chave mestra
+        if self.key_id == id or id == 0: #chave de id=0 -> chave mestra
             if self.locked:
                 self.unlock()
             elif not self.locked:
@@ -101,6 +101,7 @@ class Door(pg.sprite.Sprite):
             if self.closed:
                 sons.effect_play(sons.bad_key)
                 pop_up.add_pop("Chave errada")
+
     def open_close(self):
         self.open_delta = time()
         if self.closed:

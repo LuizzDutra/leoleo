@@ -60,12 +60,12 @@ def save(player, day_time):
         #inv do player
         temp_list = []
         temp_dict = {}
-        for i in player.inv_list:
+        for i in player.inventory.inv_list:
             temp_dict = {}
-            if i == None:
+            if i is None:
                 temp_list.append(None)
             elif type(i) == item.Key:
-                temp_dict[key_from_value(item.item_dict, type(i))] = i.id
+                temp_dict[key_from_value(item.item_dict, type(i))] = i.key_id
                 temp_list.append(temp_dict)
             elif type(i) == item.Money:
                 temp_dict[key_from_value(item.item_dict, type(i))] = i.quantity
@@ -116,15 +116,15 @@ def load_s(player, day_time):
 
     #carregando inventário do player
     data = save_json["inv"]
-    player.inv_list = []
+    player.inventory.inv_list = []
     for i in data:
-        if i == None:
-            player.inv_list.append(None)
+        if i is None:
+            player.inventory.inv_list.append(None)
         elif type(i) == dict:
             for key, value in i.items():
-                player.inv_list.append(item.item_dict[int(key)](value))
+                player.inventory.inv_list.append(item.item_dict[int(key)](value))
         else:
-            player.inv_list.append(item.item_dict[i]())
+            player.inventory.inv_list.append(item.item_dict[i]())
     
     #carregando data e hora
     data = save_json["date"]
