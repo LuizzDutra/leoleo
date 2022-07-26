@@ -22,6 +22,8 @@ def sprite_draw(screen:pg.Surface, camera, player, group_draw_list = [], interac
     i = 0
     for group in group_draw_list:
         for sprite in group:
+            particle_delay_blit.clear()
+            particle_glow_delay_blit.clear()
             offpos = get_offpos(camera, sprite.rect.center, sprite.image.get_size())
             if offpos[0]+sprite.image.get_width() > 0 and offpos[0] < screen.get_width() and offpos[1]+sprite.image.get_height() > 0 and offpos[1] < screen.get_height():
                 i += 1
@@ -35,7 +37,7 @@ def sprite_draw(screen:pg.Surface, camera, player, group_draw_list = [], interac
                         if not particle.backLayer:
                             particle_delay_blit.append([particle.surf, particleOffpos])#blit tardio
                         #checka se a partícula deve ser renderizada atrás do sprite
-                        if  particle.backLayer:
+                        if particle.backLayer:
                             screen.blit(particle.surf, particleOffpos)
                         if particle.glows:#ve se a partícula brilha
                             particle_glow_delay_blit.append([particle.glow, get_center_pos(particleOffpos, particle.surf.get_size(), particle.glow.get_size())])
