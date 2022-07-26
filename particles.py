@@ -9,7 +9,8 @@ from utils import remove_items_left_to_right
 #objeto da particula que sera usado um conjunto
 #do manuseador de partículas
 class ParticleCircle:
-    def __init__(self, pos:list, radius:int, direction:tuple, speed:int ,lifeTime:int, color, glow = False, glowIntensity = 1.5, vanish = True, backLayer = False):
+    def __init__(self, pos:list, radius:int, direction:tuple, speed:int ,lifeTime: float, color, glow = False,
+                 glowIntensity = 1.5, vanish = True, backLayer = False):
         self.surf = pg.Surface((radius*2, radius*2))
         self.surf.set_colorkey((0,0,0))
         self.color = color
@@ -21,7 +22,8 @@ class ParticleCircle:
             self.glow_color = (color[0]/2 , color[1]/2 , color[2]/2)
             self.glow = pg.Surface((radius*2 * glowIntensity, radius*2 * glowIntensity))
             self.glow.set_colorkey((0,0,0))
-            pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width()/2, self.glow.get_height()/2), radius * glowIntensity)
+            pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width()/2, self.glow.get_height()/2),
+                           radius * glowIntensity)
         pg.draw.circle(self.surf, color, (self.surf.get_width()/2, self.surf.get_height()/2), radius)
         self.sizeModifier = 1
         self.pos = list(pos)
@@ -46,14 +48,16 @@ class ParticleCircle:
             #fórmula do modificador de tamanho baseado no tempo
             self.sizeModifier = ((self.lifeTime + self.creationTime) - time()) / self.lifeTime
             self.surf.fill((0,0,0))
-            pg.draw.circle(self.surf, self.color, (self.surf.get_width()/2, self.surf.get_height()/2), self.radius * self.sizeModifier)
+            pg.draw.circle(self.surf, self.color, (self.surf.get_width()/2, self.surf.get_height()/2),
+                           self.radius * self.sizeModifier)
             if self.glows:
                 self.glow.fill((0,0,0))
-                pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width()/2, self.glow.get_height()/2), self.radius * self.glowIntensity * self.sizeModifier)
+                pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width()/2, self.glow.get_height()/2),
+                               self.radius * self.glowIntensity * self.sizeModifier)
 
 
 class ParticleSquare:
-    def __init__(self, pos: list, radius: int, direction: tuple, speed: int, lifeTime: int, color, glow=False,
+    def __init__(self, pos: list, radius: int, direction: tuple, speed: int, lifeTime: float, color, glow=False,
                  glowIntensity=1.5, vanish=True, backLayer=False):
         self.surf = pg.Surface((radius * 2, radius * 2))
         self.surf.set_colorkey((0, 0, 0))
@@ -91,7 +95,8 @@ class ParticleSquare:
         if self.vanish:  # caso ela vá diminuindo de tamanho
             # fórmula do modificador de tamanho baseado no tempo
             self.sizeModifier = ((self.lifeTime + self.creationTime) - time()) / self.lifeTime
-            self.surf = pg.transform.scale(self.surf, (self.radius * 2 * self.sizeModifier, self.radius * 2 * self.sizeModifier))
+            self.surf = pg.transform.scale(self.surf, (self.radius * 2 * self.sizeModifier,
+                                                       self.radius * 2 * self.sizeModifier))
             if self.glows:
                 self.glow.fill((0, 0, 0))
                 pg.draw.circle(self.glow, self.glow_color, (self.glow.get_width() / 2, self.glow.get_height() / 2),
@@ -99,9 +104,10 @@ class ParticleSquare:
 
 
 class ParticleImage:
-    def __init__(self, image: pg.Surface, pos: list, radius: int, direction: tuple, speed: int, lifeTime: int,
+    def __init__(self, image: pg.Surface, pos: list, radius: int, direction: tuple, speed: int, lifeTime: float,
                  color=(0, 0, 0), glow=False, glowIntensity=1.5, vanish=True, backLayer=False):
-        self.surf = image
+        self.surf = pg.transform.scale(image,
+                                       (radius * 2, radius * 2))
         self.radius = radius
         self.color = color
         self.glowIntensity = glowIntensity
@@ -135,6 +141,8 @@ class ParticleImage:
         if self.vanish:  # caso ela vá diminuindo de tamanho
             # fórmula do modificador de tamanho baseado no tempo
             self.sizeModifier = ((self.lifeTime + self.creationTime) - time()) / self.lifeTime
+            if self.sizeModifier < 0:
+                self.sizeModifier = 0
             self.surf = pg.transform.scale(self.surf,
                                            (self.radius * 2 * self.sizeModifier, self.radius * 2 * self.sizeModifier))
             if self.glows:
@@ -175,6 +183,22 @@ class Particles_Handler:
             else:
                 self.particles.append(ParticleSquare(pos, radius, randDir, randSpeed, lifeTime, color, glow=glow,
                                                      glowIntensity=glowIntensity, vanish=vanish, backLayer=backLayer))
+
+    def add_image(self, image: pg.Surface, pos, radius, direction, speed, lifeTime, color=(255, 255, 255), glow = False,
+                  glowIntensity=1.5, vanish=False, backLayer=False, circle=False):
+        self.particles.append(
+            ParticleImage(image, pos, radius, direction, speed, lifeTime, color, glow=glow, glowIntensity=glowIntensity,
+                           vanish=vanish, backLayer=backLayer))
+
+    def add_image_explosion(self, image: pg.Surface, pos, radius, intensity, speed, lifeTime,
+                            color=(255, 255, 255), glow = False, glowIntensity=1.5, vanish=True,
+                            backLayer=False, circle=False):
+        for i in range(int(intensity*10)):
+            randdir = (randint(-10, 10)/10, randint(-10, 10)/10)
+            randspeed = randint(speed - int(speed / 2), speed + int(speed / 2))
+            self.particles.append(
+                ParticleImage(image, pos, radius, randdir, randspeed, lifeTime, color, glow=glow,
+                              glowIntensity=glowIntensity, vanish=vanish, backLayer=backLayer))
 
     def delete(self):
         for particle in self.particles:
