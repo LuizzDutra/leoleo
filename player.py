@@ -231,7 +231,7 @@ class Player(pg.sprite.Sprite):
     def get_footstep_particle(self):
         if not self.anim_state["idle"] and time() - self.footStepsLast > self.footStepsTime and not self.anim_state["slow"]:
                 self.footStepsLast = time()
-                self.particleHandler.add_explosion(self.rect.center, 5, 40, 0.5, 0.5, (255,255,255), glow=False, backLayer=True)
+                self.particleHandler.add_explosion(self.rect.center, 5, 40, 0.5, 0.5, (255,255,255), glow=False, backLayer=True, circle=True)
 
 
     def animate(self, screen_size):#animação pós processamento
