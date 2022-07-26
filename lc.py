@@ -59,7 +59,7 @@ class Ground(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (pos[0]*gs , pos[1]*gs))
 
 class Door(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height, locked=False, id = 0, closed = True, mirror = False):
+    def __init__(self, x, y, width, height, locked=False, key_id = 0, closed = True, mirror = False):
         super().__init__()
         if width > height:
             self.image = pg.transform.scale(images.door, (width*gs, height*gs))
@@ -79,7 +79,7 @@ class Door(pg.sprite.Sprite):
         self.open_time = 0.5
         self.open_delta = 0
         self.locked = locked
-        self.id = id
+        self.key_id = key_id
         self.closed = closed
 
     def lock(self):
@@ -91,8 +91,8 @@ class Door(pg.sprite.Sprite):
         self.locked = False
         sons.play_far_effect(self.rect, sons.key)
 
-    def lock_unlock(self, id):
-        if self.id == id or id == 0: #chave de id=0 -> chave mestra
+    def lock_unlock(self, key_id):
+        if self.key_id == key_id or key_id == 0: #chave de id=0 -> chave mestra
             if self.locked:
                 self.unlock()
             elif not self.locked:
