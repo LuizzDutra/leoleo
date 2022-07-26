@@ -43,19 +43,21 @@ groups.door_group.add(lc.Door(9, 5, 4, 0.6))
 groups.door_group.add(lc.Door(13, 5, 4, 0.6, mirror=True))
 groups.door_group.add(lc.Door(8, 10, 0.6, 4, True, 4))
 groups.door_group.add(lc.Door(8, 14, 0.6, 4, True, 4, mirror=True))
+groups.container_group.add(lc.Container("baú", (600, 280), 50, 0))
 
 day_time = calendario.Calendario()
 
-camera = Camera(player.rect, screen)
+camera = Camera(player.rect.center, screen)
 hud = Hud(player.inv_limit)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
 
-group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group, groups.ball_group, groups.drop_item_group, groups.npc_group]
+group_draw_list = [groups.level_surface_group, groups.container_group, groups.door_group, groups.npc_group,
+                   groups.player_group, groups.ball_group, groups.drop_item_group]
 
-collision_group_list = [groups.wall_group, groups.door_group]
-interactable_group_list = [groups.drop_item_group, groups.door_group]
+collision_group_list = [groups.wall_group, groups.door_group, groups.container_group]
+interactable_group_list = [groups.drop_item_group, groups.door_group, groups.container_group]
 
 def evil_spawn():
     obj = item.Item()
