@@ -6,6 +6,7 @@ from utils import rfl, outline_image
 from lc import Door
 from groups import ball_group, drop_item_group
 import sons
+from particles import impactCreator
 
 
 
@@ -128,13 +129,16 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         self.bounce_delay = 0.01
         self.last_bounce = 0
         self.dead = False
+
     def drop(self):
         self.kill()
         self.dead = True #usado para garantir que a bola não drope mais de uma vez em caso de múltiplas colisões
         drop = Paper_Ball()
         drop.rect.center = self.rect.center
         drop_item_group.add(drop)
+
     def bounce(self, rect:pg.Rect):
+        impactCreator.add_explosion(self.rect.center, 4, 100, 0.25, 0.5, (255, 255, 255), glow=False)
         if self.bounce_qt < self.bounce_limit: 
             if pg.time.get_ticks()/1000 - self.last_bounce > self.bounce_delay:
                 self.last_bounce = pg.time.get_ticks()/1000
@@ -153,7 +157,6 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
             if not self.dead:
                 self.drop()
 
-
     def update(self, player_rect):
         self.player_rect = player_rect #referência para som
         self.dt = pg.time.get_ticks()/1000 - self.last
@@ -170,5 +173,5 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
             self.drop()
             
 
-#ids dos itens
-item_dict = {0:Item, 1:Quest_Item, 2:Key, 3:Money, 4:Paper_Ball, 5:Manguza, 6:Pacoca}
+# ids dos itens
+item_dict = {0: Item, 1: Quest_Item, 2: Key, 3: Money, 4: Paper_Ball, 5: Manguza, 6: Pacoca}

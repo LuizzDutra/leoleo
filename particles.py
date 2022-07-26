@@ -185,3 +185,6 @@ class Particles_Handler:
 
     def clear(self):
         self.particles.clear()
+
+
+impactCreator = Particles_Handler(500)

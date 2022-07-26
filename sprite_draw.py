@@ -2,6 +2,7 @@ import pygame as pg
 import fontes
 from utils import outline_image, center_blit
 from item import Item
+from particles import impactCreator
 
 last_draw_quantity = 0
 
@@ -57,12 +58,23 @@ def sprite_draw(screen:pg.Surface, camera, player, group_draw_list = [], interac
                 for blitArgument in particle_glow_delay_blit:
                     screen.blit(blitArgument[0], blitArgument[1], special_flags=pg.BLEND_RGB_ADD)
 
-    last_draw_quantity = i
+
 
     for obj in interactable_list:
         screen.blit(outline_image(obj.image, (255,255,0)), (obj.rect.x + camera.xoffset, obj.rect.y + camera.yoffset))
         if isinstance(obj, Item):
                     screen.blit(fontes.smallarial.render(str(obj.name), True, (255,255,255)), (obj.rect.x + camera.xoffset, obj.rect.top-18+camera.yoffset))
+
+    impactCreator.delete()
+    impactCreator.emit()
+    for particle in impactCreator.particles:
+        particleOffpos = get_offpos(camera, particle.pos, particle.surf.get_size())
+        screen.blit(particle.surf, particleOffpos)
+        if particle.glows:  # ve se a partícula brilha
+            screen.blit(particle.glow, particleOffpos, special_flags=pg.BLEND_RGB_ADD)
+        i += 1
+
+    last_draw_quantity = i
 
 def get_draw_count():
     return last_draw_quantity
