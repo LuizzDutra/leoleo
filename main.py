@@ -105,7 +105,8 @@ while True:
                 lc.construct_load(lc.level_loader.levels[0], "mapaTeste")
             if not console_state:
                 if event.key == pg.K_l:
-                    player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30), glowIntensity=2, vanish=True)
+                    player.particleHandler.add_explosion(player.rect.center, 10, 200, 1, 2, (127,60,30),
+                                                         glowIntensity=2, vanish=True, circle=True)
                     sons.effect_play(sons.explosion)
                 if event.key == pg.K_j:
                     camera.transition((0,0))
