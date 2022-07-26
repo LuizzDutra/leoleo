@@ -8,6 +8,7 @@ import os
 from random import randint
 from utils import outline_image
 import json
+import inventory
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
 mapExtension = ".map"
@@ -140,6 +141,20 @@ class Door(pg.sprite.Sprite):
                 pop_up.add_pop("Trancada")
             if not self.locked:
                 self.open_close()
+
+
+class Container(pg.sprite.Sprite):
+    def __init__(self, name, pos, size, image_id, image_dir: int = 0):
+        super().__init__()
+        self.name = name
+        self.image = pg.transform.rotate(images.container_dict[image_id], image_dir * 90)
+        self.rect = self.image.get_rect(topleft=pos)
+        self.size = size
+        self.inventory = inventory.Inventory(size)
+
+    def interact(self):
+        # O menu irá abrir quando o player interagir
+        pass
 
 class Level_sprite(pg.sprite.Sprite):
     def __init__(self, image, x=0, y=0):
