@@ -20,5 +20,5 @@ def collision_check(player:pg.sprite.Sprite, collision_group_list):
         col_dict2 = pg.sprite.groupcollide(groups.ball_group, group, False, False)
         for ball in col_dict2:
             for obj in col_dict2[ball]:
-                ball.bounce(obj.rect)
+                ball.bounce(obj.rect, obj.image)
 

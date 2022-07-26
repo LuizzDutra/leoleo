@@ -35,21 +35,21 @@ class Quest_Item(Item): #Item de quest que vai ter os scripts de quest
         pass
 
 class Key(Item):
-    def __init__(self, id:list):
+    def __init__(self, key_id: int):
         super().__init__()
         self.chave_name = "Chave "
         self.name_dict = {0 : "Mestra", 1 : "Comum"}
-        self.id = id
-        if self.id in self.name_dict:
-            self.name = self.chave_name + self.name_dict[self.id]
+        self.key_id = key_id
+        if self.key_id in self.name_dict:
+            self.name = self.chave_name + self.name_dict[self.key_id]
         else:
-            self.name = self.chave_name + str(self.id)
+            self.name = self.chave_name + str(self.key_id)
         self.image = images.chave
         self.rect = self.image.get_rect()
     def use(self, player):
         for obj in player.interactable_list:
             if isinstance(obj, Door):
-                obj.lock_unlock(self.id)
+                obj.lock_unlock(self.key_id)
 
 class Money(Item):
     def __init__(self, quantity:int = 10):
@@ -137,8 +137,9 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         drop.rect.center = self.rect.center
         drop_item_group.add(drop)
 
-    def bounce(self, rect:pg.Rect):
-        impactCreator.add_explosion(self.rect.center, 4, 100, 0.25, 0.5, (255, 255, 255), glow=False)
+    def bounce(self, rect:pg.Rect, image):
+        impactCreator.add_image_explosion(image, self.rect.center, 5, 0.5, 100, 0.25)
+
         if self.bounce_qt < self.bounce_limit: 
             if pg.time.get_ticks()/1000 - self.last_bounce > self.bounce_delay:
                 self.last_bounce = pg.time.get_ticks()/1000
