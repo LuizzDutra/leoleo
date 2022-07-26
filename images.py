@@ -19,12 +19,23 @@ texture_path = os.path.join("Assets", "Images", "Textures")
 item_path = os.path.join("Assets", "Images", "Items")
 hud_path = os.path.join("Assets", "Images", "Hud")
 
-def image_loader(path, image_name:str, alpha=False) -> pg.Surface:
-    try:
-        if alpha:
-            return pg.image.load(os.path.join(path, image_name)).convert_alpha()
 
-        return pg.image.load(os.path.join(path, image_name)).convert()
+def image_loader(path, image_name: str, alpha=False, resize: tuple = None, mult_resize: float = None) -> pg.Surface:
+    try:
+        image = pg.image.load(os.path.join(path, image_name))
+
+        if resize is not None:
+            image = pg.transform.scale(image, resize)
+
+        if mult_resize is not None:
+            image = pg.transform.scale(image, (image.get_width() * mult_resize, image.get_height() * mult_resize))
+
+        if alpha:
+            image = image.convert_alpha()
+        else:
+            image = image.convert()
+
+        return image
     except Exception as error:
         print(error)
         return errorimage
@@ -73,16 +84,18 @@ bola_papel_projetil.set_colorkey(default_colorkey)
 
 wall = image_loader(texture_path, "wall.png")
 wall_beam = image_loader(texture_path, "wall_beam.png")
-brick = pg.transform.scale(image_loader(texture_path, "brick.png"), (16,16))
-grass =  pg.transform.scale(image_loader(texture_path, "grass.png"), (16,16))
-concrete =  pg.transform.scale(image_loader(texture_path, "concrete.png"), (16,16))
+brick = image_loader(texture_path, "brick.png", resize=(16, 16))
+grass = image_loader(texture_path, "grass.png", resize=(16, 16))
+concrete = image_loader(texture_path, "concrete.png", resize=(16, 16))
+chest = image_loader(texture_path, "chest.png", alpha=True, mult_resize=1.25)
 
-wall_list = {BLACK:(wall, wall_beam), RED:(brick, brick)}
-ground_list = {GREEN:grass, BLUE:concrete}
+wall_list = {BLACK: (wall, wall_beam), RED: (brick, brick)}
+ground_list = {GREEN: grass, BLUE: concrete}
+container_dict = {0: chest}
 
 
 door = image_loader(texture_path, "door.png")
-chave = pg.transform.scale(image_loader(item_path, "chave.png"), (48,48))
+chave = pg.transform.scale(image_loader(item_path, "chave.png"), (48, 48))
 chave.set_colorkey(default_colorkey)
 money = image_loader(item_path, "money.png")
 

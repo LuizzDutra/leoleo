@@ -32,7 +32,7 @@ pg.mouse.set_visible(False)
 
 player = Player()
 groups.player_group.add(player)
-player.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
+player.inventory.inv_list = [item.Key(4), item.Money(50), item.Manguza(), item.Pacoca()]
 
 npc = Npc(0,0)
 groups.npc_group.add(npc)
@@ -43,19 +43,21 @@ groups.door_group.add(lc.Door(9, 5, 4, 0.6))
 groups.door_group.add(lc.Door(13, 5, 4, 0.6, mirror=True))
 groups.door_group.add(lc.Door(8, 10, 0.6, 4, True, 4))
 groups.door_group.add(lc.Door(8, 14, 0.6, 4, True, 4, mirror=True))
+groups.container_group.add(lc.Container("baú", (600, 280), 50, 0))
 
 day_time = calendario.Calendario()
 
-camera = Camera(player.rect, screen)
-hud = Hud(player.inv_limit)
+camera = Camera(player.rect.center, screen)
+hud = Hud(player.inventory.size)
 console = Console()
 quest_tracker = quests.Quest_tracker()
 
 
-group_draw_list = [groups.level_surface_group, groups.door_group, groups.player_group, groups.ball_group, groups.drop_item_group, groups.npc_group]
+group_draw_list = [groups.level_surface_group, groups.container_group, groups.door_group, groups.npc_group,
+                   groups.player_group, groups.ball_group, groups.drop_item_group]
 
-collision_group_list = [groups.wall_group, groups.door_group]
-interactable_group_list = [groups.drop_item_group, groups.door_group]
+collision_group_list = [groups.wall_group, groups.door_group, groups.container_group]
+interactable_group_list = [groups.drop_item_group, groups.door_group, groups.container_group]
 
 def evil_spawn():
     obj = item.Item()
@@ -113,9 +115,8 @@ while True:
                 if event.key == pg.K_h:
                     camera.clear_transition()
                 if event.key == pg.K_t:
-                    for i, obj in enumerate(player.inv_list):
-                        if obj == None:
-                            player.inv_list[i] = item.Paper_Ball()
+                    for i in range(player.inventory.size):
+                        player.inventory.add_item(item.Paper_Ball())
             if event.key == pg.K_F4:
                 console_state = not console_state
 
@@ -135,7 +136,7 @@ while True:
     if pg.time.get_ticks() - config.render_last > config.render_delay:
         config.render_last = pg.time.get_ticks()
         sprite_draw(screen, camera, player, group_draw_list, player.interactable_list)
-        hud.draw_inv(screen, player.inv_list, player.inv_select)
+        hud.draw_inv(screen, player.inventory.get_inv(), player.inv_select)
         hud.draw_ui(screen, player, day_time, cursor.cursor, console.draw)
         pop_up.update()
         npc.update()

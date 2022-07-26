@@ -1,13 +1,12 @@
-from code import interact
 import pygame as pg
 import images
 from time import time
-from item import Item, Paper_Ball
+from item import Item
 from groups import drop_item_group
 from utils import Animator, outline_image, center_blit, wobble_sprites
 from math import degrees, atan2
 import particles
-
+import inventory
 
 
 class Player(pg.sprite.Sprite):
@@ -56,8 +55,7 @@ class Player(pg.sprite.Sprite):
         self.use_delay = 0.2
         self.last_use = 0
         self.inv_select = 0
-        self.inv_limit = 5
-        self.inv_list = []
+        self.inventory = inventory.Inventory(5)
         self.energy_max = 100
         self.energy = 100
         self.hp_max = 100
@@ -114,10 +112,10 @@ class Player(pg.sprite.Sprite):
         self.ypos += self.yvel * self.dt
         if keys_pressed[key_binds["use"]]:
             if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
-                self.use_item(self.inv_list[self.inv_select])
+                self.use_item(self.inventory.inv_list[self.inv_select])
                 self.last_use = pg.time.get_ticks()/1000
         if keys_pressed[key_binds["drop"]]:
-            self.drop_item(drop_item_group)
+            self.drop_item()
         if keys_pressed[key_binds["interact"]]:
             if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
                 self.interact()
@@ -136,58 +134,56 @@ class Player(pg.sprite.Sprite):
         if not wheel:
             if mouse_events[key_binds["left_click"]]:#botão esquerdo
                 if (pg.time.get_ticks()/1000 - self.last_use) > self.use_delay:
-                    self.use_item(self.inv_list[self.inv_select])
+                    self.use_item(self.inventory.inv_list[self.inv_select])
                     self.last_use = pg.time.get_ticks()/1000
         if wheel:
             if mouse_events == -1:#mouse pra baixo
-                if self.inv_select+1 == self.inv_limit:
+                if self.inv_select+1 == self.inventory.size:
                     self.inv_select = 0
                 else:
                     self.inv_select += 1
             if mouse_events == 1:#mouse pra cima
                 if self.inv_select == 0:
-                    self.inv_select = self.inv_limit-1
+                    self.inv_select = self.inventory.size-1
                 else:
                     self.inv_select -= 1
 
-    def get_interactable_list(self, interactable_group_list = []):
+    def get_interactable_list(self, interactable_group_list):
         self.interactable_list = [] #reset da lista
         #interação do personagem/ for loop usado para filtrar os interagiveis por distância.
         #Objetos no alcançe são colocados em uma lista de interação
         for i in range(10, 0, -1):
             for group in interactable_group_list:
-                    for obj in group:
-                        if abs(self.rect.centerx - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - obj.rect.center[1]) < self.pickup_range/i:
-                            if len(self.interactable_list) == 0:
-                                self.interactable_list.append(obj)
-                                return
+                for obj in group:
+                    if abs(self.rect.centerx - obj.rect.center[0]) < self.pickup_range/i and abs(self.rect.centery - obj.rect.center[1]) < self.pickup_range/i:
+                        if len(self.interactable_list) == 0:
+                            self.interactable_list.append(obj)
+                            return
 
-    def add_item(self, item:pg.sprite.Sprite):
-        if len(self.inv_list) < self.inv_limit:
-            item.kill()
-            self.inv_list.append(item)
-            return
-        for i, slot in enumerate(self.inv_list):
-            if slot == None:
-                item.kill()
-                self.inv_list[i] = item
-                return
-    def drop_item(self, group:pg.sprite.Group):
-        if self.inv_list[self.inv_select] != None:
-            self.inv_list[self.inv_select].rect.center = self.rect.center
-            group.add(self.inv_list[self.inv_select])
-            self.inv_list[self.inv_select] = None
-    def use_item(self, item:pg.sprite.Sprite):
-        if item != None:
+    def add_item(self, obj: pg.sprite.Sprite):
+        self.inventory.add_item(obj)
+
+    def drop_item(self):
+        obj = self.inventory.get_inv()[self.inv_select]
+        if obj is not None:
+            self.inventory.remove_item(obj)
+            obj.rect.center = self.rect.center  # coloca o objeto na posição do player
+            drop_item_group.add(obj)
+
+    def use_item(self, item: Item):
+        if item is not None:
             item.use(self)
+
     def interact(self):
         for obj in self.interactable_list:
             if isinstance(obj, Item):
-                self.add_item(obj)
+                if self.inventory.get_empty_slots() > 0:
+                    obj.kill()
+                    self.add_item(obj)
             else:
-                #print(type)
                 obj.interact()
             self.interactable_list.remove(obj)
+
     def dmg_blink(self):
         if (pg.time.get_ticks()/1000-self.lastdmg) // 0.2 % 2 == 0:
             self.outline = outline_image(self.image, (255,0,0))
@@ -273,8 +269,6 @@ class Player(pg.sprite.Sprite):
             self.hp = self.hp_max
         if self.hp <= 0:
             self.dead = True
-        while len(self.inv_list) < self.inv_limit:
-            self.inv_list.append(None)
         
         self.get_cur_sprite()
         self.animate(screen_size)

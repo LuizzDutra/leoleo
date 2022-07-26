@@ -19,7 +19,8 @@ class Item(pg.sprite.Sprite):
     def use(self, player:pg.sprite.Sprite):
         print("Define the use function idiot")
         print(type(self))
-        rfl(self, player.inv_list)
+        player.inventory.remove_item(self)
+
 
 class Quest_Item(Item): #Item de quest que vai ter os scripts de quest
     def __init__(self):
@@ -29,10 +30,13 @@ class Quest_Item(Item): #Item de quest que vai ter os scripts de quest
         self.image = self.sprites[0]
         self.outline = outline_image(self.image, (0,255,0))
         self.rect = self.image.get_rect()
+
     def use(self, player:pg.sprite.Sprite):
         print("Não pode usar este item")
+
     def update(self):
         pass
+
 
 class Key(Item):
     def __init__(self, key_id: int):
@@ -46,10 +50,12 @@ class Key(Item):
             self.name = self.chave_name + str(self.key_id)
         self.image = images.chave
         self.rect = self.image.get_rect()
+
     def use(self, player):
         for obj in player.interactable_list:
             if isinstance(obj, Door):
                 obj.lock_unlock(self.key_id)
+
 
 class Money(Item):
     def __init__(self, quantity:int = 10):
@@ -58,10 +64,12 @@ class Money(Item):
         self.image = images.money
         self.rect = self.image.get_rect()
         self.quantity = quantity
+
     def use(self, player):
         player.money += self.quantity
         sons.effect_play(sons.cashing)
-        rfl(self, player.inv_list)
+        player.inventory.remove_item(self)
+
 
 class Paper_Ball(Item):
     def __init__(self):
@@ -73,7 +81,7 @@ class Paper_Ball(Item):
         if player.energy >= 5:
             ball_group.add(Ball(player))
             player.energy -= 5
-            rfl(self, player.inv_list)
+            player.inventory.remove_item(self)
             sons.effect_play(sons.throw)
 
 
@@ -85,7 +93,7 @@ class Manguza(Item):
         self.rect = self.image.get_rect()
     def use(self, player):
         player.energy += 15
-        rfl(self, player.inv_list)
+        player.inventory.remove_item(self)
 
 class Pacoca(Item):
     def __init__(self):
@@ -94,7 +102,7 @@ class Pacoca(Item):
         #self.image = sprites[3]
     def use(self, player):
         player.energy += 50
-        rfl(self, player.inv_list)
+        player.inventory.remove_item(self)
 
 #Essa classe é um projétil e não item
 class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
@@ -137,9 +145,8 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         drop.rect.center = self.rect.center
         drop_item_group.add(drop)
 
-    def bounce(self, rect:pg.Rect, image):
+    def bounce(self, rect: pg.Rect, image: pg.Surface):
         impactCreator.add_image_explosion(image, self.rect.center, 5, 0.5, 100, 0.25)
-
         if self.bounce_qt < self.bounce_limit: 
             if pg.time.get_ticks()/1000 - self.last_bounce > self.bounce_delay:
                 self.last_bounce = pg.time.get_ticks()/1000
