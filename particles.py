@@ -176,7 +176,7 @@ class Particles_Handler:
                       glowIntensity = 1.5, vanish=True, backLayer = False, circle=False):
         for i in range(int(intensity*10)):
             randDir = (randint(-10, 10)/10, randint(-10, 10)/10)
-            randSpeed = randint(speed - int(speed/2), speed + int(speed/2))
+            randSpeed = randint(int(speed - int(speed/2)), int(speed + int(speed/2)))
             if circle:
                 self.particles.append(ParticleCircle(pos, radius, randDir, randSpeed, lifeTime, color, glow=glow,
                                                      glowIntensity=glowIntensity, vanish=vanish, backLayer=backLayer))
@@ -195,7 +195,7 @@ class Particles_Handler:
                             backLayer=False, circle=False):
         for i in range(int(intensity*10)):
             randdir = (randint(-10, 10)/10, randint(-10, 10)/10)
-            randspeed = randint(speed - int(speed / 2), speed + int(speed / 2))
+            randspeed = randint(int(speed - int(speed / 2)), int(speed + int(speed / 2)))
             self.particles.append(
                 ParticleImage(image, pos, radius, randdir, randspeed, lifeTime, color, glow=glow,
                               glowIntensity=glowIntensity, vanish=vanish, backLayer=backLayer))
