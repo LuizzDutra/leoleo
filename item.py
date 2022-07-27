@@ -146,7 +146,7 @@ class Ball(pg.sprite.Sprite): #https://www.youtube.com/watch?v=JmpA7TU_0Ms
         drop_item_group.add(drop)
 
     def bounce(self, rect: pg.Rect, image: pg.Surface):
-        impactCreator.add_image_explosion(image, self.rect.center, 5, 0.5, 100, 0.25)
+        impactCreator.add_image_explosion(image, self.rect.center, 5, 100, 0.25, 0.5)
         if self.bounce_qt < self.bounce_limit: 
             if pg.time.get_ticks()/1000 - self.last_bounce > self.bounce_delay:
                 self.last_bounce = pg.time.get_ticks()/1000
