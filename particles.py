@@ -190,8 +190,8 @@ class Particles_Handler:
             ParticleImage(image, pos, radius, direction, speed, lifeTime, color, glow=glow, glowIntensity=glowIntensity,
                            vanish=vanish, backLayer=backLayer))
 
-    def add_image_explosion(self, image: pg.Surface, pos, radius, intensity, speed, lifeTime,
-                            color=(255, 255, 255), glow = False, glowIntensity=1.5, vanish=True,
+    def add_image_explosion(self, image: pg.Surface, pos, radius, speed, lifeTime, intensity,
+                            color=(64, 64, 64), glow=False, glowIntensity=1.5, vanish=True,
                             backLayer=False, circle=False):
         for i in range(int(intensity*10)):
             randdir = (randint(-10, 10)/10, randint(-10, 10)/10)
