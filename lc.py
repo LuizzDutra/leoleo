@@ -228,24 +228,26 @@ def draw_level(level_image, part_quantity, outline=False):#desenha o nível
 
 
 def load_level(name):#carrega o nível do arquivo
+    try:
+        with open(os.path.join(level_path, name + mapExtension), "r") as f:
+            metadataDict = json.load(f)
+            wallDict = metadataDict["walls"]
+            destructibleWallDict = metadataDict["destructible_walls"]
+            groundDict = metadataDict["grounds"]
+            groups.wall_group.empty()
+            groups.ground_group.empty()
+            groups.destructible_wall_group.empty()
 
-    with open(os.path.join(level_path, name + mapExtension), "r") as f:
-        metadataDict = json.load(f)
-        wallDict = metadataDict["walls"]
-        destructibleWallDict = metadataDict["destructible_walls"]
-        groundDict = metadataDict["grounds"]
-        groups.wall_group.empty()
-        groups.ground_group.empty()
-        groups.destructible_wall_group.empty()
+            for key, value in wallDict.items():
+                groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
 
-        for key, value in wallDict.items():
-            groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
+            for key, value in destructibleWallDict.items():
+                groups.destructible_wall_group.add(DestructibleWall(value[0], value[1], tuple(value[2])))
 
-        for key, value in destructibleWallDict.items():
-            groups.destructible_wall_group.add(DestructibleWall(value[0], value[1], tuple(value[2])))
-
-        for key, value in groundDict.items():
-            groups.ground_group.add(Ground(value[0], tuple(value[1])))
+            for key, value in groundDict.items():
+                groups.ground_group.add(Ground(value[0], tuple(value[1])))
+    except Exception as error:
+        print(error)
 
 
 def level_construct(level_image:pg.Surface, name):#construção do arquivo do mapa
