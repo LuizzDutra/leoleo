@@ -211,10 +211,6 @@ def draw_level(level_image, part_quantity, outline=False):#desenha o nível
     level_surface.image.fill((50,50,50))
     for ground in groups.ground_group:
         level_surface.image.blit(ground.image, ground.rect.topleft)
-    for wall in groups.wall_group:
-        level_surface.image.blit(wall.image, wall.rect.topleft)
-    for destructible_wall in groups.destructible_wall_group:
-        level_surface.image.blit(destructible_wall.image, destructible_wall.rect.topleft)
 
     level_width = level_surface.image.get_width()
     level_height = level_surface.image.get_height()

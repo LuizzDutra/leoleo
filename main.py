@@ -53,7 +53,7 @@ console = Console()
 quest_tracker = quests.Quest_tracker()
 
 
-group_draw_list = [groups.level_surface_group, groups.container_group, groups.door_group, groups.npc_group,
+group_draw_list = [groups.level_surface_group, groups.wall_group, groups.destructible_wall_group, groups.container_group, groups.door_group, groups.npc_group,
                    groups.player_group, groups.ball_group, groups.drop_item_group]
 
 collision_group_list = [groups.wall_group, groups.door_group, groups.container_group, groups.destructible_wall_group]
