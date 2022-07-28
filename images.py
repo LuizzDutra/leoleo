@@ -84,11 +84,14 @@ bola_papel_projetil.set_colorkey(default_colorkey)
 
 wall = image_loader(texture_path, "wall.png")
 wall_beam = image_loader(texture_path, "wall_beam.png")
+weak_wall = image_loader(texture_path, "weak_wall.png")
+weak_wall2 = image_loader(texture_path, "weak_wall2.png")
 brick = image_loader(texture_path, "brick.png", resize=(16, 16))
 grass = image_loader(texture_path, "grass.png", resize=(16, 16))
 concrete = image_loader(texture_path, "concrete.png", resize=(16, 16))
 chest = image_loader(texture_path, "chest.png", alpha=True, mult_resize=1.25)
 
+destructible_wall_list = {YELLOW: (weak_wall, weak_wall), CYAN: (weak_wall2, weak_wall2)}
 wall_list = {BLACK: (wall, wall_beam), RED: (brick, brick)}
 ground_list = {GREEN: grass, BLUE: concrete}
 container_dict = {0: chest}

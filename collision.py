@@ -21,4 +21,6 @@ def collision_check(player:pg.sprite.Sprite, collision_group_list):
         for ball in col_dict2:
             for obj in col_dict2[ball]:
                 ball.bounce(obj.rect, obj.image)
+                if hasattr(obj, "destruct"):
+                    obj.destruct()
 

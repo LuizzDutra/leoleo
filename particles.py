@@ -212,3 +212,6 @@ class Particles_Handler:
 
 
 impactCreator = Particles_Handler(500)
+destructionCreator = Particles_Handler(200)
+
+creator_list = [impactCreator, destructionCreator]
