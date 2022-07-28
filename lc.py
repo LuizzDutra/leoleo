@@ -236,6 +236,7 @@ def load_level(name):#carrega o nível do arquivo
         groundDict = metadataDict["grounds"]
         groups.wall_group.empty()
         groups.ground_group.empty()
+        groups.destructible_wall_group.empty()
 
         for key, value in wallDict.items():
             groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
@@ -313,10 +314,7 @@ def level_construct(level_image:pg.Surface, name):#construção do arquivo do ma
                     wide_check = False
                     wall_cords = []
                     if color in images.destructible_wall_list:
-                        if (x-1, y) in check_list:
-                            wall_cords.append((x-1, y))
-                        else:
-                            wall_cords.append((x, y))
+                        wall_cords.append((x, y))
                         wall_cords.append((x, y))
                         for i in range(x+1, level_size[0]):
                             if level_image.get_at((i, y)) == color:
@@ -334,10 +332,7 @@ def level_construct(level_image:pg.Surface, name):#construção do arquivo do ma
                     wall_cords = []
                     if color in images.destructible_wall_list:
                         if (x,y) not in check_list:
-                            if (x, y-1) in check_list:
-                                wall_cords.append((x, y-1))
-                            else:
-                                wall_cords.append((x,y))
+                            wall_cords.append((x,y))
                             wall_cords.append((x,y))
                             for i in range(y+1, level_size[0]):
                                 if level_image.get_at((x, i)) == color:
