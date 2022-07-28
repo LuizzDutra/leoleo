@@ -9,45 +9,71 @@ from random import randint
 from utils import outline_image
 import json
 import inventory
+from particles import destructionCreator
 #Decidi que a escala vai ser 64p:1m
 gs = 16 #cada grid tem meio metro
 mapExtension = ".map"
 
 level_path = os.path.join("Assets", "Levels")
 
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, pos:tuple, pos2:tuple, color_id):
         super().__init__()
+        self.blit_image_size = None
+        self.blit_v_image = None
+        self.blit_h_image = None
+        self.blit_images = None
         self.corner = (pos2[0]*gs+gs, pos2[1]*gs+gs)
         self.width = self.corner[0] - pos[0]*gs
         self.height = self.corner[1] - pos[1]*gs
         self.rect = pg.Rect((pos[0]*gs, pos[1]*gs), (self.width, self.height))
-        #imagem em forma de tiles
+        self.get_images(color_id)
+        self.draw_image()
+
+    def get_images(self, color_id):
+        # imagem em forma de tiles
         self.blit_images = images.wall_list[color_id]
-        self.blit_h_image = self.blit_images[0] #parede horizontal
-        self.blit_v_image = pg.transform.rotate(self.blit_images[0], 90) #parede vertical
+        self.blit_h_image = self.blit_images[0]  # parede horizontal
+        self.blit_v_image = pg.transform.rotate(self.blit_images[0], 90)  # parede vertical
         self.blit_image_size = self.blit_images[0].get_size()
+
+    def draw_image(self):
         self.image = pg.Surface((self.rect.width, self.rect.height))
         if self.width > self.height:
-            range_max = int(self.image.get_size()[0]/self.blit_image_size[0])
+            range_max = int(self.image.get_size()[0] / self.blit_image_size[0])
             for x in range(0, range_max):
-                if x == range_max-1 or x == 0:
-                    self.image.blit(self.blit_images[1], (x*self.blit_image_size[0], 0))
+                if x == range_max - 1 or x == 0:
+                    self.image.blit(self.blit_images[1], (x * self.blit_image_size[0], 0))
                 else:
-                    self.image.blit(self.blit_h_image, (x*self.blit_image_size[0], 0))
+                    self.image.blit(self.blit_h_image, (x * self.blit_image_size[0], 0))
         if self.width < self.height:
-            range_max = int(self.image.get_size()[1]/self.blit_image_size[1])
+            range_max = int(self.image.get_size()[1] / self.blit_image_size[1])
             for y in range(0, range_max):
                 if y == range_max - 1 or y == 0:
-                    self.image.blit(self.blit_images[1], (0, y*self.blit_image_size[1]))
+                    self.image.blit(self.blit_images[1], (0, y * self.blit_image_size[1]))
                 else:
-                    self.image.blit(self.blit_v_image, (0, y*self.blit_image_size[1]))
+                    self.image.blit(self.blit_v_image, (0, y * self.blit_image_size[1]))
         else:
             self.image.blit(self.blit_images[1], (0, 0))
-        del self.blit_images
-        del self.blit_image_size
-        del self.width
-        del self.height
+
+
+
+
+class DestructibleWall(Wall):
+    def __init__(self, pos, pos2, color_id):
+        super().__init__(pos, pos2, color_id)
+
+    def get_images(self, color_id):
+        self.blit_images = images.destructible_wall_list[color_id]
+        self.blit_h_image = self.blit_images[0]  # parede horizontal
+        self.blit_v_image = pg.transform.rotate(self.blit_images[0], 90)  # parede vertical
+        self.blit_image_size = self.blit_images[0].get_size()
+
+    def destruct(self):
+        self.kill()
+        destructionCreator.add_image_explosion(self.image, self.rect.center, 5, 200, 1, 1)
+
 
 class Ground(pg.sprite.Sprite):
     def __init__(self, pos:tuple, color_id, rot=False):
@@ -187,6 +213,8 @@ def draw_level(level_image, part_quantity, outline=False):#desenha o nível
         level_surface.image.blit(ground.image, ground.rect.topleft)
     for wall in groups.wall_group:
         level_surface.image.blit(wall.image, wall.rect.topleft)
+    for destructible_wall in groups.destructible_wall_group:
+        level_surface.image.blit(destructible_wall.image, destructible_wall.rect.topleft)
 
     level_width = level_surface.image.get_width()
     level_height = level_surface.image.get_height()
@@ -202,30 +230,36 @@ def draw_level(level_image, part_quantity, outline=False):#desenha o nível
             i += 1
     print("Mapa particionado em {}".format(i))
 
-def load_level(name):#carrega o nível do arquivo
-    try:
-        with open(os.path.join(level_path, name + mapExtension), "r") as f:
-            metadataDict = json.load(f)
-            wallDict = metadataDict["walls"]
-            groundDict = metadataDict["grounds"]
-            groups.wall_group.empty()
-            groups.ground_group.empty()
 
-            for key, value in wallDict.items():
-                groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
-            
-            for key, value in groundDict.items():
-                groups.ground_group.add(Ground(value[0], tuple(value[1])))
-    except Exception as error:
-        print(error)
+def load_level(name):#carrega o nível do arquivo
+
+    with open(os.path.join(level_path, name + mapExtension), "r") as f:
+        metadataDict = json.load(f)
+        wallDict = metadataDict["walls"]
+        destructibleWallDict = metadataDict["destructible_walls"]
+        groundDict = metadataDict["grounds"]
+        groups.wall_group.empty()
+        groups.ground_group.empty()
+
+        for key, value in wallDict.items():
+            groups.wall_group.add(Wall(value[0], value[1], tuple(value[2])))
+
+        for key, value in destructibleWallDict.items():
+            groups.destructible_wall_group.add(DestructibleWall(value[0], value[1], tuple(value[2])))
+
+        for key, value in groundDict.items():
+            groups.ground_group.add(Ground(value[0], tuple(value[1])))
+
 
 def level_construct(level_image:pg.Surface, name):#construção do arquivo do mapa
     print("Carrengando mapa")
     metadataDict = {}
     wallDict = {}
+    destructibleWallDict = {}
     groundDict = {}
     tempWallList = []
     tempGroundList = []
+    tempDestructibleWallList = []
     try:
         start = time()
         groups.wall_group.empty()
@@ -279,18 +313,63 @@ def level_construct(level_image:pg.Surface, name):#construção do arquivo do ma
                                     break
                             tempWallList.append([wall_cords[0], wall_cords[-1], color])
 
+                    # paredes destrutíveis --------------------------------------------------------
+                    wide_check = False
+                    wall_cords = []
+                    if color in images.destructible_wall_list:
+                        if (x-1, y) in check_list:
+                            wall_cords.append((x-1, y))
+                        else:
+                            wall_cords.append((x, y))
+                        wall_cords.append((x, y))
+                        for i in range(x+1, level_size[0]):
+                            if level_image.get_at((i, y)) == color:
+                                wall_cords[1] = (i, y)
+                                check_list.append((i, y))
+                                if not wide_check:
+                                    check_list.append((x, y))
+                                    wide_check = True
+                            else:
+                                break
+                        if (x,y) in check_list:
+                            tempDestructibleWallList.append([wall_cords[0], wall_cords[-1], color])
+                    #paredes verticais
+                    wide_check = False
+                    wall_cords = []
+                    if color in images.destructible_wall_list:
+                        if (x,y) not in check_list:
+                            if (x, y-1) in check_list:
+                                wall_cords.append((x, y-1))
+                            else:
+                                wall_cords.append((x,y))
+                            wall_cords.append((x,y))
+                            for i in range(y+1, level_size[0]):
+                                if level_image.get_at((x, i)) == color:
+                                    wall_cords[1] = (x, i)
+                                    check_list.append((x, i))
+                                    if not wide_check:
+                                        check_list.append((x, y))
+                                        wide_check = True
+                                else:
+                                    break
+                            tempDestructibleWallList.append([wall_cords[0], wall_cords[-1], color])
+
+                    # Chão ------------------------------------
+
                     if color in images.ground_list:
                         tempGroundList.append([(x, y), color])
-                        
-                        
+
         for i, value in enumerate(tempWallList):
             wallDict[i] = value
-        
+
+        for i, value in enumerate(tempDestructibleWallList):
+            destructibleWallDict[i] = value
+
         for i, value in enumerate(tempGroundList):
             groundDict[i] = value
-        #draw_level(level0, part_quantity)
 
         metadataDict["walls"] = wallDict
+        metadataDict["destructible_walls"] = destructibleWallDict
         metadataDict["grounds"] = groundDict
         with open(os.path.join(level_path, name + mapExtension), "w") as f:
             json.dump(metadataDict, f)
