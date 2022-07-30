@@ -1,29 +1,44 @@
 import pygame as pg
 import images
 import fontes
-from utils import clamp, no_zero
+from utils import clamp, center_blit, outline_image
+
 
 class Hud():
     def __init__(self, inv_limit):
         self.inv_sprites = []
         self.inv_sprites.append(images.inv_select)
         self.inv_sprites.append(images.inv_slot_selected)
-        self.inv_rect = []
-        self.get_inv_rect(inv_limit)
+        self.sprite_size = self.inv_sprites[0].get_size()
+        self.sprite_height = self.inv_sprites[0].get_height()
+        self.sprite_width = self.inv_sprites[0].get_width()
+        self.inv_space = 16  # Espaço entre cada 'slot' do inventário
+        self.inv_pos = (100, -70)
 
-        #self.inv_rect = [self.inv_sprites[0].get_rect(x = 100, y = 650), self.inv_sprites[0].get_rect(x = 174, y = 650), self.inv_sprites[0].get_rect(x =248, y = 650), self.inv_sprites[0].get_rect(x =322, y = 650), self.inv_sprites[0].get_rect(x =322+74, y = 650)]
     def draw_inv(self, screen, item_list, inv_select):
-        for rect in self.inv_rect:
-            screen.blit(self.inv_sprites[0], rect.topleft)
-
-        screen.blit(self.inv_sprites[1], self.inv_rect[inv_select].topleft)
-        
+        # blit dos slots do inventário
+        for i in range(len(item_list)):
+            screen.blit(self.inv_sprites[0], (self.inv_pos[0] + (self.sprite_width + self.inv_space)*i,
+                                              screen.get_height() + self.inv_pos[1]))
+        # blit do slot selecionado
+        screen.blit(self.inv_sprites[1], (self.inv_pos[0] + (self.sprite_width + self.inv_space)*inv_select,
+                                          screen.get_height() + self.inv_pos[1]))
+        # blit dos itens
         for i, item in enumerate(item_list):
-            if item != None:
-                screen.blit(item.image, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
+            if item is not None:
+                center = center_blit(self.sprite_size, item.image.get_size())
+                screen.blit(item.image,
+                            ((self.inv_pos[0] + (self.sprite_width + self.inv_space) * i) + center[0],
+                             screen.get_height() + self.inv_pos[1] + center[1]))
                 if hasattr(item, "outline"):
-                    screen.blit(item.outline, (self.inv_rect[i].centerx - item.rect.width/2, self.inv_rect[i].centery - item.rect.height/2))
-                screen.blit(fontes.smallarial.render(str(item.name), True, (255,255,255), (127,127,127)), (self.inv_rect[i].x, self.inv_rect[i].y))
+                    screen.blit(item.outline,
+                                ((self.inv_pos[0] + (self.sprite_width + self.inv_space) * i) + center[0],
+                                 screen.get_height() + self.inv_pos[1] + center[1]))
+                font_blit = fontes.smallarial.render(item.name, True, (255, 255, 255), (32, 32, 32))
+                font_center = center_blit(self.sprite_size, font_blit.get_size())
+                screen.blit(font_blit,
+                            ((self.inv_pos[0] + (self.sprite_width + self.inv_space) * i) + font_center[0],
+                             screen.get_height() + self.inv_pos[1] - 15))
 
     def draw_ui(self, screen:pg.display.set_mode, player, calendar, cursor, console_draw):
         screen.blit(calendar.image, (10, 10))
@@ -31,7 +46,7 @@ class Hud():
         screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,25))
         screen.blit(pg.transform.scale(images.health_bar, (images.bar_width*clamp((player.hp/player.hp_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,25))
         #barra branca que mostra o dano tomado
-        screen.blit(pg.transform.scale(images.damage_bar, (images.bar_width*clamp((((player.lasthp-player.hp)/player.hp_max)), 0, 1), images.bar_height)), ((screen.get_width()-images.bar_width)+(clamp(player.hp, 0, player.hp_max)/player.hp_max*images.bar_width)-20,25))
+        screen.blit(pg.transform.scale(images.damage_bar, (images.bar_width*clamp(((player.lasthp-player.hp)/player.hp_max), 0, 1), images.bar_height)), ((screen.get_width()-images.bar_width)+(clamp(player.hp, 0, player.hp_max)/player.hp_max*images.bar_width)-20,25))
         #barra de energia
         screen.blit(images.empty_bar, (screen.get_width()-images.bar_width-20,55))
         screen.blit(pg.transform.scale(images.energy_bar, (images.bar_width*clamp((player.energy/player.energy_max), 0, 1), images.bar_height)), (screen.get_width()-images.bar_width-20,55))
@@ -40,10 +55,7 @@ class Hud():
         screen.blit(cursor.image, (cursor.rect.x, cursor.rect.y))
 
         console_draw(screen)
-    
-    def get_inv_rect(self, inv_limit):
-        for i in range(inv_limit):
-            self.inv_rect.append(self.inv_sprites[0].get_rect(x = 100 + i*64 + i*10, y = 650))
+
 
 
 class Pop_up():
