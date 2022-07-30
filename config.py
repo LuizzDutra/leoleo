@@ -20,6 +20,8 @@ res_list = [(1280, 720), (1920, 1080)]
 res = res_list[0]
 fullscr = False
 
+camera_follow_intensity = 1
+
 def set_res(toggle = False):
     global fullscr
     global res
@@ -140,7 +142,7 @@ def load_s(player, day_time):
 def save_cfg():
 
     #lista para todas as variáveis de cfg que serão salvas
-    save_list = ["key_binds", "render_delay", "res", "fullscr"]
+    save_list = ["key_binds", "render_delay", "res", "fullscr", "camera_follow_intensity"]
 
     with open("config.json", "w") as f:
         save_dict = {}

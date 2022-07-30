@@ -1,6 +1,7 @@
 import pygame as pg
 
-class Camera():
+
+class Camera:
     def __init__(self, focus:tuple, screen:pg.display.set_mode):
         self.focus = focus
         #offset de transção
@@ -37,8 +38,14 @@ class Camera():
             self.xoffset = screen.get_width()/2 - self.t_point[0]
             self.yoffset = screen.get_height()/2 - self.t_point[1]
         else:
-            self.xoffset = (screen.get_width()/2 - self.focus[0]) - round(((pg.mouse.get_pos()[0] - screen.get_width()/2)/2)/1.5)
-            self.yoffset = (screen.get_height()/2 - self.focus[1]) -  round(((pg.mouse.get_pos()[1] - screen.get_height()/2)/2)/1.5)
+            from config import camera_follow_intensity
+            if camera_follow_intensity != 0:
+                cam_x_calc = round(((pg.mouse.get_pos()[0] - screen.get_width()/2) / 2) / (1/camera_follow_intensity))
+                cam_y_calc = round(((pg.mouse.get_pos()[1] - screen.get_height()/2) / 2) / (1/camera_follow_intensity))
+            else:
+                cam_x_calc, cam_y_calc = 0, 0
+            self.xoffset = (screen.get_width()/2 - self.focus[0]) - cam_x_calc
+            self.yoffset = (screen.get_height()/2 - self.focus[1]) - cam_y_calc
         
 
     #A transição só soma o offset, note a câmera não irá mudar o foco
